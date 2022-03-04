@@ -1,4 +1,5 @@
 #pragma once
+#include "InputList.h"
 
 //前方宣言
 class SceneManager;
@@ -6,7 +7,7 @@ class SceneManager;
 /// <summary>
 /// シーンインターフェイス
 /// </summary>
-class BaseScene
+class BaseScene : public InputList
 {
 public:
 

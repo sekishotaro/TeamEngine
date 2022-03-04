@@ -17,7 +17,6 @@ public: //メンバ関数
 	//メッセージの処理
 	bool ProcessMessage();
 
-
 	//終了
 	void Finalize();
 
