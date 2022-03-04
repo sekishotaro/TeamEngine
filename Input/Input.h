@@ -1,6 +1,6 @@
 #pragma once
-#include "WinApp.h"
 #include "InputList.h"
+#include "WinApp.h"
 #include <windows.h>
 #include <dinput.h>
 #include <wrl.h>
@@ -8,7 +8,7 @@
 
 #define DIRECTINPUT_VERSION             0x0800 //Direct Inputのバージョン指定
 
-class Input : public InputList
+class Input : protected InputList
 {
 public: //エイリアス
 	//namespace省略
@@ -51,7 +51,7 @@ public: //メンバ関数
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(WinApp* win_app);
+	void Initialize(WinApp *win_app);
 
 	/// <summary>
 	/// 更新

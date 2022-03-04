@@ -41,7 +41,6 @@ void GamePlayScene::Finalize()
 void GamePlayScene::Update()
 {
 	// ゲームシーンの毎フレーム処理
-	
 	Input *input = Input::GetInstance();
 
 	//オブジェクト移動
