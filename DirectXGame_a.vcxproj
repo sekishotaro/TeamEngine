@@ -224,7 +224,9 @@
     <ClCompile Include="collision\CollisionPrimitive.cpp" />
     <ClCompile Include="2d\DebugText.cpp" />
     <ClCompile Include="base\DirectXCommon.cpp" />
+    <ClCompile Include="Ease.cpp" />
     <ClCompile Include="Framework.cpp" />
+    <ClCompile Include="Mapchip.cpp" />
     <ClCompile Include="scene\GamePlayScene.cpp" />
     <ClCompile Include="Input\Input.cpp" />
     <ClCompile Include="main.cpp" />
@@ -239,7 +241,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Ease.h" />
     <ClInclude Include="Input\InputList.h" />
+    <ClInclude Include="Mapchip.h" />
     <ClInclude Include="scene\AbstractSceneFactory.h" />
     <ClInclude Include="Audio\Audio.h" />
     <ClInclude Include="scene\BaseScene.h" />
