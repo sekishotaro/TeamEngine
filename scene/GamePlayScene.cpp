@@ -29,8 +29,12 @@ void GamePlayScene::Initialize()
 
 	objectX = Object3d::Create();
 
+	player = Object3d::Create();
+
 	//オブジェクトにモデルをひも付ける
 	objectX->SetModel(model);
+
+	player->SetModel(model);
 }
 
 void GamePlayScene::Finalize()
@@ -74,6 +78,18 @@ void GamePlayScene::Update()
 		camera->SetEye(position);
 	}
 
+	//プレイヤーの移動
+	if (input->LeftStickAngle().x/* || input->LeftStickAngle().y*/)
+	{
+		XMFLOAT3 p_pos = player->GetPosition();
+		p_pos.x += input->LeftStickAngle().x / (1 / p_max_speed);
+		/*if (input->LeftStickAngle().y > 0)
+		{
+			p_pos.y += input->LeftStickAngle().y / 2;
+		}*/
+		player->SetPosition(p_pos);
+	}
+
 	DebugText::GetInstance()->Print(50, 30 * 1, 2, "%f", camera->GetEye().x);
 	DebugText::GetInstance()->Print(50, 30 * 2, 2, "%f", camera->GetEye().y);
 
@@ -89,6 +105,7 @@ void GamePlayScene::Update()
 	//アップデート
 	camera->Update();
 	objectX->Update();
+	player->Update();
 }
 
 void GamePlayScene::Draw()
@@ -117,7 +134,7 @@ void GamePlayScene::Draw()
 
 	// 3Dオブクジェクトの描画
 	objectX->Draw();
-
+	player->Draw();
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>

@@ -42,7 +42,7 @@ private: //メンバ変数
 	//スティックの反応範囲
 	LONG responsive_range = 100;
 	//スティックの無反応範囲
-	LONG unresponsive_range = 40;
+	LONG unresponsive_range = 30;
 
 public: //静的メンバ関数
 	static Input* GetInstance();

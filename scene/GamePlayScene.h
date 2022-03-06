@@ -44,7 +44,6 @@ public:
 	void Draw() override;
 
 
-
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
@@ -52,5 +51,9 @@ public:
 	std::unique_ptr<Object3d> objectX;
 	Model *model = nullptr;
 	Camera *camera = nullptr;
+
+	//プレイヤーオブジェクトクラス
+	std::unique_ptr<Object3d> player = nullptr;
+	float p_max_speed = 0.5f;
 };
 
