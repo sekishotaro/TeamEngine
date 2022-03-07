@@ -4,13 +4,16 @@
 #include <fstream>
 #include <sstream>
 
+const int map_size = 1;
+const int map_max_x = 52, map_max_y = 12;
+
 class Mapchip
 {
 public:
-	void CsvToVector(std::vector<std::vector<int>>& mapData, std::string fName);
+	static void CsvToVector(std::vector<std::vector<int>>& mapData, std::string fName);
 
-	int GetChipNum(int x, int y, std::vector<int> map);
+	static int GetChipNum(int x, int y, std::vector<int> map);
 
-	void MapCreate(int mapNumber);
+	static void MapCreate(int mapNumber);
 };
 

@@ -52,5 +52,10 @@ public:
 	std::unique_ptr<Object3d> objectX;
 	Model *model = nullptr;
 	Camera *camera = nullptr;
+	Model* block = nullptr;
+	std::vector<std::vector<int>> map;
+	std::vector<Object3d*> box;
+	std::unique_ptr<Object3d> goal = nullptr;
+	void MapCreate(int mapNumber);
 };
 

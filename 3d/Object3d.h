@@ -142,6 +142,12 @@ public: // メンバ関数
 	const XMFLOAT3 &GetRotation() { return rotation; }
 
 	/// <summary>
+	/// 大きさの設定
+	/// </summary>
+	/// <returns>大きさ</returns>
+	void SetScale(XMFLOAT3 scale) { this->scale = scale; }
+
+	/// <summary>
 	/// 回転角の設定
 	/// </summary>
 	/// <param name="position">回転角</param>

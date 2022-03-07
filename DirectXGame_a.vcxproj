@@ -244,6 +244,7 @@
     <ClInclude Include="Ease.h" />
     <ClInclude Include="Input\InputList.h" />
     <ClInclude Include="Mapchip.h" />
+    <ClInclude Include="safe_delete.h" />
     <ClInclude Include="scene\AbstractSceneFactory.h" />
     <ClInclude Include="Audio\Audio.h" />
     <ClInclude Include="scene\BaseScene.h" />

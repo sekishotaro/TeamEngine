@@ -4,6 +4,8 @@
 #include "Input.h"
 #include "DebugText.h"
 #include "DirectXCommon.h"
+#include "Mapchip.h"
+#include <safe_delete.h>
 
 void GamePlayScene::Initialize()
 {
@@ -133,4 +135,28 @@ void GamePlayScene::Draw()
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
+}
+
+void GamePlayScene::MapCreate(int mapNumber)
+{
+	for (auto i : box)
+	{
+		safe_delete(i);
+	}
+	//前に入っていた要素削除
+	box.clear();
+
+	const float LAND_SCALE = 1.0f;
+	for (int y = 0; y < map_max_y; y++) {
+		for (int x = 0; x < map_max_x; x++) {
+
+			if (Mapchip::GetChipNum(x, y, map[mapNumber]) == 1)
+			{
+				goal->SetScale({ LAND_SCALE, LAND_SCALE, LAND_SCALE });
+				goal->SetPosition({ x * LAND_SCALE,  y * -LAND_SCALE , 0 });
+				//object3d->SetRotation({ 0,90,0 });
+				//box.push_back(object3d);
+			}
+		}
+	}
 }
