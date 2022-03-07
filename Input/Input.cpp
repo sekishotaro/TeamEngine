@@ -265,7 +265,7 @@ bool Input::TriggerLeftStick(int stick)
 XMFLOAT2 Input::LeftStickAngle()
 {
 	//スティックの方向判定
-	float y_vec = static_cast<float>(gamePadState.lY / responsive_range);
+	float y_vec = static_cast<float>(-gamePadState.lY / responsive_range);
 	float x_vec = static_cast<float>(gamePadState.lX / responsive_range);
 
 	//横
