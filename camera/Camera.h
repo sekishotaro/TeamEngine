@@ -184,7 +184,7 @@ protected: // メンバ変数
 	// 射影行列ダーティフラグ
 	bool projectionDirty = false;
 	// 視点座標
-	XMFLOAT3 eye = { 0, 0, 60 };
+	XMFLOAT3 eye = { 0, 0, -60 };
 	//対象とカメラの距離
 	float distance = 60.0f;
 	// 注視点座標
