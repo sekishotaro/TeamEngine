@@ -188,3 +188,27 @@ void Camera::MoveVector(const XMVECTOR &move)
 	SetEye(eye_moved);
 	SetTarget(target_moved);
 }
+
+void Camera::MoveCameraClamp(XMFLOAT3 position, float mapwidth, float mapheight)
+{
+	//”ÍˆÍŠO‚ÌƒJƒƒ‰‚ğˆÚ“®‚³‚¹‚é
+	if (eye.x + act_rangeX <= position.x)
+	{
+		XMFLOAT3 pos(position.x - act_rangeX, 0, position.z - distance);
+		XMFLOAT3 post(position.x - act_rangeX, 0, position.z);
+		SetEye(pos);
+		SetTarget(post);
+	}
+	else if (eye.x - act_rangeX >= position.x)
+	{
+		XMFLOAT3 pos(position.x + act_rangeX, 0, position.z - distance);
+		XMFLOAT3 post(position.x + act_rangeX, 0, position.z);
+		SetEye(pos);
+		SetTarget(post);
+	}
+
+
+	//‚±‚±‚ÅŠm’è‚·‚é
+	XMFLOAT3 noweye(eye.x, eye.y, -distance);
+	SetEye(noweye);
+}

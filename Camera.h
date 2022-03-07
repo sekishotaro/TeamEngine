@@ -137,6 +137,36 @@ public: // メンバ関数
 	void MoveVector(const XMFLOAT3 &move);
 	void MoveVector(const XMVECTOR &move);
 
+	/// <summary>
+	/// カメラの移動(対象を常に中心に移動する)
+	/// </summary>
+	/// <param name="position">対象と同じ距離移動(対象とカメラの距離はキープする)</param>
+	void MoveCameraCenter(XMFLOAT3 position)
+	{
+		XMFLOAT3 pos(position.x, position.y, position.z - 60.0f);
+		SetEye(pos);
+		SetTarget(position);
+	}
+
+
+	/// <summary>
+	/// カメラの移動(対象の移動に幅を持たせる)
+	/// </summary>
+	/// <param name="position">対象の位置</param>
+	void MoveCameraClamp(XMFLOAT3 position, float mapwidth = 200.0f, float mapheight = 50.0f);
+
+	/// <summary>
+	/// 拡大
+	/// </summary>
+	/// <param name="position">対象の位置</param>
+	void ZoomCamera(XMFLOAT3 position)
+	{
+		XMFLOAT3 pos(position.x, position.y, position.z - 30.0f);
+		SetEye(pos);
+		SetTarget(position);
+	}
+
+
 protected: // メンバ変数
 	// ビュー行列
 	XMMATRIX matView = DirectX::XMMatrixIdentity();
@@ -160,5 +190,7 @@ protected: // メンバ変数
 	XMFLOAT3 up = { 0, 1, 0 };
 	// アスペクト比
 	float aspectRatio = 1.0f;
+	//カメラ内の移動範囲(-40 ~ 40)
+	float act_rangeX = 40.0f;
 };
 
