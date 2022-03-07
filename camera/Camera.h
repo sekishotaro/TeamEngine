@@ -138,6 +138,7 @@ public: // メンバ関数
 	void MoveVector(const XMVECTOR &move);
 
 	/// <summary>
+	/// 
 	/// カメラの移動(対象を常に中心に移動する)
 	/// </summary>
 	/// <param name="position">対象と同じ距離移動(対象とカメラの距離はキープする)</param>
@@ -184,6 +185,8 @@ protected: // メンバ変数
 	bool projectionDirty = false;
 	// 視点座標
 	XMFLOAT3 eye = { 0, 0, 60 };
+	//対象とカメラの距離
+	float distance = 60.0f;
 	// 注視点座標
 	XMFLOAT3 target = { 0, 0, 0 };
 	// 上方向ベクトル
