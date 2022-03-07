@@ -89,7 +89,6 @@ void GamePlayScene::Update()
 				p_pos.y += input->LeftStickAngle().y / 2;
 			}*/
 		}
-
 		//ジャンプフラグ
 		if (input->TriggerButton(Button_A) && is_jump == false)
 		{
