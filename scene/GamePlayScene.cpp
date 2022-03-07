@@ -29,10 +29,14 @@ void GamePlayScene::Initialize()
 	// オブジェクト生成
 	model = Model::LoadFromOBJ("sphere");
 
-	objectX = Object3d::Create();
+	enemy = Object3d::Create();
+
+	player = Object3d::Create();
 
 	//オブジェクトにモデルをひも付ける
-	objectX->SetModel(model);
+	enemy->SetModel(model);
+
+	player->SetModel(model);
 }
 
 void GamePlayScene::Finalize()
@@ -45,22 +49,7 @@ void GamePlayScene::Update()
 	// ゲームシーンの毎フレーム処理
 	Input *input = Input::GetInstance();
 
-	//オブジェクト移動
-	if (input->PushKey(DIK_UP) || input->PushKey(DIK_DOWN) || input->PushKey(DIK_RIGHT) || input->PushKey(DIK_LEFT))
-	{
-		// 現在の座標を取得
-		XMFLOAT3 position = objectX->GetPosition();
-
-		// 移動後の座標を計算
-		if (input->PushKey(DIK_UP)) { position.y += 1.0f; }
-		else if (input->PushKey(DIK_DOWN)) { position.y -= 1.0f; }
-		if (input->PushKey(DIK_RIGHT)) { position.x += 1.0f; }
-		else if (input->PushKey(DIK_LEFT)) { position.x -= 1.0f; }
-
-		// 座標の変更を反映
-		objectX->SetPosition(position);
-	}
-
+	//カメラ移動
 	if (input->PushKey(DIK_W) || input->PushKey(DIK_S) || input->PushKey(DIK_D) || input->PushKey(DIK_A))
 	{
 		// 現在の座標を取得
@@ -76,8 +65,71 @@ void GamePlayScene::Update()
 		camera->SetEye(position);
 	}
 
-	DebugText::GetInstance()->Print(50, 30 * 1, 2, "%f", camera->GetEye().x);
-	DebugText::GetInstance()->Print(50, 30 * 2, 2, "%f", camera->GetEye().y);
+	//プレイヤー処理
+	{
+		//プレイヤーの移動
+		if (input->LeftStickAngle().x/* || input->LeftStickAngle().y*/)
+		{
+			p_pos.x += input->LeftStickAngle().x / (1 / p_max_speed) * 1;
+			/*if (input->LeftStickAngle().y > 0)
+			{
+				p_pos.y += input->LeftStickAngle().y / 2;
+			}*/
+		}
+		//ジャンプフラグ
+		if (input->TriggerButton(Button_A) && is_jump == false)
+		{
+			is_jump = true;
+			p_add = 4.0f;
+			p_gravity = 0.3f;
+		}
+		//ジャンプ処理
+		if (is_jump == true)
+		{
+			p_add -= p_gravity;
+			p_pos.y += p_add;
+			if (p_pos.y < 0)
+			{
+				p_pos.y = 0;
+				p_add = 0;
+				p_gravity = 0;
+				is_jump = false;
+			}
+		}
+
+		player->SetPosition(p_pos);
+	}
+
+	//エネミー処理
+	{
+		//プレイヤーを追尾
+		if (chase == true)
+		{
+			//プレイヤーとエネミーの距離
+			XMFLOAT2 pe_len = { p_pos.x - e_pos.x, p_pos.y - e_pos.y };
+			if (pe_len.x > 0)
+			{
+				e_pos.x += 0.2f;
+				if (p_pos.x < e_pos.x)
+				{
+					e_pos.x = p_pos.x;
+				}
+			}
+			else if (pe_len.x < 0)
+			{
+				e_pos.x -= 0.2f;
+				if (p_pos.x > e_pos.x)
+				{
+					e_pos.x = p_pos.x;
+				}
+			}
+		}
+
+		enemy->SetPosition(e_pos);
+	}
+
+	DebugText::GetInstance()->Print(50, 30 * 1, 2, "%f", player->GetPosition().x);
+	DebugText::GetInstance()->Print(50, 30 * 2, 2, "%f", player->GetPosition().y);
 
 	if (input->TriggerKey(DIK_SPACE))
 	{
@@ -90,7 +142,8 @@ void GamePlayScene::Update()
 
 	//アップデート
 	camera->Update();
-	objectX->Update();
+	enemy->Update();
+	player->Update();
 }
 
 void GamePlayScene::Draw()
@@ -118,8 +171,8 @@ void GamePlayScene::Draw()
 	Object3d::PreDraw(cmdList);
 
 	// 3Dオブクジェクトの描画
-	objectX->Draw();
-
+	enemy->Draw();
+	player->Draw();
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>

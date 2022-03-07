@@ -268,6 +268,17 @@ XMFLOAT2 Input::LeftStickAngle()
 	float y_vec = static_cast<float>(-gamePadState.lY) / static_cast<float>(responsive_range);
 	float x_vec = static_cast<float>(-gamePadState.lX) / static_cast<float>(responsive_range);
 
+	//‰¡
+	if (gamePadState.lX > -unresponsive_range && gamePadState.lX < unresponsive_range)
+	{
+		x_vec = 0.0f;
+	}
+	//c
+	if (gamePadState.lY < unresponsive_range && gamePadState.lY > -unresponsive_range)
+	{
+		y_vec = 0.0f;
+	}
+
 	return XMFLOAT2(x_vec, y_vec);
 }
 
