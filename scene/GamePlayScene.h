@@ -52,8 +52,14 @@ public:
 	Model *model = nullptr;
 	Camera *camera = nullptr;
 
-	//プレイヤーオブジェクトクラス
-	std::unique_ptr<Object3d> player = nullptr;
-	float p_max_speed = 0.5f;
+	//プレイヤー
+	std::unique_ptr<Object3d> player = nullptr; //オブジェクトクラス
+	XMFLOAT3 p_pos = {0, 0, 0}; //座標
+
+	float p_max_speed = 0.5f; //最高速度
+
+	bool is_jump = false; // ジャンプフラグ
+	float p_vec = 0; //上昇度
+	float gravity = 0; //重力加速度
 };
 

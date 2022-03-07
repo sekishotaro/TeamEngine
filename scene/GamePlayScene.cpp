@@ -78,20 +78,44 @@ void GamePlayScene::Update()
 		camera->SetEye(position);
 	}
 
-	//プレイヤーの移動
-	if (input->LeftStickAngle().x/* || input->LeftStickAngle().y*/)
+	//プレイヤー処理
 	{
-		XMFLOAT3 p_pos = player->GetPosition();
-		p_pos.x += input->LeftStickAngle().x / (1 / p_max_speed);
-		/*if (input->LeftStickAngle().y > 0)
+		//プレイヤーの移動
+		if (input->LeftStickAngle().x/* || input->LeftStickAngle().y*/)
 		{
-			p_pos.y += input->LeftStickAngle().y / 2;
-		}*/
+			p_pos.x += input->LeftStickAngle().x / (1 / p_max_speed) * 1;
+			/*if (input->LeftStickAngle().y > 0)
+			{
+				p_pos.y += input->LeftStickAngle().y / 2;
+			}*/
+		}
+
+		//ジャンプフラグ
+		if (input->TriggerButton(Button_A) && is_jump == false)
+		{
+			is_jump = true;
+			p_vec = 4.0f;
+			gravity = 0.3f;
+		}
+		//ジャンプ処理
+		if (is_jump == true)
+		{
+			p_vec -= gravity;
+			p_pos.y += p_vec;
+			if (p_pos.y < 0)
+			{
+				p_pos.y = 0;
+				p_vec = 0;
+				gravity = 0;
+				is_jump = false;
+			}
+		}
+
 		player->SetPosition(p_pos);
 	}
 
-	DebugText::GetInstance()->Print(50, 30 * 1, 2, "%f", camera->GetEye().x);
-	DebugText::GetInstance()->Print(50, 30 * 2, 2, "%f", camera->GetEye().y);
+	DebugText::GetInstance()->Print(50, 30 * 1, 2, "%f", player->GetPosition().x);
+	DebugText::GetInstance()->Print(50, 30 * 2, 2, "%f", player->GetPosition().y);
 
 	if (input->TriggerKey(DIK_SPACE))
 	{
