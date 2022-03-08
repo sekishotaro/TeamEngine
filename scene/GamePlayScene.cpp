@@ -49,22 +49,6 @@ void GamePlayScene::Update()
 	// ゲームシーンの毎フレーム処理
 	Input *input = Input::GetInstance();
 
-	//カメラ移動
-	if (input->PushKey(DIK_W) || input->PushKey(DIK_S) || input->PushKey(DIK_D) || input->PushKey(DIK_A))
-	{
-		// 現在の座標を取得
-		XMFLOAT3 position = camera->GetEye();
-
-		// 移動後の座標を計算
-		if (input->PushKey(DIK_W)) { position.y += 1.0f; }
-		else if (input->PushKey(DIK_S)) { position.y -= 1.0f; }
-		if (input->PushKey(DIK_D)) { position.x += 1.0f; }
-		else if (input->PushKey(DIK_A)) { position.x -= 1.0f; }
-
-		// 座標の変更を反映
-		camera->SetEye(position);
-	}
-
 	//プレイヤー処理
 	{
 		//プレイヤーの移動
@@ -102,8 +86,25 @@ void GamePlayScene::Update()
 
 	//エネミー処理
 	{
+		//通常状態
+		if (normal == true)
+		{
+			e_pos.x += e_add;
+
+			if (e_pos.x >= 50.0f || e_pos.x <= -50.0f)
+			{
+				e_add = -e_add;
+				XMFLOAT3 e_rot = enemy->GetRotation();
+				e_rot.y += 180.0f;
+				if (e_rot.y >= 360)
+				{
+					e_rot.y = 0;
+				}
+				enemy->SetRotation(e_rot);
+			}
+		}
 		//プレイヤーを追尾
-		if (chase == true)
+		else if (chase == true)
 		{
 			//プレイヤーとエネミーの距離
 			XMFLOAT2 pe_len = { p_pos.x - e_pos.x, p_pos.y - e_pos.y };

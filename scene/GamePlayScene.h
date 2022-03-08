@@ -67,7 +67,9 @@ public:
 	//エネミー
 	std::unique_ptr<Object3d> enemy; //オブジェクトクラス
 	XMFLOAT3 e_pos = {0, 0, 0}; //座標
-
-	bool chase = true;
+	
+	bool normal = true;
+	bool chase = false;
+	float e_add = 0.25f;
 };
 
