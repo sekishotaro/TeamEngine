@@ -9,6 +9,8 @@
 #include <stdlib.h>
 #include <time.h>
 
+using namespace DirectX;
+
 void GamePlayScene::Initialize()
 {
 	Audio::GetInstance()->LoadWave("futta-dream.wav");
@@ -66,8 +68,8 @@ void GamePlayScene::Update()
 		if (input->TriggerButton(Button_A) && is_jump == false)
 		{
 			is_jump = true;
-			p_add = 4.0f;
-			p_gravity = 0.3f;
+			p_add = 2.5f;
+			p_gravity = 0.15f;
 		}
 		//ジャンプ処理
 		if (is_jump == true)
@@ -84,6 +86,17 @@ void GamePlayScene::Update()
 		}
 
 		player->SetPosition(p_pos);
+	}
+
+	if (input->PushKey(DIK_UP))
+	{
+		r += 0.01f;
+		e_pos = { 0, 0, 0 };
+	}
+	if (input->PushKey(DIK_DOWN))
+	{
+		r -= 0.01f;
+		e_pos = { 0, 0, 0 };
 	}
 
 	//エネミー処理
@@ -131,8 +144,8 @@ void GamePlayScene::Update()
 		enemy->SetPosition(e_pos);
 	}
 
-	DebugText::GetInstance()->Print(50, 30 * 1, 2, "%f", player->GetPosition().x);
-	DebugText::GetInstance()->Print(50, 30 * 2, 2, "%f", player->GetPosition().y);
+	DebugText::GetInstance()->Print(50, 30 * 1, 2, "%f", enemy->GetPosition().x);
+	DebugText::GetInstance()->Print(50, 30 * 2, 2, "%f", enemy->GetPosition().y);
 
 	if (input->TriggerKey(DIK_SPACE))
 	{
@@ -219,7 +232,7 @@ void GamePlayScene::MapCreate(int mapNumber)
 
 void GamePlayScene::SpawnEnemy(bool& active, int& spawn_num)
 {
-	if (active == true)
+	if (active)
 	{
 		srand(time(NULL));
 		int num = rand() % 100;

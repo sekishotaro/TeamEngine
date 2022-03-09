@@ -59,7 +59,6 @@ public:
 	XMFLOAT3 p_pos = {0, 0, 0}; //座標
 
 	float p_max_speed = 0.5f; //最高速度
-
 	bool is_jump = false; // ジャンプフラグ
 	float p_add = 0; //上昇度
 	float p_gravity = 0; //重力加速度
@@ -68,7 +67,7 @@ public:
 	std::unique_ptr<Object3d> enemy; //オブジェクトクラス
 	XMFLOAT3 e_pos = {0, 0, 0}; //座標
 	
-	bool normal = true;
+	bool normal = false;
 	bool chase = false;
 	float e_add = 0.25f;
 	int max_spawn = 25;
