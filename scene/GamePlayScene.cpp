@@ -32,10 +32,28 @@ void GamePlayScene::Initialize()
 
 	// オブジェクト生成
 	model = Model::LoadFromOBJ("sphere");
+	block = Model::LoadFromOBJ("block");
 
 	enemy = Object3d::Create();
 
 	player = Object3d::Create();
+
+	//マップチップ用のCSV読み込み
+	//(map, "Resource/scv/なんたら.csv")で追加可能
+	Mapchip::CsvToVector(map, "Resources/csv/demo.csv");//mapNum=0
+
+
+	//マップチップ用のオブジェクトの初期化
+	for (int y = 0; y < map_max_y; y++)
+	{
+		for (int x = 0; x < map_max_x; x++)
+		{
+			objBlock[y][x] = Object3d::Create();
+			objBlock[y][x]->SetModel(block);
+			objBlock[y][x]->SetScale({ 1.0f,1.0f,1.0f });
+			objBlock[y][x]->SetPosition({ 1.0f,1.0f,0.0f });
+		}
+	}
 
 	//オブジェクトにモデルをひも付ける
 	enemy->SetModel(model);
@@ -144,8 +162,14 @@ void GamePlayScene::Update()
 		enemy->SetPosition(e_pos);
 	}
 
-	DebugText::GetInstance()->Print(50, 30 * 1, 2, "%f", enemy->GetPosition().x);
-	DebugText::GetInstance()->Print(50, 30 * 2, 2, "%f", enemy->GetPosition().y);
+	//Mキーでマップチップ設置
+	if (input->TriggerKey(DIK_M))
+	{
+		MapCreate(0);
+	}
+
+	DebugText::GetInstance()->Print(50, 30 * 1, 2, "%f", player->GetPosition().x);
+	DebugText::GetInstance()->Print(50, 30 * 2, 2, "%f", player->GetPosition().y);
 
 	if (input->TriggerKey(DIK_SPACE))
 	{
@@ -160,6 +184,13 @@ void GamePlayScene::Update()
 	camera->Update();
 	enemy->Update();
 	player->Update();
+	for (int y = 0; y < map_max_y; y++)
+	{
+		for (int x = 0; x < map_max_x; x++)
+		{
+			objBlock[y][x]->Update();
+		}
+	}
 }
 
 void GamePlayScene::Draw()
@@ -189,6 +220,15 @@ void GamePlayScene::Draw()
 	// 3Dオブクジェクトの描画
 	enemy->Draw();
 	player->Draw();
+
+	//マップチップの描画
+	for (int y = 0; y < map_max_y; y++)
+	{
+		for (int x = 0; x < map_max_x; x++)
+		{
+			objBlock[y][x]->Draw();
+		}
+	}
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
@@ -206,25 +246,19 @@ void GamePlayScene::Draw()
 	Sprite::PostDraw();
 }
 
+//マップチップ生成関数
 void GamePlayScene::MapCreate(int mapNumber)
 {
-	for (auto i : box)
-	{
-		safe_delete(i);
-	}
-	//前に入っていた要素削除
-	box.clear();
-
-	const float LAND_SCALE = 1.0f;
-	for (int y = 0; y < map_max_y; y++) {
-		for (int x = 0; x < map_max_x; x++) {
+	//マップチップ1つの大きさ(playerが5なので5の倍数で指定すること)
+	const float LAND_SCALE = 5.0f;
+	for (int y = 0; y < map_max_y; y++) {//(yが12)
+		for (int x = 0; x < map_max_x; x++) {//(xが52)
 
 			if (Mapchip::GetChipNum(x, y, map[mapNumber]) == 1)
 			{
-				goal->SetScale({ LAND_SCALE, LAND_SCALE, LAND_SCALE });
-				goal->SetPosition({ x * LAND_SCALE,  y * -LAND_SCALE , 0 });
-				//object3d->SetRotation({ 0,90,0 });
-				//box.push_back(object3d);
+				//位置と大きさの変更(今は大きさは変更しないで)
+				//objBlock[y][x]->SetScale({ LAND_SCALE, LAND_SCALE, LAND_SCALE });
+				objBlock[y][x]->SetPosition({ x * -LAND_SCALE,  y * -LAND_SCALE , 0 });
 			}
 		}
 	}
