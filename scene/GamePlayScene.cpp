@@ -106,17 +106,6 @@ void GamePlayScene::Update()
 		player->SetPosition(p_pos);
 	}
 
-	if (input->PushKey(DIK_UP))
-	{
-		r += 0.01f;
-		e_pos = { 0, 0, 0 };
-	}
-	if (input->PushKey(DIK_DOWN))
-	{
-		r -= 0.01f;
-		e_pos = { 0, 0, 0 };
-	}
-
 	//エネミー処理
 	{
 		//通常状態
