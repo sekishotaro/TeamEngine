@@ -313,8 +313,8 @@ void GamePlayScene::SpawnEnemy(bool& active, int& spawn_num)
 
 void GamePlayScene::CircularMotion(XMFLOAT3& pos, const XMFLOAT3 center_pos, const float r, int& angle, const int add)
 {
-	angle += add;
-
 	pos.x = (cosf(3.14 / 180.0f * angle) * r) + center_pos.x;//‰~‰^“®‚Ìˆ—
 	pos.y = (sinf(3.14 / 180.0f * angle) * r) + center_pos.y;//‰~‰^“®‚Ìˆ—
+
+	angle += add;
 }
