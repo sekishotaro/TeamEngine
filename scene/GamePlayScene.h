@@ -62,15 +62,18 @@ public:
 	bool is_jump = false; // ジャンプフラグ
 	float p_add = 0; //上昇度
 	float p_gravity = 0; //重力加速度
+	bool is_attack = false;
 
 	//エネミー
 	std::unique_ptr<Object3d> enemy; //オブジェクトクラス
 	XMFLOAT3 e_pos = {0, 0, 0}; //座標
 	
-	bool normal = false;
-	bool chase = false;
+	bool is_normal = false;
+	bool is_chase = false;
 	float e_add = 0.25f;
 	int max_spawn = 25;
+	int angle = 0;
 	void SpawnEnemy(bool& active, int& spawn_num);
+	void CircularMotion(XMFLOAT3& pos, const XMFLOAT3 center_pos, const float r, int& angle, const int add);
 };
 

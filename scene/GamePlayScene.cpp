@@ -74,13 +74,17 @@ void GamePlayScene::Update()
 	//プレイヤー処理
 	{
 		//プレイヤーの移動
-		if (input->LeftStickAngle().x/* || input->LeftStickAngle().y*/)
+		if (input->LeftStickAngle().x)
 		{
 			p_pos.x += input->LeftStickAngle().x / (1 / p_max_speed) * 1;
-			/*if (input->LeftStickAngle().y > 0)
+			if (input->LeftStickAngle().x >= 0)
 			{
-				p_pos.y += input->LeftStickAngle().y / 2;
-			}*/
+				player->SetRotation(XMFLOAT3(0, 0, 0));
+			}
+			else
+			{
+				player->SetRotation(XMFLOAT3(0, 180, 0));
+			}
 		}
 		//ジャンプフラグ
 		if (input->TriggerButton(Button_A) && is_jump == false)
@@ -90,7 +94,7 @@ void GamePlayScene::Update()
 			p_gravity = 0.15f;
 		}
 		//ジャンプ処理
-		if (is_jump == true)
+		if (is_jump)
 		{
 			p_add -= p_gravity;
 			p_pos.y += p_add;
@@ -102,6 +106,18 @@ void GamePlayScene::Update()
 				is_jump = false;
 			}
 		}
+		if (input->PushButton(Button_B) && is_attack == false)
+		{
+			is_attack = true;
+			if (player->GetRotation().y == 0)
+			{
+				angle = 180;
+			}
+			else if (player->GetRotation().y == 180)
+			{
+				angle = 0;
+			}
+		}
 
 		player->SetPosition(p_pos);
 	}
@@ -109,7 +125,7 @@ void GamePlayScene::Update()
 	//エネミー処理
 	{
 		//通常状態
-		if (normal == true)
+		if (is_normal)
 		{
 			e_pos.x += e_add;
 
@@ -126,7 +142,7 @@ void GamePlayScene::Update()
 			}
 		}
 		//プレイヤーを追尾
-		else if (chase == true)
+		else if (is_chase)
 		{
 			//プレイヤーとエネミーの距離
 			XMFLOAT2 pe_len = { p_pos.x - e_pos.x, p_pos.y - e_pos.y };
@@ -144,6 +160,28 @@ void GamePlayScene::Update()
 				if (p_pos.x > e_pos.x)
 				{
 					e_pos.x = p_pos.x;
+				}
+			}
+		}
+		//攻撃状態
+		else if (is_attack)
+		{
+			if (player->GetRotation().y == 0)
+			{
+				CircularMotion(e_pos, p_pos, 10, angle, -20);
+				if (angle < 0)
+				{
+					angle = 0;
+					is_attack = false;
+				}
+			} 
+			else if (player->GetRotation().y == 180)
+			{
+				CircularMotion(e_pos, p_pos, 10, angle, 20);
+				if (angle > 180)
+				{
+					angle = 180;
+					is_attack = false;
 				}
 			}
 		}
@@ -271,4 +309,12 @@ void GamePlayScene::SpawnEnemy(bool& active, int& spawn_num)
 			}
 		}
 	}
+}
+
+void GamePlayScene::CircularMotion(XMFLOAT3& pos, const XMFLOAT3 center_pos, const float r, int& angle, const int add)
+{
+	angle += add;
+
+	pos.x = (cosf(3.14 / 180.0f * angle) * r) + center_pos.x;//円運動の処理
+	pos.y = (sinf(3.14 / 180.0f * angle) * r) + center_pos.y;//円運動の処理
 }
