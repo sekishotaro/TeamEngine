@@ -326,3 +326,22 @@ void GamePlayScene::CircularMotion(XMFLOAT3& pos, const XMFLOAT3 center_pos, con
 
 	angle += add;
 }
+
+void GamePlayScene::MapCollide(int mapNumber)
+{
+	for (int y = 0; y < map_max_y; y++) {//(y‚ª12)
+		for (int x = 0; x < map_max_x; x++) {//(x‚ª52)
+
+			if (Mapchip::GetChipNum(x, y, map[mapNumber]) == 1)
+			{
+				if ((p_pos.x - player->GetPosition().x < objBlock[y][x]->GetPosition().x + objBlock[y][x]->GetScale().x)
+					&& (p_pos.x + player->GetPosition().x > objBlock[y][x]->GetPosition().x - objBlock[y][x]->GetScale().x)
+					&& (p_pos.y - player->GetPosition().y < objBlock[y][x]->GetPosition().y + objBlock[y][x]->GetScale().y)
+					&& (p_pos.y + player->GetPosition().y > objBlock[y][x]->GetPosition().y - objBlock[y][x]->GetScale().y))
+				{
+
+				}
+			}
+		}
+	}
+}
