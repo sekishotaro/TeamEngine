@@ -2,7 +2,7 @@
 
 //CSVファイル読み込み
 void Mapchip::CsvToVector(std::vector<std::vector<int>>& mapData, std::string fName) {
-	std::ifstream ifs(fName);
+	std::ifstream ifs(fName);//ファイルネームの確認
 	std::string line;
 	std::vector<int> csv;
 	while (getline(ifs, line))
@@ -10,7 +10,7 @@ void Mapchip::CsvToVector(std::vector<std::vector<int>>& mapData, std::string fN
 		std::istringstream stream(line);
 		std::string field;
 		std::vector<int> result;
-		while (std::getline(stream, field, ','))
+		while (std::getline(stream, field, ','))//カンマ区切りで
 		{
 			result.push_back(stoi(field));
 		}
@@ -33,5 +33,6 @@ int Mapchip::GetChipNum(int x, int y, std::vector<int> map)
 		return 0;
 	}
 
+	//ここの警告は気にしないでOK
 	return map[Y * map_max_x + X];
 }

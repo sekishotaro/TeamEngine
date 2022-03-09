@@ -51,7 +51,7 @@ public:
 	Model* block = nullptr;
 	std::vector<std::vector<int>> map;
 	std::vector<Object3d*> box;
-	std::unique_ptr<Object3d> goal = nullptr;
+	std::unique_ptr<Object3d> objBlock[12][52];
 	void MapCreate(int mapNumber);
 
 	//ƒvƒŒƒCƒ„[
