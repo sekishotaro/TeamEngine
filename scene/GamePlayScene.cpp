@@ -76,7 +76,7 @@ void GamePlayScene::Update()
 		//プレイヤーの移動
 		if (input->LeftStickAngle().x)
 		{
-			p_pos.x += input->LeftStickAngle().x / (1 / p_max_speed) * 1;
+			p_pos.x += input->LeftStickAngle().x / (1 / p_max_speed);
 			if (input->LeftStickAngle().x >= 0)
 			{
 				player->SetRotation(XMFLOAT3(0, 0, 0));
@@ -86,8 +86,16 @@ void GamePlayScene::Update()
 				player->SetRotation(XMFLOAT3(0, 180, 0));
 			}
 		}
+		if (input->PushKey(DIK_D))
+		{
+			p_pos.x += 0.5f;
+		}
+		if (input->PushKey(DIK_A))
+		{
+			p_pos.x -= 0.5f;
+		}
 		//ジャンプフラグ
-		if (input->TriggerButton(Button_A) && is_jump == false)
+		if ((input->PushKey(DIK_W) || input->TriggerButton(Button_A)) && is_jump == false)
 		{
 			is_jump = true;
 			p_add = 2.5f;
@@ -106,7 +114,7 @@ void GamePlayScene::Update()
 				is_jump = false;
 			}
 		}
-		if (input->PushButton(Button_B) && is_attack == false)
+		if ((input->PushKey(DIK_RETURN) || input->PushButton(Button_B)) && is_attack == false)
 		{
 			is_attack = true;
 			if (player->GetRotation().y == 0)
