@@ -6,6 +6,7 @@
 #include <DirectXMath.h>
 #include <memory>
 #include "Camera.h"
+#include <vector>
 
 class GamePlayScene : public BaseScene
 {
@@ -41,7 +42,6 @@ public:
 	/// </summary>
 	void Draw() override;
 
-
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
@@ -71,5 +71,7 @@ public:
 	bool normal = true;
 	bool chase = false;
 	float e_add = 0.25f;
+	int max_spawn = 25;
+	void SpawnEnemy(bool& active, int& spawn_num);
 };
 

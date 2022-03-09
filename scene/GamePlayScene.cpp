@@ -6,6 +6,8 @@
 #include "DirectXCommon.h"
 #include "Mapchip.h"
 #include <safe_delete.h>
+#include <stdlib.h>
+#include <time.h>
 
 void GamePlayScene::Initialize()
 {
@@ -210,6 +212,26 @@ void GamePlayScene::MapCreate(int mapNumber)
 				goal->SetPosition({ x * LAND_SCALE,  y * -LAND_SCALE , 0 });
 				//object3d->SetRotation({ 0,90,0 });
 				//box.push_back(object3d);
+			}
+		}
+	}
+}
+
+void GamePlayScene::SpawnEnemy(bool& active, int& spawn_num)
+{
+	if (active == true)
+	{
+		srand(time(NULL));
+		int num = rand() % 100;
+
+		if (num < 40)
+		{
+
+
+			spawn_num -= 1;
+			if (max_spawn == 0)
+			{
+				active = false;
 			}
 		}
 	}
