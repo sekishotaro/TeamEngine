@@ -53,6 +53,7 @@ public:
 	std::vector<Object3d*> box;
 	std::unique_ptr<Object3d> objBlock[12][52];
 	void MapCreate(int mapNumber);
+	void MapCollide(int mapNumber);
 
 	//プレイヤー
 	std::unique_ptr<Object3d> player = nullptr; //オブジェクトクラス
@@ -75,6 +76,5 @@ public:
 	int angle = 0;
 	void SpawnEnemy(bool& active, int& spawn_num);
 	void CircularMotion(XMFLOAT3& pos, const XMFLOAT3 center_pos, const float r, int& angle, const int add);
-	void MapCollide(int mapNumber);
 };
 
