@@ -89,10 +89,12 @@ void GamePlayScene::Update()
 		if (input->PushKey(DIK_D))
 		{
 			p_pos.x += 0.5f;
+			player->SetRotation(XMFLOAT3(0, 0, 0));
 		}
 		if (input->PushKey(DIK_A))
 		{
 			p_pos.x -= 0.5f;
+			player->SetRotation(XMFLOAT3(0, 180, 0));
 		}
 		//ジャンプフラグ
 		if ((input->PushKey(DIK_W) || input->TriggerButton(Button_A)) && is_jump == false)
@@ -281,7 +283,6 @@ void GamePlayScene::Draw()
 	Sprite::PostDraw();
 }
 
-//マップチップ生成関数
 void GamePlayScene::MapCreate(int mapNumber)
 {
 	//マップチップ1つの大きさ(playerが5なので5の倍数で指定すること)
