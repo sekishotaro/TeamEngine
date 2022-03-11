@@ -73,6 +73,11 @@ void GamePlayScene::Update()
 
 	//プレイヤー処理
 	{
+		//下降度の初期化
+		if (p_down == 0)
+		{
+			p_down = 2.5f;
+		}
 		//プレイヤーの移動
 		if (input->LeftStickAngle().x)
 		{
@@ -135,6 +140,22 @@ void GamePlayScene::Update()
 			else if (player->GetRotation().y == 180)
 			{
 				angle = 0;
+			}
+		}
+		//プレイヤーの落下
+		if (is_jump == false)
+		{
+			//下降度をマイナス
+			p_down += gravity;
+
+			//地面に当たらなかったら
+			if (true)
+			{
+				p_pos.y -= p_down;
+			}
+			else
+			{
+				p_down = 0;
 			}
 		}
 

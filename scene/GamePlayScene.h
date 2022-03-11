@@ -67,6 +67,7 @@ public:
 	float p_max_speed = 0.5f; //最高速度
 	bool is_jump = false; // ジャンプフラグ
 	float p_add = 0; //上昇度
+	float p_down = 0; //下降度
 	bool is_attack = false; //攻撃フラグ
 
 	//エネミー
