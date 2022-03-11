@@ -96,6 +96,6 @@ public:
 	/// <summary>
 	/// マップチップ当たり判定
 	/// </summary>
-	void MapCollide(int mapNumber);
+	bool MapCollide(const std::unique_ptr<Object3d>& object, int mapNumber);
 };
 

@@ -243,7 +243,7 @@ void GamePlayScene::Update()
 	{
 		MapCreate(0);
 	}
-	MapCollide(0);
+	MapCollide(player, 0);
 
 	//プレイヤーの座標（X：Y）
 	DebugText::GetInstance()->Print(50, 30 * 1, 2, "%f", objBlock[8][0]->GetPosition().x);
@@ -371,19 +371,19 @@ void GamePlayScene::CircularMotion(XMFLOAT3& pos, const XMFLOAT3 center_pos, con
 	angle += add;
 }
 
-void GamePlayScene::MapCollide(int mapNumber)
+bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapNumber)
 {
 	for (int y = 0; y < map_max_y; y++) {//(yが12)
 		for (int x = 0; x < map_max_x; x++) {//(xが52)
 
-			if (Mapchip::GetChipNum(x, y, map[mapNumber]) == Ground)
+			if (Mapchip::GetChipNum(x, y, map[mapNumber]) == 1)
 			{
-				if ((p_pos.x - player->GetScale().x < objBlock[y][x]->GetPosition().x + objBlock[y][x]->GetScale().x)
-					&& (p_pos.x + player->GetScale().x > objBlock[y][x]->GetPosition().x - objBlock[y][x]->GetScale().x)
-					&& (p_pos.y - player->GetScale().y < objBlock[y][x]->GetPosition().y + objBlock[y][x]->GetScale().y)
-					&& (p_pos.y + player->GetScale().y > objBlock[y][x]->GetPosition().y - objBlock[y][x]->GetScale().y))
+				if ((object->GetPosition().x - object->GetScale().x < objBlock[y][x]->GetPosition().x + objBlock[y][x]->GetScale().x)
+					&& (object->GetPosition().x + object->GetScale().x > objBlock[y][x]->GetPosition().x - objBlock[y][x]->GetScale().x)
+					&& (object->GetPosition().y - object->GetScale().y < objBlock[y][x]->GetPosition().y + objBlock[y][x]->GetScale().y)
+					&& (object->GetPosition().y + object->GetScale().y > objBlock[y][x]->GetPosition().y - objBlock[y][x]->GetScale().y))
 				{
-					p_pos.x -= 10.0f;
+					return true;
 				}
 			}
 		}
