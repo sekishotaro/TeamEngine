@@ -71,6 +71,12 @@ void GamePlayScene::Update()
 	// ゲームシーンの毎フレーム処理
 	Input *input = Input::GetInstance();
 
+	//Mキーでマップチップ設置
+	if (input->TriggerKey(DIK_M) || true)
+	{
+		MapCreate(0);
+	}
+
 	//プレイヤー処理
 	{
 		//下降度の初期化
@@ -146,14 +152,15 @@ void GamePlayScene::Update()
 		if (is_jump == false && !MapCollide(player, 0))
 		{
 			//下降度をマイナス
-		/*	p_pos.y -= p_down;
-			p_down += gravity;*/
+			p_down += gravity;
+			p_pos.y -= p_down;
 		}
 		//ブロックに当たったら
 		if (MapCollide(player, 0))
 		{
 			//押し戻し
-			int a = 0;
+			/*p_pos.y = 2.5f + 0.15f;
+			p_down = 0;*/
 		}
 
 		player->SetPosition(p_pos);
@@ -214,31 +221,22 @@ void GamePlayScene::Update()
 			if (player->GetRotation().y == 0)
 			{
 				CircularMotion(e_pos, p_pos, 10, angle, -20);
-				if (angle < 0)
-				{
-					angle = 0;
-					is_attack = false;
-				}
+				enemy->SetPosition(e_pos);
 			} 
 			//左向きなら
 			else if (player->GetRotation().y == 180)
 			{
 				CircularMotion(e_pos, p_pos, 10, angle, 20);
-				if (angle > 180)
-				{
-					angle = 180;
-					is_attack = false;
-				}
+				enemy->SetPosition(e_pos);
+			}
+			//マップの当たり判定
+			if (MapCollide(enemy, 0))
+			{
+				is_attack = false;
 			}
 		}
 
 		enemy->SetPosition(e_pos);
-	}
-
-	//Mキーでマップチップ設置
-	if (input->TriggerKey(DIK_M) || true)
-	{
-		MapCreate(0);
 	}
 
 	//プレイヤーの座標（X：Y）
@@ -369,20 +367,26 @@ void GamePlayScene::CircularMotion(XMFLOAT3& pos, const XMFLOAT3 center_pos, con
 
 bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapNumber)
 {
+	float block_r = 2.5f * objBlock[0][0]->GetScale().x;
+
 	for (int y = 0; y < map_max_y; y++) //yが12
 	{
 		for (int x = 0; x < map_max_x; x++) //xが52
 		{
-			if (Mapchip::GetChipNum(x, y, map[mapNumber]) == 1)
+			if (Mapchip::GetChipNum(x, y, map[mapNumber]) == Ground)
 			{
-				if ((object->GetPosition().x - object->GetScale().x < objBlock[y][x]->GetPosition().x + objBlock[y][x]->GetScale().x)
-					&& (object->GetPosition().x + object->GetScale().x > objBlock[y][x]->GetPosition().x - objBlock[y][x]->GetScale().x)
-					&& (object->GetPosition().y - object->GetScale().y < objBlock[y][x]->GetPosition().y + objBlock[y][x]->GetScale().y)
-					&& (object->GetPosition().y + object->GetScale().y > objBlock[y][x]->GetPosition().y - objBlock[y][x]->GetScale().y))
+				if (
+					(object->GetPosition().x <= objBlock[y][x]->GetPosition().x + block_r)
+					&& (object->GetPosition().x >= objBlock[y][x]->GetPosition().x - block_r)
+					&& (object->GetPosition().y <= objBlock[y][x]->GetPosition().y + block_r)
+					&& (object->GetPosition().y >= objBlock[y][x]->GetPosition().y - block_r)
+					)
 				{
 					return true;
 				}
 			}
 		}
 	}
+
+	return false;
 }
