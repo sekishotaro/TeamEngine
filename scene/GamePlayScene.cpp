@@ -128,7 +128,7 @@ void GamePlayScene::Update()
 			}
 		}
 		//プレイヤーの攻撃
-		if ((input->PushKey(DIK_RETURN) || input->PushButton(Button_B)) && is_attack == false)
+		if ((input->TriggerKey(DIK_RETURN) || input->PushButton(Button_B)) && is_attack == false)
 		{
 			is_attack = true;
 
@@ -143,20 +143,17 @@ void GamePlayScene::Update()
 			}
 		}
 		//プレイヤーの落下
-		if (is_jump == false)
+		if (is_jump == false && !MapCollide(player, 0))
 		{
 			//下降度をマイナス
-			p_down += gravity;
-
-			//地面に当たらなかったら
-			if (true)
-			{
-				p_pos.y -= p_down;
-			}
-			else
-			{
-				p_down = 0;
-			}
+		/*	p_pos.y -= p_down;
+			p_down += gravity;*/
+		}
+		//ブロックに当たったら
+		if (MapCollide(player, 0))
+		{
+			//押し戻し
+			int a = 0;
 		}
 
 		player->SetPosition(p_pos);
@@ -239,11 +236,10 @@ void GamePlayScene::Update()
 	}
 
 	//Mキーでマップチップ設置
-	if (input->TriggerKey(DIK_M))
+	if (input->TriggerKey(DIK_M) || true)
 	{
 		MapCreate(0);
 	}
-	MapCollide(player, 0);
 
 	//プレイヤーの座標（X：Y）
 	DebugText::GetInstance()->Print(50, 30 * 1, 2, "%f", objBlock[8][0]->GetPosition().x);
@@ -373,9 +369,10 @@ void GamePlayScene::CircularMotion(XMFLOAT3& pos, const XMFLOAT3 center_pos, con
 
 bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapNumber)
 {
-	for (int y = 0; y < map_max_y; y++) {//(yが12)
-		for (int x = 0; x < map_max_x; x++) {//(xが52)
-
+	for (int y = 0; y < map_max_y; y++) //yが12
+	{
+		for (int x = 0; x < map_max_x; x++) //xが52
+		{
 			if (Mapchip::GetChipNum(x, y, map[mapNumber]) == 1)
 			{
 				if ((object->GetPosition().x - object->GetScale().x < objBlock[y][x]->GetPosition().x + objBlock[y][x]->GetScale().x)
