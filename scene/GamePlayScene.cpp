@@ -76,7 +76,9 @@ void GamePlayScene::Update()
 		//プレイヤーの移動
 		if (input->LeftStickAngle().x)
 		{
-			p_pos.x += input->LeftStickAngle().x / (1 / p_max_speed);
+			p_pos.x += input->LeftStickAngle().x / (1.0f / p_max_speed) * 1.0f; // * 1.0f = 何倍速か
+
+			//進行方向に向きを変える
 			if (input->LeftStickAngle().x >= 0)
 			{
 				player->SetRotation(XMFLOAT3(0, 0, 0));
@@ -86,6 +88,7 @@ void GamePlayScene::Update()
 				player->SetRotation(XMFLOAT3(0, 180, 0));
 			}
 		}
+		//キーボード用
 		if (input->PushKey(DIK_D))
 		{
 			p_pos.x += 0.5f;
@@ -96,29 +99,35 @@ void GamePlayScene::Update()
 			p_pos.x -= 0.5f;
 			player->SetRotation(XMFLOAT3(0, 180, 0));
 		}
-		//ジャンプフラグ
+		//プレイヤーのジャンプ
 		if ((input->PushKey(DIK_W) || input->TriggerButton(Button_A)) && is_jump == false)
 		{
 			is_jump = true;
+
+			//上昇率の初期化
 			p_add = 2.5f;
-			p_gravity = 0.15f;
 		}
 		//ジャンプ処理
 		if (is_jump)
 		{
-			p_add -= p_gravity;
+			//座標の上昇
+			p_add -= gravity;
 			p_pos.y += p_add;
+
+			//地面に当たったら
 			if (p_pos.y < 0)
 			{
 				p_pos.y = 0;
 				p_add = 0;
-				p_gravity = 0;
 				is_jump = false;
 			}
 		}
+		//プレイヤーの攻撃
 		if ((input->PushKey(DIK_RETURN) || input->PushButton(Button_B)) && is_attack == false)
 		{
 			is_attack = true;
+
+			//プレイヤーの向きで投げる方向を変える
 			if (player->GetRotation().y == 0)
 			{
 				angle = 180;
@@ -137,11 +146,15 @@ void GamePlayScene::Update()
 		//通常状態
 		if (is_normal)
 		{
+			//移動
 			e_pos.x += e_add;
 
+			//端まで行ったら
 			if (e_pos.x >= 50.0f || e_pos.x <= -50.0f)
 			{
 				e_add = -e_add;
+
+				//向きを変える
 				XMFLOAT3 e_rot = enemy->GetRotation();
 				e_rot.y += 180.0f;
 				if (e_rot.y >= 360)
@@ -156,17 +169,20 @@ void GamePlayScene::Update()
 		{
 			//プレイヤーとエネミーの距離
 			XMFLOAT2 pe_len = { p_pos.x - e_pos.x, p_pos.y - e_pos.y };
+
+			//正の値なら
 			if (pe_len.x > 0)
 			{
-				e_pos.x += 0.2f;
+				e_pos.x += e_add;
 				if (p_pos.x < e_pos.x)
 				{
 					e_pos.x = p_pos.x;
 				}
 			}
+			//負の値なら
 			else if (pe_len.x < 0)
 			{
-				e_pos.x -= 0.2f;
+				e_pos.x -= e_add;
 				if (p_pos.x > e_pos.x)
 				{
 					e_pos.x = p_pos.x;
@@ -176,6 +192,7 @@ void GamePlayScene::Update()
 		//攻撃状態
 		else if (is_attack)
 		{
+			//右向きなら
 			if (player->GetRotation().y == 0)
 			{
 				CircularMotion(e_pos, p_pos, 10, angle, -20);
@@ -185,6 +202,7 @@ void GamePlayScene::Update()
 					is_attack = false;
 				}
 			} 
+			//左向きなら
 			else if (player->GetRotation().y == 180)
 			{
 				CircularMotion(e_pos, p_pos, 10, angle, 20);
@@ -205,6 +223,7 @@ void GamePlayScene::Update()
 		MapCreate(0);
 	}
 
+	//プレイヤーの座標（X：Y）
 	DebugText::GetInstance()->Print(50, 30 * 1, 2, "%f", player->GetPosition().x);
 	DebugText::GetInstance()->Print(50, 30 * 2, 2, "%f", player->GetPosition().y);
 
@@ -217,7 +236,7 @@ void GamePlayScene::Update()
 		SceneManager::GetInstance()->ChangeScene("TITLE");
 	}
 
-	//アップデート
+	//オブジェクト情報の更新
 	camera->Update();
 	enemy->Update();
 	player->Update();
@@ -290,7 +309,7 @@ void GamePlayScene::MapCreate(int mapNumber)
 	for (int y = 0; y < map_max_y; y++) {//(yが12)
 		for (int x = 0; x < map_max_x; x++) {//(xが52)
 
-			if (Mapchip::GetChipNum(x, y, map[mapNumber]) == 1)
+			if (Mapchip::GetChipNum(x, y, map[mapNumber]) == Ground)
 			{
 				//位置と大きさの変更(今は大きさは変更しないで)
 				//objBlock[y][x]->SetScale({ LAND_SCALE, LAND_SCALE, LAND_SCALE });
@@ -333,7 +352,7 @@ void GamePlayScene::MapCollide(int mapNumber)
 	for (int y = 0; y < map_max_y; y++) {//(yが12)
 		for (int x = 0; x < map_max_x; x++) {//(xが52)
 
-			if (Mapchip::GetChipNum(x, y, map[mapNumber]) == 1)
+			if (Mapchip::GetChipNum(x, y, map[mapNumber]) == Ground)
 			{
 				if ((p_pos.x - player->GetPosition().x < objBlock[y][x]->GetPosition().x + objBlock[y][x]->GetScale().x)
 					&& (p_pos.x + player->GetPosition().x > objBlock[y][x]->GetPosition().x - objBlock[y][x]->GetScale().x)
