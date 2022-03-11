@@ -80,10 +80,6 @@ void GamePlayScene::Update()
 	//プレイヤー処理
 	{
 		//下降度の初期化
-		if (p_down == 0)
-		{
-			p_down = 2.5f;
-		}
 		//プレイヤーの移動
 		if (input->LeftStickAngle().x)
 		{
@@ -159,8 +155,8 @@ void GamePlayScene::Update()
 		if (MapCollide(player, 0))
 		{
 			//押し戻し
-			/*p_pos.y = 2.5f + 0.15f;
-			p_down = 0;*/
+			p_pos.y = 0;
+			p_down = 0;
 		}
 
 		player->SetPosition(p_pos);
@@ -367,20 +363,16 @@ void GamePlayScene::CircularMotion(XMFLOAT3& pos, const XMFLOAT3 center_pos, con
 
 bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapNumber)
 {
-	float block_r = 2.5f * objBlock[0][0]->GetScale().x;
-
 	for (int y = 0; y < map_max_y; y++) //yが12
 	{
 		for (int x = 0; x < map_max_x; x++) //xが52
 		{
 			if (Mapchip::GetChipNum(x, y, map[mapNumber]) == Ground)
 			{
-				if (
-					(object->GetPosition().x <= objBlock[y][x]->GetPosition().x + block_r)
-					&& (object->GetPosition().x >= objBlock[y][x]->GetPosition().x - block_r)
-					&& (object->GetPosition().y <= objBlock[y][x]->GetPosition().y + block_r)
-					&& (object->GetPosition().y >= objBlock[y][x]->GetPosition().y - block_r)
-					)
+				if ((object->GetPosition().x <= objBlock[y][x]->GetPosition().x + 2.5f * objBlock[0][0]->GetScale().x)
+					&& (object->GetPosition().x >= objBlock[y][x]->GetPosition().x - 2.5f * objBlock[0][0]->GetScale().x)
+					&& (object->GetPosition().y <= objBlock[y][x]->GetPosition().y + 2.5f * objBlock[0][0]->GetScale().x)
+					&& (object->GetPosition().y >= objBlock[y][x]->GetPosition().y - 2.5f * objBlock[0][0]->GetScale().x))
 				{
 					return true;
 				}
@@ -390,3 +382,48 @@ bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapN
 
 	return false;
 }
+
+/*
+//半径
+				float block_r = 2.5f * objBlock[y][x]->GetScale().x;
+				float obj_r = 1.0f * object->GetScale().x;
+				//XとYの長さ
+				float len_x = objBlock[y][x]->GetPosition().x - object->GetPosition().x;
+				float len_y = objBlock[y][x]->GetPosition().y - object->GetPosition().y;
+				//それぞれが半径以下である
+				if (block_r + obj_r >= sqrtf(len_x * len_x) && block_r + obj_r >= sqrtf(len_y * len_y))
+				{
+					return true;
+				}
+				//四角の隅から円の中心までのベクトル
+				XMFLOAT2 vec = {0, 0};
+				//長さ
+				float len_r = 0;
+				//四つの隅を調べる
+				for (int i = 0; i < 4; i++)
+				{
+					if (i == 0)
+					{
+						vec = { objBlock[y][x]->GetPosition().x - block_r + object->GetPosition().x, objBlock[y][x]->GetPosition().y - block_r + object->GetPosition().y };
+					}
+					else if (i == 1)
+					{
+						vec = { objBlock[y][x]->GetPosition().x - block_r + object->GetPosition().x, objBlock[y][x]->GetPosition().y + block_r + object->GetPosition().y };
+					}
+					else if (i == 2)
+					{
+						vec = { objBlock[y][x]->GetPosition().x + block_r + object->GetPosition().x, objBlock[y][x]->GetPosition().y - block_r + object->GetPosition().y };
+					}
+					else if (i == 3)
+					{
+						vec = { objBlock[y][x]->GetPosition().x + block_r + object->GetPosition().x, objBlock[y][x]->GetPosition().y + block_r + object->GetPosition().y };
+					}
+					//長さを求める
+					len_r = sqrtf(vec.x * vec.x + vec.y * vec.y);
+					//円の半径よりも長さが短い
+					if (len_r <= obj_r)
+					{
+						return true;
+					}
+				}
+*/
