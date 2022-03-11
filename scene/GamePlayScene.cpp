@@ -51,7 +51,7 @@ void GamePlayScene::Initialize()
 			objBlock[y][x] = Object3d::Create();
 			objBlock[y][x]->SetModel(block);
 			objBlock[y][x]->SetScale({ 1.0f,1.0f,1.0f });
-			objBlock[y][x]->SetPosition({ 1.0f,1.0f,0.0f });
+			objBlock[y][x]->SetPosition({ 1000.0f,1000.0f,0.0f });
 		}
 	}
 
@@ -202,6 +202,7 @@ void GamePlayScene::Update()
 	{
 		MapCreate(0);
 	}
+	MapCollide(0);
 
 	DebugText::GetInstance()->Print(50, 30 * 1, 2, "%f", player->GetPosition().x);
 	DebugText::GetInstance()->Print(50, 30 * 2, 2, "%f", player->GetPosition().y);
@@ -293,7 +294,7 @@ void GamePlayScene::MapCreate(int mapNumber)
 			{
 				//ˆÊ’u‚Æ‘å‚«‚³‚Ì•ÏX(¡‚Í‘å‚«‚³‚Í•ÏX‚µ‚È‚¢‚Å)
 				//objBlock[y][x]->SetScale({ LAND_SCALE, LAND_SCALE, LAND_SCALE });
-				objBlock[y][x]->SetPosition({ x * -LAND_SCALE,  y * -LAND_SCALE , 0 });
+				objBlock[y][x]->SetPosition({ x * LAND_SCALE,  y * -LAND_SCALE + 35, 0 });
 			}
 		}
 	}
@@ -339,7 +340,7 @@ void GamePlayScene::MapCollide(int mapNumber)
 					&& (p_pos.y - player->GetPosition().y < objBlock[y][x]->GetPosition().y + objBlock[y][x]->GetScale().y)
 					&& (p_pos.y + player->GetPosition().y > objBlock[y][x]->GetPosition().y - objBlock[y][x]->GetScale().y))
 				{
-
+					p_pos.x -= 10.0f;
 				}
 			}
 		}
