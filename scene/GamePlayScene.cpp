@@ -122,7 +122,7 @@ void GamePlayScene::Update()
 			p_pos.y += p_add;
 
 			//’n–Ê‚É“–‚½‚Á‚½‚ç
-			if (p_pos.y < 0)
+			if (MapCollide(player, 0))
 			{
 				p_pos.y = 0;
 				p_add = 0;
