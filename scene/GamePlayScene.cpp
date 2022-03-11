@@ -246,8 +246,10 @@ void GamePlayScene::Update()
 	MapCollide(0);
 
 	//プレイヤーの座標（X：Y）
-	DebugText::GetInstance()->Print(50, 30 * 1, 2, "%f", player->GetPosition().x);
-	DebugText::GetInstance()->Print(50, 30 * 2, 2, "%f", player->GetPosition().y);
+	DebugText::GetInstance()->Print(50, 30 * 1, 2, "%f", objBlock[8][0]->GetPosition().x);
+	DebugText::GetInstance()->Print(50, 30 * 2, 2, "%f", objBlock[8][0]->GetPosition().y);
+	DebugText::GetInstance()->Print(50, 30 * 3, 2, "%f", player->GetPosition().x);
+	DebugText::GetInstance()->Print(50, 30 * 4, 2, "%f", player->GetPosition().y);
 
 	if (input->TriggerKey(DIK_SPACE))
 	{
@@ -335,7 +337,7 @@ void GamePlayScene::MapCreate(int mapNumber)
 			{
 				//位置と大きさの変更(今は大きさは変更しないで)
 				//objBlock[y][x]->SetScale({ LAND_SCALE, LAND_SCALE, LAND_SCALE });
-				objBlock[y][x]->SetPosition({ x * LAND_SCALE,  y * -LAND_SCALE + 35, 0 });
+				objBlock[y][x]->SetPosition({ x * LAND_SCALE - 40,  y * -LAND_SCALE + 35, 0 });
 			}
 		}
 	}
@@ -376,10 +378,10 @@ void GamePlayScene::MapCollide(int mapNumber)
 
 			if (Mapchip::GetChipNum(x, y, map[mapNumber]) == Ground)
 			{
-				if ((p_pos.x - player->GetPosition().x < objBlock[y][x]->GetPosition().x + objBlock[y][x]->GetScale().x)
-					&& (p_pos.x + player->GetPosition().x > objBlock[y][x]->GetPosition().x - objBlock[y][x]->GetScale().x)
-					&& (p_pos.y - player->GetPosition().y < objBlock[y][x]->GetPosition().y + objBlock[y][x]->GetScale().y)
-					&& (p_pos.y + player->GetPosition().y > objBlock[y][x]->GetPosition().y - objBlock[y][x]->GetScale().y))
+				if ((p_pos.x - player->GetScale().x < objBlock[y][x]->GetPosition().x + objBlock[y][x]->GetScale().x)
+					&& (p_pos.x + player->GetScale().x > objBlock[y][x]->GetPosition().x - objBlock[y][x]->GetScale().x)
+					&& (p_pos.y - player->GetScale().y < objBlock[y][x]->GetPosition().y + objBlock[y][x]->GetScale().y)
+					&& (p_pos.y + player->GetScale().y > objBlock[y][x]->GetPosition().y - objBlock[y][x]->GetScale().y))
 				{
 					p_pos.x -= 10.0f;
 				}
