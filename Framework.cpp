@@ -54,7 +54,7 @@ void Framework::Finalize()
 void Framework::Update()
 {
 	// メッセージ処理
-	if (winApp->ProcessMessage())
+	if (winApp->ProcessMessage() || input->PushKey(DIK_ESCAPE))
 	{
 		// ゲームループを抜ける
 		endRequest_ = true;
