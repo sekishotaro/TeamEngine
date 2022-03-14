@@ -149,6 +149,13 @@ void GamePlayScene::Update()
 				angle = 0;
 			}
 		}
+		//プレイヤーの自由落下
+		if (is_jump == false && !MapCollide(player, 0))
+		{
+			//下降度をマイナス
+			p_down -= gravity;
+			p_pos.y += p_down;
+		}
 		//座標をセット
 		player->SetPosition(p_pos);
 		//ブロックに当たったら
@@ -158,16 +165,6 @@ void GamePlayScene::Update()
 			is_jump = false;
 			p_add = 0;
 			p_down = 0;
-		}
-		//プレイヤーの自由落下
-		if (is_jump == false && !MapCollide(player, 0))
-		{
-			p_pos = player->GetPosition();
-			//下降度をマイナス
-			p_down -= gravity;
-			p_pos.y += p_down;
-			//座標をセット
-			player->SetPosition(p_pos);
 		}
 
 		//ミニマップ用座標変換
@@ -254,7 +251,6 @@ void GamePlayScene::Update()
 		mini_e_pos.x = (e_pos.x / 5) - 52.5f;
 		mini_e_pos.y = (e_pos.y / 5) + 27.5f;
 		mini_e_pos.z = e_pos.z / 5;
-		enemy->SetPosition(e_pos);
 		mini_enemy->SetPosition(mini_e_pos);
 	}
 
@@ -422,7 +418,7 @@ bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapN
 						if (Mapchip::GetChipNum(b_x, b_y, map[mapNumber]) == Ground)
 						{
 							XMFLOAT3 pos = object->GetPosition();
-							pos.y = y_h + r + gravity;
+							pos.y = y_h + r;
 							object->SetPosition(pos);
 							object->Update();
 						}
