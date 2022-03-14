@@ -84,7 +84,6 @@ public:
 	bool is_normal = false; //通常状態
 	bool is_chase = false; //追跡状態
 	float e_add = 0.25f; //移動量
-	int max_spawn = 25; //最大スポーン数
 
 	//ロープ
 	std::unique_ptr<Object3d> Rope = nullptr; //オブジェクトクラス
@@ -92,7 +91,7 @@ public:
 	/// <summary>
 	/// エネミー生成
 	/// </summary>
-	void SpawnEnemy(bool& active, int& spawn_num);
+	void SpawnEnemy();
 
 	/// <summary>
 	/// 円運動
@@ -119,6 +118,3 @@ public:
 	/// </summary>
 	void ropeRotation();
 };
-
-
-

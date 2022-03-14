@@ -134,8 +134,22 @@ void GamePlayScene::Update()
 			p_pos.x -= 0.5f;
 			player->SetRotation(XMFLOAT3(0, 180, 0));
 		}
+		//プレイヤーの攻撃
+		if ((input->TriggerKey(DIK_RETURN) || input->PushButton(Button_B)) && is_attack == false)
+		{
+			is_attack = true;
+
+			//プレイヤーの向きで投げる方向を変える
+			if (player->GetRotation().y == 0)
+			{
+				angle = 180;
+			} else if (player->GetRotation().y == 180)
+			{
+				angle = 0;
+			}
+		}
 		//プレイヤーのジャンプ
-		if ((input->PushKey(DIK_W) || input->TriggerButton(Button_A)) && is_jump == false && MapCollide(player, 0))
+		if ((input->PushKey(DIK_W) || input->TriggerButton(Button_A)) && is_jump == false)
 		{
 			is_jump = true;
 
@@ -148,38 +162,32 @@ void GamePlayScene::Update()
 			//座標の上昇
 			p_add -= gravity;
 			p_pos.y += p_add;
-		}
-		//プレイヤーの攻撃
-		if ((input->TriggerKey(DIK_RETURN) || input->PushButton(Button_B)) && is_attack == false)
-		{
-			is_attack = true;
 
-			//プレイヤーの向きで投げる方向を変える
-			if (player->GetRotation().y == 0)
+			player->SetPosition(p_pos);
+			player->Update();
+
+			if (MapCollide(player, 0))
 			{
-				angle = 180;
-			} 
-			else if (player->GetRotation().y == 180)
-			{
-				angle = 0;
+				//初期化
+				is_jump = false;
+				p_add = 0;
 			}
 		}
 		//プレイヤーの自由落下
-		if (is_jump == false && !MapCollide(player, 0))
+		if (is_jump == false)
 		{
 			//下降度をマイナス
 			p_down -= gravity;
 			p_pos.y += p_down;
-		}
-		//座標をセット
-		player->SetPosition(p_pos);
-		//ブロックに当たったら
-		if (MapCollide(player, 0))
-		{
-			//初期化
-			is_jump = false;
-			p_add = 0;
-			p_down = 0;
+
+			player->SetPosition(p_pos);
+			player->Update();
+
+			if (MapCollide(player, 0))
+			{
+				//初期化
+				p_down = 0;
+			}
 		}
 
 		//ミニマップ用座標変換
@@ -279,6 +287,9 @@ void GamePlayScene::Update()
 	DebugText::GetInstance()->Print(50, 30 * 2, 2, "%f", objBlock[8][0]->GetPosition().y);
 	DebugText::GetInstance()->Print(50, 30 * 3, 2, "%f", player->GetPosition().x);
 	DebugText::GetInstance()->Print(50, 30 * 4, 2, "%f", player->GetPosition().y);
+	DebugText::GetInstance()->Print(50, 30 * 5, 2, "%f", p_add);
+	DebugText::GetInstance()->Print(50, 30 * 6, 2, "%f", p_down);
+	DebugText::GetInstance()->Print(50, 30 * 7, 2, "%f", MapCollide(player, 0));
 
 	if (input->TriggerKey(DIK_SPACE))
 	{
@@ -309,8 +320,7 @@ void GamePlayScene::Update()
 void GamePlayScene::Draw()
 {
 	// ゲームシーンの描画
-
-// コマンドリストの取得
+	// コマンドリストの取得
 	ID3D12GraphicsCommandList *cmdList = DirectXCommon::GetInstance()->GetCmdList();
 
 	// 背景スプライト描画前処理
@@ -380,24 +390,9 @@ void GamePlayScene::MapCreate(int mapNumber)
 	}
 }
 
-void GamePlayScene::SpawnEnemy(bool& active, int& spawn_num)
+void GamePlayScene::SpawnEnemy()
 {
-	if (active)
-	{
-		srand(time(NULL));
-		int num = rand() % 100;
-
-		if (num < 40)
-		{
-
-
-			spawn_num -= 1;
-			if (max_spawn == 0)
-			{
-				active = false;
-			}
-		}
-	}
+	
 }
 
 void GamePlayScene::CircularMotion(XMFLOAT3& pos, const XMFLOAT3 center_pos, const float r, int& angle, const int add)
@@ -413,10 +408,11 @@ bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapN
 	float a = object->GetPosition().x;
 	float b = object->GetPosition().y;
 	float r = 1.0f * object->GetScale().x;
+
 	float x = 0;
 	float y = 0;
-	float x_w = 0;
-	float y_h = 0;
+	float w = 0;
+	float h = 0;
 
 	bool is_hit = false;
 
@@ -426,117 +422,43 @@ bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapN
 		{
 			if (Mapchip::GetChipNum(b_x, b_y, map[mapNumber]) == Ground)
 			{
-				x = objBlock[b_y][b_x]->GetPosition().x - 2.5f * objBlock[b_y][b_x]->GetScale().x;
-				y = objBlock[b_y][b_x]->GetPosition().y - 2.5f * objBlock[b_y][b_x]->GetScale().x;
-				x_w = objBlock[b_y][b_x]->GetPosition().x + 2.5f * objBlock[b_y][b_x]->GetScale().x;
-				y_h = objBlock[b_y][b_x]->GetPosition().y + 2.5f * objBlock[b_y][b_x]->GetScale().x;
+				x = objBlock[b_y][b_x]->GetPosition().x;
+				y = objBlock[b_y][b_x]->GetPosition().y;
+				w = 2.5f * objBlock[b_y][b_x]->GetScale().x;
+				h = 2.5f * objBlock[b_y][b_x]->GetScale().y;
 
-				//縦
-				if ((x <= a && a <= x_w) && (y - r <= b && b <= y_h + r))
+				if (powf(y - b, 2) < powf(h + r, 2) && (x - w <= a && a <= x + w))
 				{
-					is_hit = true;
-					if (b_y != map_max_y && Mapchip::GetChipNum(b_x, b_y - 1, map[mapNumber]) == None)
+					XMFLOAT3 pos = object->GetPosition();
+					//下
+					if (y - b < 0)
 					{
-						if (Mapchip::GetChipNum(b_x, b_y, map[mapNumber]) == Ground)
-						{
-							XMFLOAT3 pos = object->GetPosition();
-							pos.y = y_h + r;
-							object->SetPosition(pos);
-							object->Update();
-						}
+						pos.y = y + h + r;
+						is_hit = true;
 					}
-				}
-				//横
-				if ((x - r <= a && a <= x_w + r) && (y <= b && b <= y_h))
-				{
-					is_hit = true;
-					if (x > a)
+					//上
+					else if (y - b > 0)
 					{
-						XMFLOAT3 pos = object->GetPosition();
-						pos.x = x - r;
-						object->SetPosition(pos);
-						object->Update();
+						pos.y = y - h - r;
 					}
-					else if (x_w < a)
+					object->SetPosition(pos);
+					object->Update();
+				}
+				else if (powf(x - a, 2) < powf(w + r, 2) && (y - h <= b  && b <= y + h))
+				{
+					XMFLOAT3 pos = object->GetPosition();
+					//右
+					if (x - a < 0)
 					{
-						XMFLOAT3 pos = object->GetPosition();
-						pos.x = x_w + r;
-						object->SetPosition(pos);
-						object->Update();
+						pos.x = x + w + r;
 					}
-				}
-				//四隅
-				if (powf(x - a, 2) + powf(y - b, 2) <= powf(r, 2))
-				{
-					is_hit = true;
-					/*if (y > b)
+					//左
+					else if (x - a > 0)
 					{
-						XMFLOAT3 pos = object->GetPosition();
-						pos.y = y - r;
-						object->SetPosition(pos);
-						object->Update();
-					} 
-					else
-					{
-						XMFLOAT3 pos = object->GetPosition();
-						pos.y = y_h + r;
-						object->SetPosition(pos);
-						object->Update();
-					}*/
-				}
-				if (powf(x_w - a, 2) + powf(y - b, 2) <= powf(r, 2))
-				{
-					is_hit = true;
-					/*if (y > b)
-					{
-						XMFLOAT3 pos = object->GetPosition();
-						pos.y = y - r;
-						object->SetPosition(pos);
-						object->Update();
+						pos.x = x - w - r;
 					}
-					else
-					{
-						XMFLOAT3 pos = object->GetPosition();
-						pos.y = y_h + r;
-						object->SetPosition(pos);
-						object->Update();
-					}*/
-				}
-				if (powf(x - a, 2) + powf(y_h - b, 2) <= powf(r, 2))
-				{
-					is_hit = true;
-					/*if (y > b)
-					{
-						XMFLOAT3 pos = object->GetPosition();
-						pos.y = y - r;
-						object->SetPosition(pos);
-						object->Update();
-					} 
-					else
-					{
-						XMFLOAT3 pos = object->GetPosition();
-						pos.y = y_h + r;
-						object->SetPosition(pos);
-						object->Update();
-					}*/
-				}
-				if (powf(x_w - a, 2) + powf(y_h - b, 2) <= powf(r, 2))
-				{
-					is_hit = true;
-					/*if (y > b)
-					{
-						XMFLOAT3 pos = object->GetPosition();
-						pos.y = y - r;
-						object->SetPosition(pos);
-						object->Update();
-					} 
-					else
-					{
-						XMFLOAT3 pos = object->GetPosition();
-						pos.y = y_h + r;
-						object->SetPosition(pos);
-						object->Update();
-					}*/
+					object->SetPosition(pos);
+					object->Update();
 				}
 			}
 		}
