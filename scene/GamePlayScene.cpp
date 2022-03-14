@@ -448,7 +448,6 @@ bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapN
 						object->Update();
 					}
 				}
-				XMFLOAT3 pos_s = object->GetPosition();
 				//Žl‹÷
 				if (powf(x - a, 2) + powf(y - b, 2) <= powf(r, 2))
 				{
