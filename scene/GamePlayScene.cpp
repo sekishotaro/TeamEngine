@@ -505,6 +505,11 @@ void GamePlayScene::ropeRotation() {
 	//プレイヤーの位置を取得
 	XMFLOAT3 playerPosition = player->GetPosition();
 
+	XMFLOAT3 length = { playerPosition.x - ropePosition.x, playerPosition.y - ropePosition.y, playerPosition.z - ropePosition.z };
+	float len = sqrtf(length.x * length.x + length.y * length.y + length.z * length.z);
+
+	Rope->SetScale({ 0.3f, len, 0.3f });
+
 	float angleX = ANGLE->PosForAngle(playerPosition.x, ropePosition.y, ropePosition.x, playerPosition.y);
 
 	Rope->SetRotation({ 0, 0 , DirectX::XMConvertToDegrees(angleX) });
