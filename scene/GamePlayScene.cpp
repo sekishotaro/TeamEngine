@@ -81,13 +81,17 @@ void GamePlayScene::Update()
 	// ゲームシーンの毎フレーム処理
 	Input *input = Input::GetInstance();
 
+	//Mキーでマップチップ設置
+	if (input->TriggerKey(DIK_M) || true)
+	{
+		MapCreate(0);
+	}
+
 	//プレイヤー処理
 	{
-		//下降度の初期化
-		if (p_down == 0)
-		{
-			p_down = 2.5f;
-		}
+		//座標更新
+		p_pos = player->GetPosition();
+
 		//プレイヤーの移動
 		if (input->LeftStickAngle().x)
 		{
@@ -115,7 +119,7 @@ void GamePlayScene::Update()
 			player->SetRotation(XMFLOAT3(0, 180, 0));
 		}
 		//プレイヤーのジャンプ
-		if ((input->PushKey(DIK_W) || input->TriggerButton(Button_A)) && is_jump == false)
+		if ((input->PushKey(DIK_W) || input->TriggerButton(Button_A)) && is_jump == false && MapCollide(player, 0))
 		{
 			is_jump = true;
 
@@ -128,14 +132,6 @@ void GamePlayScene::Update()
 			//座標の上昇
 			p_add -= gravity;
 			p_pos.y += p_add;
-
-			//地面に当たったら
-			if (p_pos.y < 0)
-			{
-				p_pos.y = 0;
-				p_add = 0;
-				is_jump = false;
-			}
 		}
 		//プレイヤーの攻撃
 		if ((input->TriggerKey(DIK_RETURN) || input->PushButton(Button_B)) && is_attack == false)
@@ -146,24 +142,31 @@ void GamePlayScene::Update()
 			if (player->GetRotation().y == 0)
 			{
 				angle = 180;
-			}
+			} 
 			else if (player->GetRotation().y == 180)
 			{
 				angle = 0;
 			}
 		}
-		//プレイヤーの落下
-		if (is_jump == false && !MapCollide(player, 0))
-		{
-			//下降度をマイナス
-		/*	p_pos.y -= p_down;
-			p_down += gravity;*/
-		}
+		//座標をセット
+		player->SetPosition(p_pos);
 		//ブロックに当たったら
 		if (MapCollide(player, 0))
 		{
-			//押し戻し
-			int a = 0;
+			//初期化
+			is_jump = false;
+			p_add = 0;
+			p_down = 0;
+		}
+		//プレイヤーの自由落下
+		if (is_jump == false && !MapCollide(player, 0))
+		{
+			p_pos = player->GetPosition();
+			//下降度をマイナス
+			p_down -= gravity;
+			p_pos.y += p_down;
+			//座標をセット
+			player->SetPosition(p_pos);
 		}
 
 		//ミニマップ用座標変換
@@ -172,6 +175,10 @@ void GamePlayScene::Update()
 		mini_p_pos.z = p_pos.z / 5;
 		mini_player->SetPosition(mini_p_pos);
 		player->SetPosition(p_pos);
+	}
+
+		camera->SetTarget(player->GetPosition());
+		camera->SetEye({ player->GetPosition().x, player->GetPosition().y, player->GetPosition().z - 60.0f });
 	}
 
 	//エネミー処理
@@ -229,16 +236,21 @@ void GamePlayScene::Update()
 			if (player->GetRotation().y == 0)
 			{
 				CircularMotion(e_pos, p_pos, 10, angle, -20);
-				if (angle < 0)
-				{
-					angle = 0;
-					is_attack = false;
-				}
+				enemy->SetPosition(e_pos);
 			} 
 			//左向きなら
 			else if (player->GetRotation().y == 180)
 			{
 				CircularMotion(e_pos, p_pos, 10, angle, 20);
+				enemy->SetPosition(e_pos);
+			}
+			//マップの当たり判定
+			if (MapCollide(enemy, 0))
+			{
+				is_attack = false;
+			}
+		}
+
 				if (angle > 180)
 				{
 					angle = 180;
@@ -350,7 +362,7 @@ void GamePlayScene::Draw()
 
 void GamePlayScene::MapCreate(int mapNumber)
 {
-	//マップチップ1つの大きさ(playerが5なので5の倍数で指定すること)
+	//マップチップ1つの大きさ
 	const float LAND_SCALE = 5.0f;
 	for (int y = 0; y < map_max_y; y++) {//(yが12)
 		for (int x = 0; x < map_max_x; x++) {//(xが52)
@@ -359,7 +371,7 @@ void GamePlayScene::MapCreate(int mapNumber)
 			{
 				//位置と大きさの変更(今は大きさは変更しないで)
 				//objBlock[y][x]->SetScale({ LAND_SCALE, LAND_SCALE, LAND_SCALE });
-				objBlock[y][x]->SetPosition({ x * LAND_SCALE - 40,  y * -LAND_SCALE + 35, 0 });
+				objBlock[y][x]->SetPosition({ x * LAND_SCALE,  -y * LAND_SCALE, 0 });
 			}
 		}
 	}
@@ -395,18 +407,134 @@ void GamePlayScene::CircularMotion(XMFLOAT3& pos, const XMFLOAT3 center_pos, con
 
 bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapNumber)
 {
-	for (int y = 0; y < map_max_y; y++) //yが12
+	float a = object->GetPosition().x;
+	float b = object->GetPosition().y;
+	float r = 1.0f * object->GetScale().x;
+	float x = 0;
+	float y = 0;
+	float x_w = 0;
+	float y_h = 0;
+
+	bool is_hit = false;
+
+	for (int b_y = 0; b_y < map_max_y; b_y++) //yが12
 	{
-		for (int x = 0; x < map_max_x; x++) //xが52
+		for (int b_x = 0; b_x < map_max_x; b_x++) //xが52
 		{
-			if (Mapchip::GetChipNum(x, y, map[mapNumber]) == 1)
+			if (Mapchip::GetChipNum(b_x, b_y, map[mapNumber]) == Ground)
 			{
-				if ((object->GetPosition().x - object->GetScale().x < objBlock[y][x]->GetPosition().x + objBlock[y][x]->GetScale().x)
-					&& (object->GetPosition().x + object->GetScale().x > objBlock[y][x]->GetPosition().x - objBlock[y][x]->GetScale().x)
-					&& (object->GetPosition().y - object->GetScale().y < objBlock[y][x]->GetPosition().y + objBlock[y][x]->GetScale().y)
-					&& (object->GetPosition().y + object->GetScale().y > objBlock[y][x]->GetPosition().y - objBlock[y][x]->GetScale().y))
+				x = objBlock[b_y][b_x]->GetPosition().x - 2.5f * objBlock[b_y][b_x]->GetScale().x;
+				y = objBlock[b_y][b_x]->GetPosition().y - 2.5f * objBlock[b_y][b_x]->GetScale().x;
+				x_w = objBlock[b_y][b_x]->GetPosition().x + 2.5f * objBlock[b_y][b_x]->GetScale().x;
+				y_h = objBlock[b_y][b_x]->GetPosition().y + 2.5f * objBlock[b_y][b_x]->GetScale().x;
+
+				//縦
+				if ((x <= a && a <= x_w) && (y - r <= b && b <= y_h + r))
 				{
-					return true;
+					is_hit = true;
+					if (b_y != map_max_y && Mapchip::GetChipNum(b_x, b_y - 1, map[mapNumber]) == None)
+					{
+						if (Mapchip::GetChipNum(b_x, b_y, map[mapNumber]) == Ground)
+						{
+							XMFLOAT3 pos = object->GetPosition();
+							pos.y = y_h + r + gravity;
+							object->SetPosition(pos);
+							object->Update();
+						}
+					}
+				}
+				//横
+				if ((x - r <= a && a <= x_w + r) && (y <= b && b <= y_h))
+				{
+					is_hit = true;
+					if (x > a)
+					{
+						XMFLOAT3 pos = object->GetPosition();
+						pos.x = x - r;
+						object->SetPosition(pos);
+						object->Update();
+					}
+					else
+					{
+						XMFLOAT3 pos = object->GetPosition();
+						pos.x = x_w + r;
+						object->SetPosition(pos);
+						object->Update();
+					}
+				}
+				XMFLOAT3 pos_s = object->GetPosition();
+				//四隅
+				if (powf(x - a, 2) + powf(y - b, 2) <= powf(r, 2))
+				{
+					is_hit = true;
+					/*if (y > b)
+					{
+						XMFLOAT3 pos = object->GetPosition();
+						pos.y = y - r;
+						object->SetPosition(pos);
+						object->Update();
+					} 
+					else
+					{
+						XMFLOAT3 pos = object->GetPosition();
+						pos.y = y_h + r;
+						object->SetPosition(pos);
+						object->Update();
+					}*/
+				}
+				if (powf(x_w - a, 2) + powf(y - b, 2) <= powf(r, 2))
+				{
+					is_hit = true;
+					/*if (y > b)
+					{
+						XMFLOAT3 pos = object->GetPosition();
+						pos.y = y - r;
+						object->SetPosition(pos);
+						object->Update();
+					}
+					else
+					{
+						XMFLOAT3 pos = object->GetPosition();
+						pos.y = y_h + r;
+						object->SetPosition(pos);
+						object->Update();
+					}*/
+				}
+				if (powf(x - a, 2) + powf(y_h - b, 2) <= powf(r, 2))
+				{
+					is_hit = true;
+					/*if (y > b)
+					{
+						XMFLOAT3 pos = object->GetPosition();
+						pos.y = y - r;
+						object->SetPosition(pos);
+						object->Update();
+					} 
+					else
+					{
+						XMFLOAT3 pos = object->GetPosition();
+						pos.y = y_h + r;
+						object->SetPosition(pos);
+						object->Update();
+					}*/
+				}
+				if (powf(x_w - a, 2) + powf(y_h - b, 2) <= powf(r, 2))
+				{
+					is_hit = true;
+					/*if (y > b)
+					{
+						XMFLOAT3 pos = object->GetPosition();
+						pos.y = y - r;
+						object->SetPosition(pos);
+						object->Update();
+					} 
+					else
+					{
+						XMFLOAT3 pos = object->GetPosition();
+						pos.y = y_h + r;
+						object->SetPosition(pos);
+						object->Update();
+					}*/
 				}
 			}
 		}
@@ -428,5 +556,6 @@ void GamePlayScene::MiniMapCreate(int mapNumber)
 			}
 		}
 	}
-}
 
+	return is_hit;
+}
