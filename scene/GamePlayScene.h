@@ -52,6 +52,7 @@ public:
 	std::vector<std::vector<int>> map;
 	std::vector<Object3d*> box;
 	std::unique_ptr<Object3d> objBlock[12][52];
+	std::unique_ptr<Object3d> objMiniBlock[12][52];
 	enum MapNumber //マップチップの番号
 	{
 		None, Ground
@@ -64,6 +65,8 @@ public:
 	//プレイヤー
 	std::unique_ptr<Object3d> player = nullptr; //オブジェクトクラス
 	XMFLOAT3 p_pos = {0, 10, 0}; //座標
+	std::unique_ptr<Object3d> mini_player = nullptr; //オブジェクトクラス
+	XMFLOAT3 mini_p_pos = { 0, 10, 0 }; //座標
 	float p_max_speed = 0.5f; //最高速度
 	bool is_jump = false; // ジャンプフラグ
 	float p_add = 0; //上昇度
@@ -73,6 +76,8 @@ public:
 	//エネミー
 	std::unique_ptr<Object3d> enemy; //オブジェクトクラス
 	XMFLOAT3 e_pos = {0, 0, 0}; //座標
+	std::unique_ptr<Object3d> mini_enemy; //オブジェクトクラス
+	XMFLOAT3 mini_e_pos = { 0, 0, 0 }; //座標
 	bool is_normal = false; //通常状態
 	bool is_chase = false; //追跡状態
 	float e_add = 0.25f; //移動量
@@ -97,5 +102,12 @@ public:
 	/// マップチップ当たり判定
 	/// </summary>
 	bool MapCollide(const std::unique_ptr<Object3d>& object, int mapNumber);
+
+	/// <summary>
+	/// //マップチップ生成
+	/// </summary>
+	void MiniMapCreate(int mapNumber);
 };
+
+
 

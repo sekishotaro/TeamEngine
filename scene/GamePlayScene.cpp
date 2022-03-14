@@ -34,8 +34,10 @@ void GamePlayScene::Initialize()
 	model = Model::LoadFromOBJ("sphere");
 	block = Model::LoadFromOBJ("block");
 
+	mini_enemy = Object3d::Create();
 	enemy = Object3d::Create();
 
+	mini_player = Object3d::Create();
 	player = Object3d::Create();
 
 	//マップチップ用のCSV読み込み
@@ -48,6 +50,10 @@ void GamePlayScene::Initialize()
 	{
 		for (int x = 0; x < map_max_x; x++)
 		{
+			objMiniBlock[y][x] = Object3d::Create();
+			objMiniBlock[y][x]->SetModel(block);
+			objMiniBlock[y][x]->SetScale({ 0.2f,0.2f,0.2f });
+			objMiniBlock[y][x]->SetPosition({ 1000.0f,1000.0f,0.0f });
 			objBlock[y][x] = Object3d::Create();
 			objBlock[y][x]->SetModel(block);
 			objBlock[y][x]->SetScale({ 1.0f,1.0f,1.0f });
@@ -56,8 +62,12 @@ void GamePlayScene::Initialize()
 	}
 
 	//オブジェクトにモデルをひも付ける
+	mini_enemy->SetModel(model);
+	mini_enemy->SetScale({ 0.2f,0.2f,0.2f });
 	enemy->SetModel(model);
 
+	mini_player->SetModel(model);
+	mini_player->SetScale({ 0.2f,0.2f,0.2f });
 	player->SetModel(model);
 }
 
@@ -156,6 +166,11 @@ void GamePlayScene::Update()
 			int a = 0;
 		}
 
+		//ミニマップ用座標変換
+		mini_p_pos.x = (p_pos.x / 5) - 52.5f;
+		mini_p_pos.y = (p_pos.y / 5) + 27.5f;
+		mini_p_pos.z = p_pos.z / 5;
+		mini_player->SetPosition(mini_p_pos);
 		player->SetPosition(p_pos);
 	}
 
@@ -231,14 +246,19 @@ void GamePlayScene::Update()
 				}
 			}
 		}
-
+		//ミニマップ用座標変換
+		mini_e_pos.x = (e_pos.x / 5) - 52.5f;
+		mini_e_pos.y = (e_pos.y / 5) + 27.5f;
+		mini_e_pos.z = e_pos.z / 5;
 		enemy->SetPosition(e_pos);
+		mini_enemy->SetPosition(mini_e_pos);
 	}
 
 	//Mキーでマップチップ設置
 	if (input->TriggerKey(DIK_M) || true)
 	{
 		MapCreate(0);
+		MiniMapCreate(0);
 	}
 
 	//プレイヤーの座標（X：Y）
@@ -259,12 +279,15 @@ void GamePlayScene::Update()
 	//オブジェクト情報の更新
 	camera->Update();
 	enemy->Update();
+	mini_enemy->Update();
 	player->Update();
+	mini_player->Update();
 	for (int y = 0; y < map_max_y; y++)
 	{
 		for (int x = 0; x < map_max_x; x++)
 		{
 			objBlock[y][x]->Update();
+			objMiniBlock[y][x]->Update();
 		}
 	}
 }
@@ -295,7 +318,9 @@ void GamePlayScene::Draw()
 
 	// 3Dオブクジェクトの描画
 	enemy->Draw();
+	mini_enemy->Draw();
 	player->Draw();
+	mini_player->Draw();
 
 	//マップチップの描画
 	for (int y = 0; y < map_max_y; y++)
@@ -303,6 +328,7 @@ void GamePlayScene::Draw()
 		for (int x = 0; x < map_max_x; x++)
 		{
 			objBlock[y][x]->Draw();
+			objMiniBlock[y][x]->Draw();
 		}
 	}
 	/// <summary>
@@ -386,3 +412,21 @@ bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapN
 		}
 	}
 }
+
+void GamePlayScene::MiniMapCreate(int mapNumber)
+{
+	//マップチップ1つの大きさ(playerが5なので5の倍数で指定すること)
+	const float LAND_SCALE = 1.0f;
+	for (int y = 0; y < map_max_y; y++) {//(yが12)
+		for (int x = 0; x < map_max_x; x++) {//(xが52)
+
+			if (Mapchip::GetChipNum(x, y, map[mapNumber]) == Ground)
+			{
+				//位置と大きさの変更
+				objMiniBlock[y][x]->SetScale({ LAND_SCALE / 5, LAND_SCALE / 5, LAND_SCALE / 5 });
+				objMiniBlock[y][x]->SetPosition({ x * LAND_SCALE - 60,  y * -LAND_SCALE + 35, 0 });
+			}
+		}
+	}
+}
+
