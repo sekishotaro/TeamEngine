@@ -33,12 +33,15 @@ void GamePlayScene::Initialize()
 	// オブジェクト生成
 	model = Model::LoadFromOBJ("sphere");
 	block = Model::LoadFromOBJ("block");
+	rope = Model::LoadFromOBJ("rope");
 
 	mini_enemy = Object3d::Create();
 	enemy = Object3d::Create();
 
 	mini_player = Object3d::Create();
 	player = Object3d::Create();
+
+	Rope = Object3d::Create();
 
 	//マップチップ用のCSV読み込み
 	//(map, "Resource/scv/なんたら.csv")で追加可能
@@ -69,6 +72,9 @@ void GamePlayScene::Initialize()
 	mini_player->SetModel(model);
 	mini_player->SetScale({ 0.2f,0.2f,0.2f });
 	player->SetModel(model);
+
+	Rope->SetModel(rope);
+	Rope->SetScale({ 0.3, 5, 0.3 });
 }
 
 void GamePlayScene::Finalize()
@@ -80,6 +86,15 @@ void GamePlayScene::Update()
 {
 	// ゲームシーンの毎フレーム処理
 	Input *input = Input::GetInstance();
+
+	ropeRotation();
+	//現在の座標を取得
+	XMFLOAT3 playerPosition = player->GetPosition();
+	XMFLOAT3 ropePosition = Rope->GetPosition();
+	XMFLOAT3 enemyPosition = enemy->GetPosition();
+
+	//現在のスケールを取得
+	XMFLOAT3 ropeScale = Rope->GetScale();
 
 	//Mキーでマップチップ設置
 	if (input->TriggerKey(DIK_M) || true)
@@ -254,6 +269,11 @@ void GamePlayScene::Update()
 		mini_enemy->SetPosition(mini_e_pos);
 	}
 
+	//ロープの座標値
+	Rope->SetPosition({ (enemyPosition.x + playerPosition.x) / 2,(enemyPosition.y + playerPosition.y) / 2,(enemyPosition.z + playerPosition.z) / 2 });
+	//ロープの大きさ
+	Rope->SetScale({ ropeScale.x, ropeScale.y, ropeScale.z });
+
 	//プレイヤーの座標（X：Y）
 	DebugText::GetInstance()->Print(50, 30 * 1, 2, "%f", objBlock[8][0]->GetPosition().x);
 	DebugText::GetInstance()->Print(50, 30 * 2, 2, "%f", objBlock[8][0]->GetPosition().y);
@@ -275,6 +295,7 @@ void GamePlayScene::Update()
 	mini_enemy->Update();
 	player->Update();
 	mini_player->Update();
+	Rope->Update();
 	for (int y = 0; y < map_max_y; y++)
 	{
 		for (int x = 0; x < map_max_x; x++)
@@ -314,6 +335,7 @@ void GamePlayScene::Draw()
 	mini_enemy->Draw();
 	player->Draw();
 	mini_player->Draw();
+	Rope->Draw();
 
 	//マップチップの描画
 	for (int y = 0; y < map_max_y; y++)
@@ -538,4 +560,15 @@ void GamePlayScene::MiniMapCreate(int mapNumber)
 			}
 		}
 	}
+}
+
+void GamePlayScene::ropeRotation() {
+	//敵の位置を取得
+	XMFLOAT3 ropePosition = Rope->GetPosition();
+	//プレイヤーの位置を取得
+	XMFLOAT3 playerPosition = player->GetPosition();
+
+	float angleX = ANGLE->PosForAngle(playerPosition.x, ropePosition.y, ropePosition.x, playerPosition.y);
+
+	Rope->SetRotation({ 0, 0 , DirectX::XMConvertToDegrees(angleX) });
 }

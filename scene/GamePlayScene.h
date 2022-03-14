@@ -6,6 +6,7 @@
 #include <DirectXMath.h>
 #include <memory>
 #include "Camera.h"
+#include "Angle.h"
 #include <vector>
 
 class GamePlayScene : public BaseScene
@@ -49,6 +50,8 @@ public:
 	Model *model = nullptr;
 	Camera *camera = nullptr;
 	Model* block = nullptr;
+	Model* rope = nullptr;
+	Angle* ANGLE = new Angle();
 	std::vector<std::vector<int>> map;
 	std::vector<Object3d*> box;
 	std::unique_ptr<Object3d> objBlock[12][52];
@@ -83,6 +86,9 @@ public:
 	float e_add = 0.25f; //移動量
 	int max_spawn = 25; //最大スポーン数
 
+	//ロープ
+	std::unique_ptr<Object3d> Rope = nullptr; //オブジェクトクラス
+
 	/// <summary>
 	/// エネミー生成
 	/// </summary>
@@ -107,6 +113,11 @@ public:
 	/// //マップチップ生成
 	/// </summary>
 	void MiniMapCreate(int mapNumber);
+
+	/// <summary>
+	/// ロープの角度変更
+	/// </summary>
+	void ropeRotation();
 };
 
 
