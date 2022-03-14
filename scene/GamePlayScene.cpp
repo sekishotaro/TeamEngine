@@ -79,7 +79,9 @@ void GamePlayScene::Update()
 
 	//プレイヤー処理
 	{
-		//下降度の初期化
+		//座標更新
+		p_pos = player->GetPosition();
+
 		//プレイヤーの移動
 		if (input->LeftStickAngle().x)
 		{
@@ -107,7 +109,7 @@ void GamePlayScene::Update()
 			player->SetRotation(XMFLOAT3(0, 180, 0));
 		}
 		//プレイヤーのジャンプ
-		if ((input->PushKey(DIK_W) || input->TriggerButton(Button_A)) && is_jump == false)
+		if ((input->PushKey(DIK_W) || input->TriggerButton(Button_A)) && is_jump == false && MapCollide(player, 0))
 		{
 			is_jump = true;
 
@@ -120,14 +122,6 @@ void GamePlayScene::Update()
 			//座標の上昇
 			p_add -= gravity;
 			p_pos.y += p_add;
-
-			//地面に当たったら
-			if (MapCollide(player, 0))
-			{
-				p_pos.y = 0;
-				p_add = 0;
-				is_jump = false;
-			}
 		}
 		//プレイヤーの攻撃
 		if ((input->TriggerKey(DIK_RETURN) || input->PushButton(Button_B)) && is_attack == false)
@@ -138,28 +132,35 @@ void GamePlayScene::Update()
 			if (player->GetRotation().y == 0)
 			{
 				angle = 180;
-			}
+			} 
 			else if (player->GetRotation().y == 180)
 			{
 				angle = 0;
 			}
 		}
-		//プレイヤーの落下
-		if (is_jump == false && !MapCollide(player, 0))
-		{
-			//下降度をマイナス
-			p_down += gravity;
-			p_pos.y -= p_down;
-		}
+		//座標をセット
+		player->SetPosition(p_pos);
 		//ブロックに当たったら
 		if (MapCollide(player, 0))
 		{
-			//押し戻し
-			p_pos.y = 0;
+			//初期化
+			is_jump = false;
+			p_add = 0;
 			p_down = 0;
 		}
+		//プレイヤーの自由落下
+		if (is_jump == false && !MapCollide(player, 0))
+		{
+			p_pos = player->GetPosition();
+			//下降度をマイナス
+			p_down -= gravity;
+			p_pos.y += p_down;
+			//座標をセット
+			player->SetPosition(p_pos);
+		}
 
-		player->SetPosition(p_pos);
+		camera->SetTarget(player->GetPosition());
+		camera->SetEye({ player->GetPosition().x, player->GetPosition().y, player->GetPosition().z - 60.0f });
 	}
 
 	//エネミー処理
@@ -318,7 +319,7 @@ void GamePlayScene::Draw()
 
 void GamePlayScene::MapCreate(int mapNumber)
 {
-	//マップチップ1つの大きさ(playerが5なので5の倍数で指定すること)
+	//マップチップ1つの大きさ
 	const float LAND_SCALE = 5.0f;
 	for (int y = 0; y < map_max_y; y++) {//(yが12)
 		for (int x = 0; x < map_max_x; x++) {//(xが52)
@@ -327,7 +328,7 @@ void GamePlayScene::MapCreate(int mapNumber)
 			{
 				//位置と大きさの変更(今は大きさは変更しないで)
 				//objBlock[y][x]->SetScale({ LAND_SCALE, LAND_SCALE, LAND_SCALE });
-				objBlock[y][x]->SetPosition({ x * LAND_SCALE - 40,  y * -LAND_SCALE + 35, 0 });
+				objBlock[y][x]->SetPosition({ x * LAND_SCALE,  -y * LAND_SCALE, 0 });
 			}
 		}
 	}
@@ -363,67 +364,138 @@ void GamePlayScene::CircularMotion(XMFLOAT3& pos, const XMFLOAT3 center_pos, con
 
 bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapNumber)
 {
-	for (int y = 0; y < map_max_y; y++) //yが12
+	float a = object->GetPosition().x;
+	float b = object->GetPosition().y;
+	float r = 1.0f * object->GetScale().x;
+	float x = 0;
+	float y = 0;
+	float x_w = 0;
+	float y_h = 0;
+
+	bool is_hit = false;
+
+	for (int b_y = 0; b_y < map_max_y; b_y++) //yが12
 	{
-		for (int x = 0; x < map_max_x; x++) //xが52
+		for (int b_x = 0; b_x < map_max_x; b_x++) //xが52
 		{
-			if (Mapchip::GetChipNum(x, y, map[mapNumber]) == Ground)
+			if (Mapchip::GetChipNum(b_x, b_y, map[mapNumber]) == Ground)
 			{
-				if ((object->GetPosition().x <= objBlock[y][x]->GetPosition().x + 2.5f * objBlock[0][0]->GetScale().x)
-					&& (object->GetPosition().x >= objBlock[y][x]->GetPosition().x - 2.5f * objBlock[0][0]->GetScale().x)
-					&& (object->GetPosition().y <= objBlock[y][x]->GetPosition().y + 2.5f * objBlock[0][0]->GetScale().x)
-					&& (object->GetPosition().y >= objBlock[y][x]->GetPosition().y - 2.5f * objBlock[0][0]->GetScale().x))
+				x = objBlock[b_y][b_x]->GetPosition().x - 2.5f * objBlock[b_y][b_x]->GetScale().x;
+				y = objBlock[b_y][b_x]->GetPosition().y - 2.5f * objBlock[b_y][b_x]->GetScale().x;
+				x_w = objBlock[b_y][b_x]->GetPosition().x + 2.5f * objBlock[b_y][b_x]->GetScale().x;
+				y_h = objBlock[b_y][b_x]->GetPosition().y + 2.5f * objBlock[b_y][b_x]->GetScale().x;
+
+				//縦
+				if ((x <= a && a <= x_w) && (y - r <= b && b <= y_h + r))
 				{
-					return true;
+					is_hit = true;
+					if (b_y != map_max_y && Mapchip::GetChipNum(b_x, b_y - 1, map[mapNumber]) == None)
+					{
+						if (Mapchip::GetChipNum(b_x, b_y, map[mapNumber]) == Ground)
+						{
+							XMFLOAT3 pos = object->GetPosition();
+							pos.y = y_h + r + gravity;
+							object->SetPosition(pos);
+							object->Update();
+						}
+					}
+				}
+				//横
+				if ((x - r <= a && a <= x_w + r) && (y <= b && b <= y_h))
+				{
+					is_hit = true;
+					if (x > a)
+					{
+						XMFLOAT3 pos = object->GetPosition();
+						pos.x = x - r;
+						object->SetPosition(pos);
+						object->Update();
+					}
+					else
+					{
+						XMFLOAT3 pos = object->GetPosition();
+						pos.x = x_w + r;
+						object->SetPosition(pos);
+						object->Update();
+					}
+				}
+				XMFLOAT3 pos_s = object->GetPosition();
+				//四隅
+				if (powf(x - a, 2) + powf(y - b, 2) <= powf(r, 2))
+				{
+					is_hit = true;
+					/*if (y > b)
+					{
+						XMFLOAT3 pos = object->GetPosition();
+						pos.y = y - r;
+						object->SetPosition(pos);
+						object->Update();
+					} 
+					else
+					{
+						XMFLOAT3 pos = object->GetPosition();
+						pos.y = y_h + r;
+						object->SetPosition(pos);
+						object->Update();
+					}*/
+				}
+				if (powf(x_w - a, 2) + powf(y - b, 2) <= powf(r, 2))
+				{
+					is_hit = true;
+					/*if (y > b)
+					{
+						XMFLOAT3 pos = object->GetPosition();
+						pos.y = y - r;
+						object->SetPosition(pos);
+						object->Update();
+					}
+					else
+					{
+						XMFLOAT3 pos = object->GetPosition();
+						pos.y = y_h + r;
+						object->SetPosition(pos);
+						object->Update();
+					}*/
+				}
+				if (powf(x - a, 2) + powf(y_h - b, 2) <= powf(r, 2))
+				{
+					is_hit = true;
+					/*if (y > b)
+					{
+						XMFLOAT3 pos = object->GetPosition();
+						pos.y = y - r;
+						object->SetPosition(pos);
+						object->Update();
+					} 
+					else
+					{
+						XMFLOAT3 pos = object->GetPosition();
+						pos.y = y_h + r;
+						object->SetPosition(pos);
+						object->Update();
+					}*/
+				}
+				if (powf(x_w - a, 2) + powf(y_h - b, 2) <= powf(r, 2))
+				{
+					is_hit = true;
+					/*if (y > b)
+					{
+						XMFLOAT3 pos = object->GetPosition();
+						pos.y = y - r;
+						object->SetPosition(pos);
+						object->Update();
+					} 
+					else
+					{
+						XMFLOAT3 pos = object->GetPosition();
+						pos.y = y_h + r;
+						object->SetPosition(pos);
+						object->Update();
+					}*/
 				}
 			}
 		}
 	}
 
-	return false;
+	return is_hit;
 }
-
-/*
-//半径
-				float block_r = 2.5f * objBlock[y][x]->GetScale().x;
-				float obj_r = 1.0f * object->GetScale().x;
-				//XとYの長さ
-				float len_x = objBlock[y][x]->GetPosition().x - object->GetPosition().x;
-				float len_y = objBlock[y][x]->GetPosition().y - object->GetPosition().y;
-				//それぞれが半径以下である
-				if (block_r + obj_r >= sqrtf(len_x * len_x) && block_r + obj_r >= sqrtf(len_y * len_y))
-				{
-					return true;
-				}
-				//四角の隅から円の中心までのベクトル
-				XMFLOAT2 vec = {0, 0};
-				//長さ
-				float len_r = 0;
-				//四つの隅を調べる
-				for (int i = 0; i < 4; i++)
-				{
-					if (i == 0)
-					{
-						vec = { objBlock[y][x]->GetPosition().x - block_r + object->GetPosition().x, objBlock[y][x]->GetPosition().y - block_r + object->GetPosition().y };
-					}
-					else if (i == 1)
-					{
-						vec = { objBlock[y][x]->GetPosition().x - block_r + object->GetPosition().x, objBlock[y][x]->GetPosition().y + block_r + object->GetPosition().y };
-					}
-					else if (i == 2)
-					{
-						vec = { objBlock[y][x]->GetPosition().x + block_r + object->GetPosition().x, objBlock[y][x]->GetPosition().y - block_r + object->GetPosition().y };
-					}
-					else if (i == 3)
-					{
-						vec = { objBlock[y][x]->GetPosition().x + block_r + object->GetPosition().x, objBlock[y][x]->GetPosition().y + block_r + object->GetPosition().y };
-					}
-					//長さを求める
-					len_r = sqrtf(vec.x * vec.x + vec.y * vec.y);
-					//円の半径よりも長さが短い
-					if (len_r <= obj_r)
-					{
-						return true;
-					}
-				}
-*/
