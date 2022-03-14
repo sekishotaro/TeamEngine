@@ -175,7 +175,6 @@ void GamePlayScene::Update()
 		mini_p_pos.y = (p_pos.y / 5) + 27.5f;
 		mini_p_pos.z = p_pos.z / 5;
 		mini_player->SetPosition(mini_p_pos);
-		player->SetPosition(p_pos);
 
 		camera->SetTarget(player->GetPosition());
 		camera->SetEye({ player->GetPosition().x, player->GetPosition().y, player->GetPosition().z - 60.0f });
