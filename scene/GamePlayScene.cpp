@@ -85,6 +85,7 @@ void GamePlayScene::Update()
 	if (input->TriggerKey(DIK_M) || true)
 	{
 		MapCreate(0);
+		MiniMapCreate(0);
 	}
 
 	//プレイヤー処理
@@ -175,7 +176,6 @@ void GamePlayScene::Update()
 		mini_p_pos.z = p_pos.z / 5;
 		mini_player->SetPosition(mini_p_pos);
 		player->SetPosition(p_pos);
-	}
 
 		camera->SetTarget(player->GetPosition());
 		camera->SetEye({ player->GetPosition().x, player->GetPosition().y, player->GetPosition().z - 60.0f });
@@ -251,26 +251,12 @@ void GamePlayScene::Update()
 			}
 		}
 
-				if (angle > 180)
-				{
-					angle = 180;
-					is_attack = false;
-				}
-			}
-		}
 		//ミニマップ用座標変換
 		mini_e_pos.x = (e_pos.x / 5) - 52.5f;
 		mini_e_pos.y = (e_pos.y / 5) + 27.5f;
 		mini_e_pos.z = e_pos.z / 5;
 		enemy->SetPosition(e_pos);
 		mini_enemy->SetPosition(mini_e_pos);
-	}
-
-	//Mキーでマップチップ設置
-	if (input->TriggerKey(DIK_M) || true)
-	{
-		MapCreate(0);
-		MiniMapCreate(0);
 	}
 
 	//プレイヤーの座標（X：Y）
@@ -556,6 +542,4 @@ void GamePlayScene::MiniMapCreate(int mapNumber)
 			}
 		}
 	}
-
-	return is_hit;
 }
