@@ -106,7 +106,7 @@ public:
 	/// <summary>
 	/// マップチップ当たり判定
 	/// </summary>
-	bool MapCollide(const std::unique_ptr<Object3d>& object, int mapNumber);
+	bool MapCollide(const std::unique_ptr<Object3d>& object, int mapNumber, bool is_jump = false);
 
 	/// <summary>
 	/// //マップチップ生成

@@ -8,6 +8,8 @@
 #include <safe_delete.h>
 #include <stdlib.h>
 #include <time.h>
+#include <iostream>
+#include <string>
 
 using namespace DirectX;
 
@@ -143,7 +145,8 @@ void GamePlayScene::Update()
 			if (player->GetRotation().y == 0)
 			{
 				angle = 180;
-			} else if (player->GetRotation().y == 180)
+			}
+			else if (player->GetRotation().y == 180)
 			{
 				angle = 0;
 			}
@@ -166,7 +169,7 @@ void GamePlayScene::Update()
 			player->SetPosition(p_pos);
 			player->Update();
 
-			if (MapCollide(player, 0))
+			if (MapCollide(player, 0, is_jump))
 			{
 				//èâä˙âª
 				is_jump = false;
@@ -403,7 +406,7 @@ void GamePlayScene::CircularMotion(XMFLOAT3& pos, const XMFLOAT3 center_pos, con
 	angle += add;
 }
 
-bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapNumber)
+bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapNumber, bool is_jump)
 {
 	float a = object->GetPosition().x;
 	float b = object->GetPosition().y;
@@ -440,6 +443,10 @@ bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapN
 					else if (y - b > 0)
 					{
 						pos.y = y - h - r;
+						if (!is_jump)
+						{
+							is_hit = true;
+						}
 					}
 					object->SetPosition(pos);
 					object->Update();
@@ -451,11 +458,19 @@ bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapN
 					if (x - a < 0)
 					{
 						pos.x = x + w + r;
+						if (!is_jump)
+						{
+							is_hit = true;
+						}
 					}
 					//ç∂
 					else if (x - a > 0)
 					{
 						pos.x = x - w - r;
+						if (!is_jump)
+						{
+							is_hit = true;
+						}
 					}
 					object->SetPosition(pos);
 					object->Update();
