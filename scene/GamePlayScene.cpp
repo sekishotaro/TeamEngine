@@ -175,7 +175,6 @@ void GamePlayScene::Update()
 		mini_p_pos.y = (p_pos.y / 5) + 27.5f;
 		mini_p_pos.z = p_pos.z / 5;
 		mini_player->SetPosition(mini_p_pos);
-		player->SetPosition(p_pos);
 
 		camera->SetTarget(player->GetPosition());
 		camera->SetEye({ player->GetPosition().x, player->GetPosition().y, player->GetPosition().z - 60.0f });
@@ -440,7 +439,7 @@ bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapN
 						object->SetPosition(pos);
 						object->Update();
 					}
-					else
+					else if (x_w < a)
 					{
 						XMFLOAT3 pos = object->GetPosition();
 						pos.x = x_w + r;
