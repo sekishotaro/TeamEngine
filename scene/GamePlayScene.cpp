@@ -524,6 +524,8 @@ bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapN
 			}
 		}
 	}
+
+	return is_hit;
 }
 
 void GamePlayScene::MiniMapCreate(int mapNumber)
