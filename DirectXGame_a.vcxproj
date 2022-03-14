@@ -218,7 +218,6 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Angle.cpp" />
     <ClCompile Include="Audio\Audio.cpp" />
     <ClCompile Include="camera\Camera.cpp" />
     <ClCompile Include="collision\Collision.cpp" />
@@ -241,7 +240,6 @@
     <ClCompile Include="base\WinApp.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Angle.h" />
     <ClInclude Include="camera\Camera.h" />
     <ClInclude Include="Ease.h" />
     <ClInclude Include="Input\InputList.h" />
