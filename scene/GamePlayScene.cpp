@@ -89,15 +89,6 @@ void GamePlayScene::Update()
 	// ゲームシーンの毎フレーム処理
 	Input *input = Input::GetInstance();
 
-	ropeRotation();
-	//現在の座標を取得
-	XMFLOAT3 playerPosition = player->GetPosition();
-	XMFLOAT3 ropePosition = Rope->GetPosition();
-	XMFLOAT3 enemyPosition = enemy->GetPosition();
-
-	//現在のスケールを取得
-	XMFLOAT3 ropeScale = Rope->GetScale();
-
 	//Mキーでマップチップ設置
 	if (input->TriggerKey(DIK_M) || true)
 	{
@@ -259,12 +250,14 @@ void GamePlayScene::Update()
 			{
 				CircularMotion(e_pos, p_pos, 10, angle, -20);
 				enemy->SetPosition(e_pos);
+				enemy->Update();
 			} 
 			//左向きなら
 			else if (player->GetRotation().y == 180)
 			{
 				CircularMotion(e_pos, p_pos, 10, angle, 20);
 				enemy->SetPosition(e_pos);
+				enemy->Update();
 			}
 			//マップの当たり判定
 			if (MapCollide(enemy, 0))
@@ -272,6 +265,7 @@ void GamePlayScene::Update()
 				is_attack = false;
 			}
 		}
+		enemy->Update();
 
 		//ミニマップ用座標変換
 		mini_e_pos.x = (e_pos.x / 5) - 52.5f;
@@ -279,6 +273,15 @@ void GamePlayScene::Update()
 		mini_e_pos.z = e_pos.z / 5;
 		mini_enemy->SetPosition(mini_e_pos);
 	}
+
+	ropeRotation();
+	//現在の座標を取得
+	XMFLOAT3 playerPosition = player->GetPosition();
+	XMFLOAT3 ropePosition = Rope->GetPosition();
+	XMFLOAT3 enemyPosition = enemy->GetPosition();
+
+	//現在のスケールを取得
+	XMFLOAT3 ropeScale = Rope->GetScale();
 
 	//ロープの座標値
 	Rope->SetPosition({ (enemyPosition.x + playerPosition.x) / 2,(enemyPosition.y + playerPosition.y) / 2,(enemyPosition.z + playerPosition.z) / 2 });
