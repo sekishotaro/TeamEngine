@@ -274,7 +274,6 @@ void GamePlayScene::Update()
 		mini_enemy->SetPosition(mini_e_pos);
 	}
 
-	ropeRotation();
 	//現在の座標を取得
 	XMFLOAT3 playerPosition = player->GetPosition();
 	XMFLOAT3 ropePosition = Rope->GetPosition();
@@ -287,6 +286,10 @@ void GamePlayScene::Update()
 	Rope->SetPosition({ (enemyPosition.x + playerPosition.x) / 2,(enemyPosition.y + playerPosition.y) / 2,(enemyPosition.z + playerPosition.z) / 2 });
 	//ロープの大きさ
 	Rope->SetScale({ ropeScale.x, ropeScale.y, ropeScale.z });
+	//ロープ更新
+	Rope->Update();
+	//プレイヤーとエネミーをつなぐ
+	ropeRotation();
 
 	//プレイヤーの座標（X：Y）
 	DebugText::GetInstance()->Print(50, 30 * 1, 2, "%f", objBlock[8][0]->GetPosition().x);
