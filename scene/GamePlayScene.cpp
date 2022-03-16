@@ -138,7 +138,7 @@ void GamePlayScene::Update()
 			}
 		}
 		//プレイヤーのジャンプ
-		if ((input->PushKey(DIK_W) || input->TriggerButton(Button_A)) && is_air == false && is_jump == false)
+		if ((input->TriggerKey(DIK_W) || input->TriggerButton(Button_A)) && is_air == false && is_jump == false)
 		{
 			is_jump = true;
 
