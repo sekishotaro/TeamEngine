@@ -406,10 +406,10 @@ void GamePlayScene::SpawnEnemy()
 
 void GamePlayScene::CircularMotion(XMFLOAT3& pos, const XMFLOAT3 center_pos, const float r, int& angle, const int add)
 {
+	angle += add;
+
 	pos.x = (cosf(3.14 / 180.0f * angle) * r) + center_pos.x;//‰~‰^“®‚Ìˆ—
 	pos.y = (sinf(3.14 / 180.0f * angle) * r) + center_pos.y;//‰~‰^“®‚Ìˆ—
-
-	angle += add;
 }
 
 bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapNumber, bool is_jump)
