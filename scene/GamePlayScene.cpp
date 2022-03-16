@@ -29,18 +29,23 @@ void GamePlayScene::Initialize()
 	// テクスチャ読み込み
 
 	Sprite::LoadTexture(1, L"Resources/background.png");
+	Sprite::LoadTexture(2, L"Resources/minimap.png");
+	Sprite::LoadTexture(3, L"Resources/miniplayer.png");
+	Sprite::LoadTexture(4, L"Resources/minienemy.png");
 	// 背景スプライト生成
 	spriteBG = Sprite::Create(1, { 0.0f,0.0f });
+
+	//スプライト生成
+	minimap = Sprite::Create(2, { 0.0f,0.0f });
+	miniplayer = Sprite::Create(3, { 20.0f,20.0f });
+	minienemy = Sprite::Create(4, { 40.0f,20.0f });
 
 	// オブジェクト生成
 	model = Model::LoadFromOBJ("sphere");
 	block = Model::LoadFromOBJ("block");
 	rope = Model::LoadFromOBJ("rope");
 
-	mini_enemy = Object3d::Create();
 	enemy = Object3d::Create();
-
-	mini_player = Object3d::Create();
 	player = Object3d::Create();
 
 	Rope = Object3d::Create();
@@ -55,10 +60,6 @@ void GamePlayScene::Initialize()
 	{
 		for (int x = 0; x < map_max_x; x++)
 		{
-			objMiniBlock[y][x] = Object3d::Create();
-			objMiniBlock[y][x]->SetModel(block);
-			objMiniBlock[y][x]->SetScale({ 0.2f,0.2f,0.2f });
-			objMiniBlock[y][x]->SetPosition({ 1000.0f,1000.0f,0.0f });
 			objBlock[y][x] = Object3d::Create();
 			objBlock[y][x]->SetModel(block);
 			objBlock[y][x]->SetScale({ 1.0f,1.0f,1.0f });
@@ -67,12 +68,7 @@ void GamePlayScene::Initialize()
 	}
 
 	//オブジェクトにモデルをひも付ける
-	mini_enemy->SetModel(model);
-	mini_enemy->SetScale({ 0.2f,0.2f,0.2f });
 	enemy->SetModel(model);
-
-	mini_player->SetModel(model);
-	mini_player->SetScale({ 0.2f,0.2f,0.2f });
 	player->SetModel(model);
 
 	Rope->SetModel(rope);
@@ -93,7 +89,6 @@ void GamePlayScene::Update()
 	if (input->TriggerKey(DIK_M) || true)
 	{
 		MapCreate(0);
-		MiniMapCreate(0);
 	}
 
 	//プレイヤー処理
@@ -185,10 +180,7 @@ void GamePlayScene::Update()
 		}
 
 		//ミニマップ用座標変換
-		mini_p_pos.x = (p_pos.x / 5) - 52.5f;
-		mini_p_pos.y = (p_pos.y / 5) + 27.5f;
-		mini_p_pos.z = p_pos.z / 5;
-		mini_player->SetPosition(mini_p_pos);
+		miniplayer->SetPosition({ p_pos.x , -p_pos.y + 28 });
 
 		camera->SetTarget(player->GetPosition());
 		camera->SetEye({ player->GetPosition().x, player->GetPosition().y, player->GetPosition().z - 60.0f });
@@ -268,10 +260,8 @@ void GamePlayScene::Update()
 		enemy->Update();
 
 		//ミニマップ用座標変換
-		mini_e_pos.x = (e_pos.x / 5) - 52.5f;
-		mini_e_pos.y = (e_pos.y / 5) + 27.5f;
-		mini_e_pos.z = e_pos.z / 5;
-		mini_enemy->SetPosition(mini_e_pos);
+		minienemy->SetPosition({ e_pos.x , -e_pos.y + 28 });
+
 	}
 
 	//現在の座標を取得
@@ -312,16 +302,13 @@ void GamePlayScene::Update()
 	//オブジェクト情報の更新
 	camera->Update();
 	enemy->Update();
-	mini_enemy->Update();
 	player->Update();
-	mini_player->Update();
 	Rope->Update();
 	for (int y = 0; y < map_max_y; y++)
 	{
 		for (int x = 0; x < map_max_x; x++)
 		{
 			objBlock[y][x]->Update();
-			objMiniBlock[y][x]->Update();
 		}
 	}
 }
@@ -351,9 +338,7 @@ void GamePlayScene::Draw()
 
 	// 3Dオブクジェクトの描画
 	enemy->Draw();
-	mini_enemy->Draw();
 	player->Draw();
-	mini_player->Draw();
 	Rope->Draw();
 
 	//マップチップの描画
@@ -362,7 +347,6 @@ void GamePlayScene::Draw()
 		for (int x = 0; x < map_max_x; x++)
 		{
 			objBlock[y][x]->Draw();
-			objMiniBlock[y][x]->Draw();
 		}
 	}
 	/// <summary>
@@ -374,6 +358,11 @@ void GamePlayScene::Draw()
 
 	// 前景スプライト描画前処理
 	Sprite::PreDraw(cmdList);
+
+	//ミニマップの描画
+	minimap->Draw();
+	minienemy->Draw();
+	miniplayer->Draw();
 
 	// デバッグテキストの描画
 	DebugText::GetInstance()->DrawAll(cmdList);
@@ -486,23 +475,6 @@ bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapN
 	}
 
 	return is_hit;
-}
-
-void GamePlayScene::MiniMapCreate(int mapNumber)
-{
-	//マップチップ1つの大きさ(playerが5なので5の倍数で指定すること)
-	const float LAND_SCALE = 1.0f;
-	for (int y = 0; y < map_max_y; y++) {//(yが12)
-		for (int x = 0; x < map_max_x; x++) {//(xが52)
-
-			if (Mapchip::GetChipNum(x, y, map[mapNumber]) == Ground)
-			{
-				//位置と大きさの変更
-				objMiniBlock[y][x]->SetScale({ LAND_SCALE / 5, LAND_SCALE / 5, LAND_SCALE / 5 });
-				objMiniBlock[y][x]->SetPosition({ x * LAND_SCALE - 60,  y * -LAND_SCALE + 35, 0 });
-			}
-		}
-	}
 }
 
 void GamePlayScene::ropeRotation() {
