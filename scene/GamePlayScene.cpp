@@ -123,7 +123,7 @@ void GamePlayScene::Update()
 			player->SetRotation(XMFLOAT3(0, 180, 0));
 		}
 		//ƒvƒŒƒCƒ„[‚ÌUŒ‚
-		if ((input->TriggerKey(DIK_RETURN) || input->PushButton(Button_B)) && is_attack == false)
+		if ((input->TriggerKey(DIK_SPACE) || input->PushButton(Button_B)) && is_attack == false)
 		{
 			is_attack = true;
 
@@ -319,7 +319,7 @@ void GamePlayScene::Update()
 	DebugText::GetInstance()->Print(50, 30 * 6, 2, "%f", e_down);
 	DebugText::GetInstance()->Print(50, 30 * 7, 2, "%f", MapCollide(enemy, 0));
 
-	if (input->TriggerKey(DIK_SPACE))
+	if (input->TriggerKey(DIK_RETURN))
 	{
 		//BGMŽ~‚ß‚é
 		//Audio::GetInstance()->SoundStop("zaza.wav");
