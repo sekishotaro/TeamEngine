@@ -75,6 +75,7 @@ public:
 	float p_add = 0; //上昇度
 	float p_down = 0; //下降度
 	bool is_attack = false; //攻撃フラグ
+	bool is_air = false;//空中フラグ
 
 	//エネミー
 	std::unique_ptr<Object3d> enemy; //オブジェクトクラス

@@ -138,7 +138,7 @@ void GamePlayScene::Update()
 			}
 		}
 		//プレイヤーのジャンプ
-		if ((input->PushKey(DIK_W) || input->TriggerButton(Button_A)) && is_jump == false)
+		if ((input->PushKey(DIK_W) || input->TriggerButton(Button_A)) && is_air == false && is_jump == false)
 		{
 			is_jump = true;
 
@@ -165,6 +165,7 @@ void GamePlayScene::Update()
 		//プレイヤーの自由落下
 		if (is_jump == false)
 		{
+			is_air = true;
 			//下降度をマイナス
 			p_down -= gravity;
 			p_pos.y += p_down;
@@ -176,6 +177,7 @@ void GamePlayScene::Update()
 			{
 				//初期化
 				p_down = 0;
+				is_air = false;
 			}
 		}
 
