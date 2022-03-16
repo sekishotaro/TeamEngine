@@ -506,23 +506,6 @@ bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapN
 	return is_hit;
 }
 
-void GamePlayScene::MiniMapCreate(int mapNumber)
-{
-	//マップチップ1つの大きさ(playerが5なので5の倍数で指定すること)
-	const float LAND_SCALE = 1.0f;
-	for (int y = 0; y < map_max_y; y++) {//(yが12)
-		for (int x = 0; x < map_max_x; x++) {//(xが52)
-
-			if (Mapchip::GetChipNum(x, y, map[mapNumber]) == Ground)
-			{
-				//位置と大きさの変更
-				objMiniBlock[y][x]->SetScale({ LAND_SCALE / 5, LAND_SCALE / 5, LAND_SCALE / 5 });
-				objMiniBlock[y][x]->SetPosition({ x * LAND_SCALE - 60,  y * -LAND_SCALE + 35, 0 });
-			}
-		}
-	}
-}
-
 void GamePlayScene::ropeMove()
 {
 	if (catched)
