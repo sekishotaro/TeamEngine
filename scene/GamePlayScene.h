@@ -51,7 +51,7 @@ public:
 	Camera *camera = nullptr;
 	Model* block = nullptr;
 	Model* rope = nullptr;
-	Angle* ANGLE = new Angle();
+	Angle* rope_angle = new Angle();
 	std::vector<std::vector<int>> map;
 	std::vector<Object3d*> box;
 	std::unique_ptr<Object3d> objBlock[12][52];
@@ -78,15 +78,18 @@ public:
 
 	//エネミー
 	std::unique_ptr<Object3d> enemy; //オブジェクトクラス
-	XMFLOAT3 e_pos = {0, 0, 0}; //座標
+	XMFLOAT3 e_pos = {0, 10, 0}; //座標
 	std::unique_ptr<Object3d> mini_enemy; //オブジェクトクラス
 	XMFLOAT3 mini_e_pos = { 0, 0, 0 }; //座標
 	bool is_normal = false; //通常状態
 	bool is_chase = false; //追跡状態
+	bool catched = true; //捕縛状態
 	float e_add = 0.25f; //移動量
+	float e_down = 0; //下降度
 
 	//ロープ
 	std::unique_ptr<Object3d> Rope = nullptr; //オブジェクトクラス
+	float max_rope = 15.0f;
 
 	/// <summary>
 	/// エネミー生成
@@ -116,5 +119,5 @@ public:
 	/// <summary>
 	/// ロープの角度変更
 	/// </summary>
-	void ropeRotation();
+	void ropeMove();
 };
