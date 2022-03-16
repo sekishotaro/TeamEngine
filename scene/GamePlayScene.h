@@ -114,6 +114,6 @@ public:
 
 	/// <summary>
 	/// ロープの角度変更
-	/// </summary>
+	/// <summary>
 	void ropeMove();
 };
