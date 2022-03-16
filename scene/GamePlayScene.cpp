@@ -303,12 +303,15 @@ void GamePlayScene::Update()
 	if (limit_y < -500.0f)
 	{
 		player->SetPosition({ 0, 10, 0 });
+		p_down = 0;
 	}
 	limit_y = enemy->GetPosition().y;
 	if (limit_y < -500.0f)
 	{
 		enemy->SetPosition({ 0, 10, 0 });
+		e_down = 0;
 	}
+	MapCollide(enemy, 0);
 
 	//プレイヤーの座標（X：Y）
 	DebugText::GetInstance()->Print(50, 30 * 1, 2, "%f", objBlock[8][0]->GetPosition().x);
@@ -317,7 +320,6 @@ void GamePlayScene::Update()
 	DebugText::GetInstance()->Print(50, 30 * 4, 2, "%f", enemy->GetPosition().y);
 	DebugText::GetInstance()->Print(50, 30 * 5, 2, "%f", e_add);
 	DebugText::GetInstance()->Print(50, 30 * 6, 2, "%f", e_down);
-	DebugText::GetInstance()->Print(50, 30 * 7, 2, "%f", MapCollide(enemy, 0));
 
 	if (input->TriggerKey(DIK_RETURN))
 	{
@@ -462,6 +464,10 @@ bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapN
 					{
 						pos.y = y + h + r;
 						is_hit = true;
+						/*if (is_jump)
+						{
+							this->is_jump = false;
+						}*/
 					}
 					//上
 					else if (y - b > 0)
@@ -470,6 +476,10 @@ bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapN
 						if (!is_jump)
 						{
 							is_hit = true;
+						}
+						else
+						{
+							p_add = 0;
 						}
 					}
 					object->SetPosition(pos);
@@ -518,12 +528,13 @@ void GamePlayScene::ropeMove()
 		XMFLOAT3 enemyPosition = enemy->GetPosition();
 
 		//プレイヤーとエネミーの距離
-		XMFLOAT3 length = { playerPosition.x - enemyPosition.x, playerPosition.y - enemyPosition.y, playerPosition.z - enemyPosition.z };
-		float len = sqrtf(length.x * length.x + length.y * length.y + length.z * length.z);
+		XMFLOAT2 length = { playerPosition.x - enemyPosition.x, playerPosition.y - enemyPosition.y };
+		float len = sqrtf(length.x * length.x + length.y * length.y);
 		if (len > max_rope)
 		{
+			float wq = len / max_rope;
 			len = max_rope;
-			enemy->SetPosition({ playerPosition.x - length.x, playerPosition.y - length.y, playerPosition.z - length.z });
+			enemy->SetPosition({ playerPosition.x - length.x / wq, playerPosition.y - length.y / wq, 0 });
 		}
 
 		Rope->SetScale({ 0.3f, len / 2, 0.3f });
