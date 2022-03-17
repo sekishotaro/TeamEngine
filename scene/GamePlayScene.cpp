@@ -69,10 +69,13 @@ void GamePlayScene::Initialize()
 
 	//オブジェクトにモデルをひも付ける
 	enemy->SetModel(model);
+	enemy->SetPosition(e_pos);
+	enemy->Update();
 	player->SetModel(model);
 
 	Rope->SetModel(rope);
 	Rope->SetScale({ 0.3, 5, 0.3 });
+	Rope->Update();
 }
 
 void GamePlayScene::Finalize()
@@ -180,6 +183,11 @@ void GamePlayScene::Update()
 				is_air = false;
 			}
 		}
+		//プレイヤーとエネミーが接触したら
+		if (CollisionObject(player, enemy))
+		{
+			is_catch = true;
+		}
 
 		//ミニマップ用座標変換
 		miniplayer->SetPosition({ p_pos.x , -p_pos.y + 28 });
@@ -190,6 +198,8 @@ void GamePlayScene::Update()
 
 	//エネミー処理
 	{
+		e_pos = enemy->GetPosition();
+
 		//通常状態
 		if (is_normal && is_attack == false)
 		{
@@ -298,7 +308,7 @@ void GamePlayScene::Update()
 	//ロープ更新
 	Rope->Update();
 	//プレイヤーとエネミーをつなぐ
-	ropeMove();
+	RopeMove();
 
 	//落下の最大値を超えたら
 	float limit_y = player->GetPosition().y;
@@ -372,7 +382,10 @@ void GamePlayScene::Draw()
 	// 3Dオブクジェクトの描画
 	enemy->Draw();
 	player->Draw();
-	Rope->Draw();
+	if (is_catch)
+	{
+		Rope->Draw();
+	}
 
 	//マップチップの描画
 	for (int y = 0; y < map_max_y; y++)
@@ -518,9 +531,9 @@ bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapN
 	return is_hit;
 }
 
-void GamePlayScene::ropeMove()
+void GamePlayScene::RopeMove()
 {
-	if (catched)
+	if (is_catch)
 	{
 		//ロープの位置を取得
 		XMFLOAT3 ropePosition = Rope->GetPosition();
@@ -545,4 +558,27 @@ void GamePlayScene::ropeMove()
 
 		Rope->SetRotation({ 0, 0 ,XMConvertToDegrees(angleX) });
 	}
+}
+
+bool GamePlayScene::CollisionObject(const std::unique_ptr<Object3d>& object_a, const std::unique_ptr<Object3d>& object_b)
+{
+	//座標
+	XMFLOAT3 A = object_a->GetPosition();
+	XMFLOAT3 B = object_b->GetPosition();
+
+	//半径
+	float a_r = 1.0f * object_a->GetScale().x;
+	float b_r = 1.0f * object_a->GetScale().x;
+
+	//長さ
+	float l_x = sqrtf(powf(A.x - B.x, 2));
+	float l_y = sqrtf(powf(A.y - B.y, 2));
+
+	//半径の合計より短ければ
+	if (l_x < a_r + b_r && l_y < a_r + b_r)
+	{
+		return true;
+	}
+
+	return false;
 }
