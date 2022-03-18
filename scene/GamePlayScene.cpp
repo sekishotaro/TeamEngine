@@ -72,6 +72,8 @@ void GamePlayScene::Initialize()
 	enemy->SetPosition(e_pos);
 	enemy->Update();
 	player->SetModel(model);
+	player->SetPosition(p_pos);
+	player->Update();
 
 	Rope->SetModel(rope);
 	Rope->SetScale({ 0.3, 5, 0.3 });
@@ -253,13 +255,13 @@ void GamePlayScene::Update()
 			//右向きなら
 			if (player->GetRotation().y == 0)
 			{
-				CircularMotion(e_pos, p_pos, GetLengthObject(p_pos, e_pos), angle, -10);
+				CircularMotion(e_pos, p_pos, GetLengthObject(p_pos, e_pos), angle, -15);
 				enemy->SetPosition(e_pos);
 			} 
 			//左向きなら
 			else if (player->GetRotation().y == 180)
 			{
-				CircularMotion(e_pos, p_pos, GetLengthObject(p_pos, e_pos), angle, 10);
+				CircularMotion(e_pos, p_pos, GetLengthObject(p_pos, e_pos), angle, 15);
 				enemy->SetPosition(e_pos);
 			}
 			enemy->Update();
@@ -289,28 +291,17 @@ void GamePlayScene::Update()
 			}
 		}
 		enemy->Update();
-
-		//ミニマップ用座標変換
-		minienemy->SetPosition({ e_pos.x , -e_pos.y + 28 });
-
 	}
 
-	//現在の座標を取得
-	XMFLOAT3 playerPosition = player->GetPosition();
-	XMFLOAT3 ropePosition = Rope->GetPosition();
-	XMFLOAT3 enemyPosition = enemy->GetPosition();
+	Rope->SetPosition({ (player->GetPosition().x + enemy->GetPosition().x) / 2, (player->GetPosition().y + enemy->GetPosition().y) / 2, (player->GetPosition().z + enemy->GetPosition().z) / 2 });
 
-	//現在のスケールを取得
-	XMFLOAT3 ropeScale = Rope->GetScale();
-
-	//ロープの座標値
-	Rope->SetPosition({ (enemyPosition.x + playerPosition.x) / 2,(enemyPosition.y + playerPosition.y) / 2,(enemyPosition.z + playerPosition.z) / 2 });
-	//ロープの大きさ
-	Rope->SetScale({ ropeScale.x, ropeScale.y, ropeScale.z });
-	//ロープ更新
-	Rope->Update();
 	//ロープの更新
 	RopeMove();
+
+	Rope->SetPosition({ (player->GetPosition().x + enemy->GetPosition().x) / 2, (player->GetPosition().y + enemy->GetPosition().y) / 2, (player->GetPosition().z + enemy->GetPosition().z) / 2 });
+
+	//ミニマップ用座標変換
+	minienemy->SetPosition({ enemy->GetPosition().x, -enemy->GetPosition().y + 28 });
 
 	//落下の最大値を超えたら
 	float limit_y = player->GetPosition().y;
@@ -325,15 +316,6 @@ void GamePlayScene::Update()
 		enemy->SetPosition({ 0, 10, 0 });
 		e_down = 0;
 	}
-	MapCollide(enemy, 0);
-
-	//プレイヤーの座標（X：Y）
-	DebugText::GetInstance()->Print(50, 30 * 1, 2, "%f", objBlock[8][0]->GetPosition().x);
-	DebugText::GetInstance()->Print(50, 30 * 2, 2, "%f", objBlock[8][0]->GetPosition().y);
-	DebugText::GetInstance()->Print(50, 30 * 3, 2, "%f", enemy->GetPosition().x);
-	DebugText::GetInstance()->Print(50, 30 * 4, 2, "%f", enemy->GetPosition().y);
-	DebugText::GetInstance()->Print(50, 30 * 5, 2, "%f", e_add);
-	DebugText::GetInstance()->Print(50, 30 * 6, 2, "%f", e_down);
 
 	if (input->TriggerKey(DIK_RETURN))
 	{
@@ -356,6 +338,14 @@ void GamePlayScene::Update()
 			objBlock[y][x]->Update();
 		}
 	}
+
+	//プレイヤーの座標（X：Y）
+	DebugText::GetInstance()->Print(50, 30 * 1, 2, "%f", objBlock[8][0]->GetPosition().x);
+	DebugText::GetInstance()->Print(50, 30 * 2, 2, "%f", objBlock[8][0]->GetPosition().y);
+	DebugText::GetInstance()->Print(50, 30 * 3, 2, "rope_X:%f", Rope->GetPosition().x);
+	DebugText::GetInstance()->Print(50, 30 * 4, 2, "rope_Y:%f", Rope->GetPosition().y);
+	DebugText::GetInstance()->Print(50, 30 * 5, 2, "player_X:%f", player->GetPosition().y);
+	DebugText::GetInstance()->Print(50, 30 * 6, 2, "enemy_Y:%f", enemy->GetPosition().y);
 }
 
 void GamePlayScene::Draw()
@@ -481,10 +471,6 @@ bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapN
 					{
 						pos.y = y + h + r;
 						is_hit = true;
-						/*if (is_jump)
-						{
-							this->is_jump = false;
-						}*/
 					}
 					//上
 					else if (y - b > 0)
@@ -537,12 +523,14 @@ void GamePlayScene::RopeMove()
 {
 	if (is_catch)
 	{
-		//ロープの位置を取得
-		XMFLOAT3 ropePosition = Rope->GetPosition();
+		Rope->Update();
+
 		//プレイヤーの位置を取得
 		XMFLOAT3 playerPosition = player->GetPosition();
 		//エネミーの位置
 		XMFLOAT3 enemyPosition = enemy->GetPosition();
+		//ロープの位置を取得
+		XMFLOAT3 ropePosition = Rope->GetPosition();
 
 		//プレイヤーとエネミーの距離
 		XMFLOAT2 length = { playerPosition.x - enemyPosition.x, playerPosition.y - enemyPosition.y };
@@ -553,7 +541,9 @@ void GamePlayScene::RopeMove()
 			float wq = len / max_rope;
 			len = max_rope;
 			enemy->SetPosition({ playerPosition.x - length.x / wq, playerPosition.y - length.y / wq, 0 });
+			enemy->Update();
 		}
+
 		//ロープの長さ
 		Rope->SetScale({ 0.3f, len / 2, 0.3f });
 

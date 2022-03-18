@@ -69,7 +69,7 @@ public:
 
 	//プレイヤー
 	std::unique_ptr<Object3d> player = nullptr; //オブジェクトクラス
-	XMFLOAT3 p_pos = {0, 10, 0}; //座標
+	XMFLOAT3 p_pos = {120, 10, 0}; //座標
 	float p_max_speed = 0.5f; //最高速度
 	bool is_jump = false; // ジャンプフラグ
 	float p_add = 0; //上昇度
@@ -79,12 +79,12 @@ public:
 
 	//エネミー
 	std::unique_ptr<Object3d> enemy; //オブジェクトクラス
-	XMFLOAT3 e_pos = {20, 5, 0}; //座標
+	XMFLOAT3 e_pos = {110, 5, 0}; //座標
 	std::unique_ptr<Object3d> mini_enemy; //オブジェクトクラス
 	XMFLOAT3 mini_e_pos = { 0, 0, 0 }; //座標
 	bool is_normal = false; //通常状態
 	bool is_chase = false; //追跡状態
-	bool is_catch = false; //捕縛状態
+	bool is_catch = true; //捕縛状態
 	float e_add = 0.25f; //移動量
 	float e_down = 0; //下降度
 
