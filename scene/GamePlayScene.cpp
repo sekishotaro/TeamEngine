@@ -38,14 +38,20 @@ void GamePlayScene::Initialize()
 	//スプライト生成
 	minimap = Sprite::Create(2, { 0.0f,0.0f });
 	miniplayer = Sprite::Create(3, { 20.0f,20.0f });
-	minienemy = Sprite::Create(4, { 40.0f,20.0f });
+	for (int i = 0; i < 10; i++)
+	{
+		minienemy[i] = Sprite::Create(4, { 40.0f,20.0f });
+	}
 
 	// オブジェクト生成
 	model = Model::LoadFromOBJ("sphere");
 	block = Model::LoadFromOBJ("block");
 	rope = Model::LoadFromOBJ("rope");
 
-	enemy = Object3d::Create();
+	for (int i = 0; i < 10; i++)
+	{
+		enemy[i] = Object3d::Create();
+	}
 	player = Object3d::Create();
 
 	Rope = Object3d::Create();
@@ -68,9 +74,20 @@ void GamePlayScene::Initialize()
 	}
 
 	//オブジェクトにモデルをひも付ける
-	enemy->SetModel(model);
-	enemy->SetPosition(e_pos);
-	enemy->Update();
+	for (int i = 0; i < 10; i++)
+	{
+		e_pos[i] = { 20,5,0 }; //座標
+		is_normal[i] = false; //通常状態
+		is_chase[i] = false; //追跡状態
+		is_catch[i] = false; //捕縛状態
+		is_alive[i] = false; //死亡状態
+		is_alive[0] = true;//初期描画のため1匹だけ出す
+		e_speed[i] = 0.25f; //移動量
+		e_down[i] = 0.0f; //下降度
+		enemy[i]->SetModel(model);
+		enemy[i]->SetPosition(e_pos[i]);
+		enemy[i]->Update();
+	}
 	player->SetModel(model);
 
 	Rope->SetModel(rope);
@@ -184,11 +201,16 @@ void GamePlayScene::Update()
 			}
 		}
 		//プレイヤーとエネミーが接触したら
-		if (CollisionObject(player, enemy))
+		for (int i = 0; i < 10; i++)
 		{
-			is_catch = true;
+			if (is_alive[i])
+			{
+				if (CollisionObject(player, enemy[i]))
+				{
+					is_catch[i] = true;
+				}
+			}
 		}
-
 		//ミニマップ用座標変換
 		miniplayer->SetPosition({ p_pos.x , -p_pos.y + 28 });
 
@@ -196,113 +218,130 @@ void GamePlayScene::Update()
 		camera->SetEye({ player->GetPosition().x, player->GetPosition().y, player->GetPosition().z - 60.0f });
 	}
 
-	//エネミー処理
+	//敵のスポーン
+	for (int i = 0; i < 10; i++)
 	{
-		e_pos = enemy->GetPosition();
-
-		//通常状態
-		if (is_normal && is_attack == false)
+		if (is_alive[i] == false)
 		{
-			//移動
-			e_pos.x += e_add;
-
-			//端まで行ったら
-			if (e_pos.x >= 50.0f || e_pos.x <= -50.0f)
-			{
-				e_add = -e_add;
-
-				//向きを変える
-				XMFLOAT3 e_rot = enemy->GetRotation();
-				e_rot.y += 180.0f;
-				if (e_rot.y >= 360)
-				{
-					e_rot.y = 0;
-				}
-				enemy->SetRotation(e_rot);
-			}
+			//SpawnEnemy(0, i);
 		}
-		//プレイヤーを追尾
-		else if (is_chase && is_attack == false)
-		{
-			//プレイヤーとエネミーの距離
-			XMFLOAT2 pe_len = { p_pos.x - e_pos.x, p_pos.y - e_pos.y };
+	}
 
-			//正の値なら
-			if (pe_len.x > 0)
+	//エネミー処理
+	for (int i = 0; i < 10; i++)
+	{
+		if (is_alive[i])
+		{
+			e_pos[i] = enemy[i]->GetPosition();
+
+			//通常状態
+			if (is_normal && is_attack == false)
 			{
-				e_pos.x += e_add;
-				if (p_pos.x < e_pos.x)
+				//移動
+				e_pos[i].x += e_speed[i];
+
+				//端まで行ったら
+				if (e_pos[i].x >= 50.0f || e_pos[i].x <= -50.0f)
 				{
-					e_pos.x = p_pos.x;
+					e_speed[i] = -e_speed[i];
+
+					//向きを変える
+					XMFLOAT3 e_rot[10];
+					e_rot[i] = enemy[i]->GetRotation();
+					e_rot[i].y += 180.0f;
+					if (e_rot[i].y >= 360)
+					{
+						e_rot[i].y = 0;
+					}
+					enemy[i]->SetRotation(e_rot[i]);
 				}
 			}
-			//負の値なら
-			else if (pe_len.x < 0)
+			//プレイヤーを追尾
+			else if (is_chase && is_attack == false)
 			{
-				e_pos.x -= e_add;
-				if (p_pos.x > e_pos.x)
+				//プレイヤーとエネミーの距離
+				XMFLOAT2 pe_len = { p_pos.x - e_pos[i].x, p_pos.y - e_pos[i].y };
+
+				//正の値なら
+				if (pe_len.x > 0)
 				{
-					e_pos.x = p_pos.x;
+					e_pos[i].x += e_speed[i];
+					if (p_pos.x < e_pos[i].x)
+					{
+						e_pos[i].x = p_pos.x;
+					}
+				}
+				//負の値なら
+				else if (pe_len.x < 0)
+				{
+					e_pos[i].x -= e_speed[i];
+					if (p_pos.x > e_pos[i].x)
+					{
+						e_pos[i].x = p_pos.x;
+					}
 				}
 			}
-		}
-		//攻撃状態
-		if (is_attack)
-		{
-			//右向きなら
-			if (player->GetRotation().y == 0)
+			//攻撃状態
+			if (is_attack)
 			{
-				CircularMotion(e_pos, p_pos, 10, angle, -20);
-				enemy->SetPosition(e_pos);
-			} 
-			//左向きなら
-			else if (player->GetRotation().y == 180)
-			{
-				CircularMotion(e_pos, p_pos, 10, angle, 20);
-				enemy->SetPosition(e_pos);
+				//右向きなら
+				if (player->GetRotation().y == 0)
+				{
+					CircularMotion(e_pos[i], p_pos, 10, angle, -20);
+					enemy[i]->SetPosition(e_pos[i]);
+				}
+				//左向きなら
+				else if (player->GetRotation().y == 180)
+				{
+					CircularMotion(e_pos[i], p_pos, 10, angle, 20);
+					enemy[i]->SetPosition(e_pos[i]);
+				}
+				enemy[i]->Update();
+
+				//マップの当たり判定
+				if (MapCollide(enemy[i], 0))
+				{
+					e_down[i] = 0;
+					is_attack = false;
+				}
 			}
-			enemy->Update();
-
-			//マップの当たり判定
-			if (MapCollide(enemy, 0))
+			else
 			{
-				e_down = 0;
-				is_attack = false;
+				//プレイヤーの自由落下
+				//下降度をマイナス
+				e_pos[i] = enemy[i]->GetPosition();
+				e_down[i] -= gravity;
+				e_pos[i].y += e_down[i];
+				enemy[i]->SetPosition(e_pos[i]);
+				enemy[i]->Update();
+
+				if (MapCollide(enemy[i], 0))
+				{
+					//初期化
+					e_down[i] = 0;
+				}
 			}
+			enemy[i]->Update();
+
+			//ミニマップ用座標変換
+			minienemy[i]->SetPosition({ e_pos[i].x , -e_pos[i].y + 28 });
 		}
-		else
-		{
-			//プレイヤーの自由落下
-			//下降度をマイナス
-			e_pos = enemy->GetPosition();
-			e_down -= gravity;
-			e_pos.y += e_down;
-			enemy->SetPosition(e_pos);
-			enemy->Update();
-
-			if (MapCollide(enemy, 0))
-			{
-				//初期化
-				e_down = 0;
-			}
-		}
-		enemy->Update();
-
-		//ミニマップ用座標変換
-		minienemy->SetPosition({ e_pos.x , -e_pos.y + 28 });
-
 	}
 
 	//現在の座標を取得
 	XMFLOAT3 playerPosition = player->GetPosition();
 	XMFLOAT3 ropePosition = Rope->GetPosition();
-	XMFLOAT3 enemyPosition = enemy->GetPosition();
+	XMFLOAT3 enemyPosition[10];
+	for (int i = 0; i < 10; i++)
+	{
+		enemyPosition[i] = enemy[i]->GetPosition();
+	}
 
 	//現在のスケールを取得
 	XMFLOAT3 ropeScale = Rope->GetScale();
 
 	//ロープの座標値
-	Rope->SetPosition({ (enemyPosition.x + playerPosition.x) / 2,(enemyPosition.y + playerPosition.y) / 2,(enemyPosition.z + playerPosition.z) / 2 });
+	Rope->SetPosition({ (enemyPosition[0].x + playerPosition.x) / 2,(enemyPosition[0].y + playerPosition.y) / 2,(enemyPosition[0].z + playerPosition.z) / 2 });
 	//ロープの大きさ
 	Rope->SetScale({ ropeScale.x, ropeScale.y, ropeScale.z });
 	//ロープ更新
@@ -317,21 +356,30 @@ void GamePlayScene::Update()
 		player->SetPosition({ 0, 10, 0 });
 		p_down = 0;
 	}
-	limit_y = enemy->GetPosition().y;
+	for (int i = 0; i < 10; i++)
+	{
+		limit_y = enemy[i]->GetPosition().y;
+	}
 	if (limit_y < -500.0f)
 	{
-		enemy->SetPosition({ 0, 10, 0 });
-		e_down = 0;
+		for (int i = 0; i < 10; i++)
+		{
+			enemy[i]->SetPosition({ 0, 10, 0 });
+			e_down[i] = 0;
+		}
 	}
-	MapCollide(enemy, 0);
+	for (int i = 0; i < 10; i++)
+	{
+		MapCollide(enemy[i], 0);
+	}
 
 	//プレイヤーの座標（X：Y）
 	DebugText::GetInstance()->Print(50, 30 * 1, 2, "%f", objBlock[8][0]->GetPosition().x);
 	DebugText::GetInstance()->Print(50, 30 * 2, 2, "%f", objBlock[8][0]->GetPosition().y);
-	DebugText::GetInstance()->Print(50, 30 * 3, 2, "%f", enemy->GetPosition().x);
-	DebugText::GetInstance()->Print(50, 30 * 4, 2, "%f", enemy->GetPosition().y);
-	DebugText::GetInstance()->Print(50, 30 * 5, 2, "%f", e_add);
-	DebugText::GetInstance()->Print(50, 30 * 6, 2, "%f", e_down);
+	DebugText::GetInstance()->Print(50, 30 * 3, 2, "%f", enemy[0]->GetPosition().x);
+	DebugText::GetInstance()->Print(50, 30 * 4, 2, "%f", enemy[0]->GetPosition().y);
+	DebugText::GetInstance()->Print(50, 30 * 5, 2, "%f", e_speed[0]);
+	DebugText::GetInstance()->Print(50, 30 * 6, 2, "%f", e_down[0]);
 
 	if (input->TriggerKey(DIK_RETURN))
 	{
@@ -344,7 +392,10 @@ void GamePlayScene::Update()
 
 	//オブジェクト情報の更新
 	camera->Update();
-	enemy->Update();
+	for (int i = 0; i < 10; i++)
+	{
+		enemy[i]->Update();
+	}
 	player->Update();
 	Rope->Update();
 	for (int y = 0; y < map_max_y; y++)
@@ -380,7 +431,13 @@ void GamePlayScene::Draw()
 	Object3d::PreDraw(cmdList);
 
 	// 3Dオブクジェクトの描画
-	enemy->Draw();
+	for (int i = 0; i < 10; i++)
+	{
+		if (is_alive[i])
+		{
+			enemy[i]->Draw();
+		}
+	}
 	player->Draw();
 	if (is_catch)
 	{
@@ -407,7 +464,13 @@ void GamePlayScene::Draw()
 
 	//ミニマップの描画
 	minimap->Draw();
-	minienemy->Draw();
+	for (int i = 0; i < 10; i++)
+	{
+		if (is_alive[i])
+		{
+			minienemy[i]->Draw();
+		}
+	}
 	miniplayer->Draw();
 
 	// デバッグテキストの描画
@@ -434,9 +497,18 @@ void GamePlayScene::MapCreate(int mapNumber)
 	}
 }
 
-void GamePlayScene::SpawnEnemy()
+void GamePlayScene::SpawnEnemy(int mapNumber, int enemyNumber)
 {
-	
+	int spawnY = 0;
+	int spawnX = 0;
+	spawnY = rand() % map_max_y;
+	spawnX = rand() % map_max_x;
+	const float LAND_SCALE = 5.0f;
+	if (Mapchip::GetChipNum(spawnX, spawnY, map[mapNumber]) == None)
+	{
+		enemy[enemyNumber]->SetPosition({ spawnX * LAND_SCALE,  -spawnY * LAND_SCALE, 0 });//位置をセット
+		is_alive[enemyNumber] = true;//スポーン
+	}
 }
 
 void GamePlayScene::CircularMotion(XMFLOAT3& pos, const XMFLOAT3 center_pos, const float r, int& angle, const int add)
@@ -540,7 +612,7 @@ void GamePlayScene::RopeMove()
 		//プレイヤーの位置を取得
 		XMFLOAT3 playerPosition = player->GetPosition();
 		//エネミーの位置
-		XMFLOAT3 enemyPosition = enemy->GetPosition();
+		XMFLOAT3 enemyPosition = enemy[0]->GetPosition();
 
 		//プレイヤーとエネミーの距離
 		XMFLOAT2 length = { playerPosition.x - enemyPosition.x, playerPosition.y - enemyPosition.y };
@@ -549,7 +621,7 @@ void GamePlayScene::RopeMove()
 		{
 			float wq = len / max_rope;
 			len = max_rope;
-			enemy->SetPosition({ playerPosition.x - length.x / wq, playerPosition.y - length.y / wq, 0 });
+			enemy[0]->SetPosition({ playerPosition.x - length.x / wq, playerPosition.y - length.y / wq, 0 });
 		}
 
 		Rope->SetScale({ 0.3f, len / 2, 0.3f });
