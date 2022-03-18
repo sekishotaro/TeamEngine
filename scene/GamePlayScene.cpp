@@ -269,6 +269,7 @@ void GamePlayScene::Update()
 			{
 				e_down = 0;
 				is_attack = false;
+				is_catch = false;
 			}
 		}
 		else
