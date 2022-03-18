@@ -38,7 +38,7 @@ void GamePlayScene::Initialize()
 	//スプライト生成
 	minimap = Sprite::Create(2, { 0.0f,0.0f });
 	miniplayer = Sprite::Create(3, { 20.0f,20.0f });
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < EnemySpawnMax; i++)
 	{
 		minienemy[i] = Sprite::Create(4, { 40.0f,20.0f });
 	}
@@ -48,7 +48,7 @@ void GamePlayScene::Initialize()
 	block = Model::LoadFromOBJ("block");
 	rope = Model::LoadFromOBJ("rope");
 
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < EnemySpawnMax; i++)
 	{
 		enemy[i] = Object3d::Create();
 	}
@@ -74,7 +74,7 @@ void GamePlayScene::Initialize()
 	}
 
 	//オブジェクトにモデルをひも付ける
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < EnemySpawnMax; i++)
 	{
 		e_pos[i] = { 20,5,0 }; //座標
 		is_normal[i] = false; //通常状態
@@ -201,7 +201,7 @@ void GamePlayScene::Update()
 			}
 		}
 		//プレイヤーとエネミーが接触したら
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < EnemySpawnMax; i++)
 		{
 			if (is_alive[i])
 			{
@@ -219,16 +219,16 @@ void GamePlayScene::Update()
 	}
 
 	//敵のスポーン
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < EnemySpawnMax; i++)
 	{
 		if (is_alive[i] == false)
 		{
-			//SpawnEnemy(0, i);
+			SpawnEnemy(0, i);
 		}
 	}
 
 	//エネミー処理
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < EnemySpawnMax; i++)
 	{
 		if (is_alive[i])
 		{
@@ -332,7 +332,7 @@ void GamePlayScene::Update()
 	XMFLOAT3 playerPosition = player->GetPosition();
 	XMFLOAT3 ropePosition = Rope->GetPosition();
 	XMFLOAT3 enemyPosition[10];
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < EnemySpawnMax; i++)
 	{
 		enemyPosition[i] = enemy[i]->GetPosition();
 	}
@@ -356,19 +356,19 @@ void GamePlayScene::Update()
 		player->SetPosition({ 0, 10, 0 });
 		p_down = 0;
 	}
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < EnemySpawnMax; i++)
 	{
 		limit_y = enemy[i]->GetPosition().y;
 	}
 	if (limit_y < -500.0f)
 	{
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < EnemySpawnMax; i++)
 		{
 			enemy[i]->SetPosition({ 0, 10, 0 });
 			e_down[i] = 0;
 		}
 	}
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < EnemySpawnMax; i++)
 	{
 		MapCollide(enemy[i], 0);
 	}
@@ -392,7 +392,7 @@ void GamePlayScene::Update()
 
 	//オブジェクト情報の更新
 	camera->Update();
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < EnemySpawnMax; i++)
 	{
 		enemy[i]->Update();
 	}
@@ -431,7 +431,7 @@ void GamePlayScene::Draw()
 	Object3d::PreDraw(cmdList);
 
 	// 3Dオブクジェクトの描画
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < EnemySpawnMax; i++)
 	{
 		if (is_alive[i])
 		{
@@ -464,7 +464,7 @@ void GamePlayScene::Draw()
 
 	//ミニマップの描画
 	minimap->Draw();
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < EnemySpawnMax; i++)
 	{
 		if (is_alive[i])
 		{

@@ -78,7 +78,8 @@ public:
 	bool is_air = false;//空中フラグ
 
 	//エネミー
-	std::unique_ptr<Object3d> enemy[10]; //オブジェクトクラス
+	static const int EnemySpawnMax = 10;
+	std::unique_ptr<Object3d> enemy[EnemySpawnMax]; //オブジェクトクラス
 	XMFLOAT3 e_pos[10]; //座標
 	bool is_normal[10]; //通常状態
 	bool is_chase[10]; //追跡状態
