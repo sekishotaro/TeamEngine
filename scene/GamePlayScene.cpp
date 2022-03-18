@@ -126,18 +126,18 @@ void GamePlayScene::Update()
 			player->SetRotation(XMFLOAT3(0, 180, 0));
 		}
 		//プレイヤーの攻撃
-		if ((input->TriggerKey(DIK_SPACE) || input->PushButton(Button_B)) && is_attack == false)
+		if ((input->TriggerKey(DIK_SPACE) || input->PushButton(Button_B)) && is_attack == false && is_catch)
 		{
-			is_attack = true;
-
 			//プレイヤーの向きで投げる方向を変える
-			if (player->GetRotation().y == 0)
+			if (player->GetRotation().y == 0 && p_pos.x >= enemy->GetPosition().x)
 			{
 				angle = 180;
+				is_attack = true;
 			}
-			else if (player->GetRotation().y == 180)
+			else if (player->GetRotation().y == 180 && p_pos.x < enemy->GetPosition().x)
 			{
 				angle = 0;
+				is_attack = true;
 			}
 		}
 		//プレイヤーのジャンプ
@@ -190,10 +190,11 @@ void GamePlayScene::Update()
 		}
 
 		//ミニマップ用座標変換
+		p_pos = player->GetPosition();
 		miniplayer->SetPosition({ p_pos.x , -p_pos.y + 28 });
 
-		camera->SetTarget(player->GetPosition());
-		camera->SetEye({ player->GetPosition().x, player->GetPosition().y, player->GetPosition().z - 60.0f });
+		camera->SetTarget(p_pos);
+		camera->SetEye({ p_pos.x, p_pos.y, p_pos.z - 60.0f });
 	}
 
 	//エネミー処理
@@ -252,13 +253,13 @@ void GamePlayScene::Update()
 			//右向きなら
 			if (player->GetRotation().y == 0)
 			{
-				CircularMotion(e_pos, p_pos, 10, angle, -20);
+				CircularMotion(e_pos, p_pos, GetLengthObject(p_pos, e_pos), angle, -15);
 				enemy->SetPosition(e_pos);
 			} 
 			//左向きなら
 			else if (player->GetRotation().y == 180)
 			{
-				CircularMotion(e_pos, p_pos, 10, angle, 20);
+				CircularMotion(e_pos, p_pos, GetLengthObject(p_pos, e_pos), angle, 15);
 				enemy->SetPosition(e_pos);
 			}
 			enemy->Update();
@@ -307,7 +308,7 @@ void GamePlayScene::Update()
 	Rope->SetScale({ ropeScale.x, ropeScale.y, ropeScale.z });
 	//ロープ更新
 	Rope->Update();
-	//プレイヤーとエネミーをつなぐ
+	//ロープの更新
 	RopeMove();
 
 	//落下の最大値を超えたら
@@ -544,14 +545,15 @@ void GamePlayScene::RopeMove()
 
 		//プレイヤーとエネミーの距離
 		XMFLOAT2 length = { playerPosition.x - enemyPosition.x, playerPosition.y - enemyPosition.y };
-		float len = sqrtf(length.x * length.x + length.y * length.y);
+		float len = GetLengthObject(playerPosition, enemyPosition);
+		//最大値より大きいなら
 		if (len > max_rope)
 		{
 			float wq = len / max_rope;
 			len = max_rope;
 			enemy->SetPosition({ playerPosition.x - length.x / wq, playerPosition.y - length.y / wq, 0 });
 		}
-
+		//ロープの長さ
 		Rope->SetScale({ 0.3f, len / 2, 0.3f });
 
 		float angleX = rope_angle->PosForAngle(playerPosition.x, ropePosition.y, ropePosition.x, playerPosition.y);
@@ -581,4 +583,11 @@ bool GamePlayScene::CollisionObject(const std::unique_ptr<Object3d>& object_a, c
 	}
 
 	return false;
+}
+
+float GamePlayScene::GetLengthObject(XMFLOAT3 pos_a, XMFLOAT3 pos_b)
+{
+	XMFLOAT3 len = { pos_a.x - pos_b.x, pos_a.y - pos_b.y, pos_a.z - pos_b.z };
+
+	return sqrtf(len.x * len.x + len.y * len.y + len.z * len.z);
 }
