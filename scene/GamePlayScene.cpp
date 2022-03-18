@@ -131,12 +131,12 @@ void GamePlayScene::Update()
 			//プレイヤーの向きで投げる方向を変える
 			if (player->GetRotation().y == 0 && p_pos.x >= enemy->GetPosition().x)
 			{
-				angle = 180;
+				angle = static_cast<int>(XMConvertToDegrees(rope_angle->PosForAngle(p_pos.x, enemy->GetPosition().y, enemy->GetPosition().x, p_pos.y))) - 90;
 				is_attack = true;
 			}
 			else if (player->GetRotation().y == 180 && p_pos.x < enemy->GetPosition().x)
 			{
-				angle = 0;
+				angle = static_cast<int>(XMConvertToDegrees(rope_angle->PosForAngle(p_pos.x, enemy->GetPosition().y, enemy->GetPosition().x, p_pos.y))) - 90;
 				is_attack = true;
 			}
 		}
@@ -253,13 +253,13 @@ void GamePlayScene::Update()
 			//右向きなら
 			if (player->GetRotation().y == 0)
 			{
-				CircularMotion(e_pos, p_pos, GetLengthObject(p_pos, e_pos), angle, -15);
+				CircularMotion(e_pos, p_pos, GetLengthObject(p_pos, e_pos), angle, -10);
 				enemy->SetPosition(e_pos);
 			} 
 			//左向きなら
 			else if (player->GetRotation().y == 180)
 			{
-				CircularMotion(e_pos, p_pos, GetLengthObject(p_pos, e_pos), angle, 15);
+				CircularMotion(e_pos, p_pos, GetLengthObject(p_pos, e_pos), angle, 10);
 				enemy->SetPosition(e_pos);
 			}
 			enemy->Update();
@@ -269,7 +269,7 @@ void GamePlayScene::Update()
 			{
 				e_down = 0;
 				is_attack = false;
-				is_catch = false;
+				//is_catch = false;
 			}
 		}
 		else
