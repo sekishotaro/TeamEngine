@@ -69,7 +69,8 @@ public:
 
 	//プレイヤー
 	std::unique_ptr<Object3d> player = nullptr; //オブジェクトクラス
-	XMFLOAT3 p_pos = {120, 10, 0}; //座標
+	XMFLOAT3 p_pos = {0, 5, 0}; //座標
+	XMFLOAT3 old_p_pos;
 	float p_max_speed = 0.5f; //最高速度
 	bool is_jump = false; // ジャンプフラグ
 	float p_add = 0; //上昇度
@@ -79,7 +80,8 @@ public:
 
 	//エネミー
 	std::unique_ptr<Object3d> enemy; //オブジェクトクラス
-	XMFLOAT3 e_pos = {110, 5, 0}; //座標
+	XMFLOAT3 e_pos = {10, 5, 0}; //座標
+	XMFLOAT3 old_e_pos;
 	std::unique_ptr<Object3d> mini_enemy; //オブジェクトクラス
 	XMFLOAT3 mini_e_pos = { 0, 0, 0 }; //座標
 	bool is_normal = false; //通常状態
@@ -110,7 +112,7 @@ public:
 	/// <summary>
 	/// マップチップ当たり判定
 	/// </summary>
-	bool MapCollide(const std::unique_ptr<Object3d>& object, int mapNumber, bool is_jump = false);
+	bool MapCollide(const std::unique_ptr<Object3d>& object, int mapNumber, const XMFLOAT3 old_pos, bool is_jump = false);
 
 	/// <summary>
 	/// ロープの角度変更

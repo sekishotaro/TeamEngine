@@ -96,6 +96,9 @@ void GamePlayScene::Update()
 		MapCreate(0);
 	}
 
+	old_p_pos = player->GetPosition();
+	old_e_pos = enemy->GetPosition();
+
 	//プレイヤー処理
 	{
 		//座標更新
@@ -160,7 +163,7 @@ void GamePlayScene::Update()
 			player->SetPosition(p_pos);
 			player->Update();
 
-			if (MapCollide(player, 0, is_jump))
+			if (MapCollide(player, 0, old_p_pos, is_jump))
 			{
 				//初期化
 				is_jump = false;
@@ -178,7 +181,7 @@ void GamePlayScene::Update()
 			player->SetPosition(p_pos);
 			player->Update();
 
-			if (MapCollide(player, 0))
+			if (MapCollide(player, 0, old_p_pos))
 			{
 				//初期化
 				p_down = 0;
@@ -267,7 +270,7 @@ void GamePlayScene::Update()
 			enemy->Update();
 
 			//マップの当たり判定
-			if (MapCollide(enemy, 0))
+			if (MapCollide(enemy, 0, old_e_pos))
 			{
 				e_down = 0;
 				is_attack = false;
@@ -284,7 +287,7 @@ void GamePlayScene::Update()
 			enemy->SetPosition(e_pos);
 			enemy->Update();
 
-			if (MapCollide(enemy, 0))
+			if (MapCollide(enemy, 0, old_e_pos))
 			{
 				//初期化
 				e_down = 0;
@@ -439,17 +442,20 @@ void GamePlayScene::CircularMotion(XMFLOAT3& pos, const XMFLOAT3 center_pos, con
 	pos.y = (sinf(3.14 / 180.0f * angle) * r) + center_pos.y;//円運動の処理
 }
 
-bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapNumber, bool is_jump)
+bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapNumber, const XMFLOAT3 old_pos, bool is_jump)
 {
+	//判定対象
 	float a = object->GetPosition().x;
 	float b = object->GetPosition().y;
 	float r = 1.0f * object->GetScale().x;
 
+	//マップチップ
 	float x = 0;
 	float y = 0;
-	float w = 0;
-	float h = 0;
+	float r_x = 0;
+	float r_y = 0;
 
+	//判定
 	bool is_hit = false;
 
 	for (int b_y = map_max_y - 1; b_y >= 0; b_y--) //yが12
@@ -460,58 +466,10 @@ bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapN
 			{
 				x = objBlock[b_y][b_x]->GetPosition().x;
 				y = objBlock[b_y][b_x]->GetPosition().y;
-				w = 2.5f * objBlock[b_y][b_x]->GetScale().x;
-				h = 2.5f * objBlock[b_y][b_x]->GetScale().y;
+				r_x = 2.5f * objBlock[b_y][b_x]->GetScale().x;
+				r_y = 2.5f * objBlock[b_y][b_x]->GetScale().y;
 
-				if (powf(y - b, 2) < powf(h + r, 2) && (x - w <= a && a <= x + w))
-				{
-					XMFLOAT3 pos = object->GetPosition();
-					//下
-					if (y - b < 0)
-					{
-						pos.y = y + h + r;
-						is_hit = true;
-					}
-					//上
-					else if (y - b > 0)
-					{
-						pos.y = y - h - r;
-						if (!is_jump)
-						{
-							is_hit = true;
-						}
-						else
-						{
-							p_add = 0;
-						}
-					}
-					object->SetPosition(pos);
-					object->Update();
-				}
-				else if (powf(x - a, 2) < powf(w + r, 2) && (y - h <= b  && b <= y + h))
-				{
-					XMFLOAT3 pos = object->GetPosition();
-					//右
-					if (x - a < 0)
-					{
-						pos.x = x + w + r;
-						if (!is_jump)
-						{
-							is_hit = true;
-						}
-					}
-					//左
-					else if (x - a > 0)
-					{
-						pos.x = x - w - r;
-						if (!is_jump)
-						{
-							is_hit = true;
-						}
-					}
-					object->SetPosition(pos);
-					object->Update();
-				}
+				
 			}
 		}
 	}
