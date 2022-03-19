@@ -102,30 +102,32 @@ void GamePlayScene::Update()
 		p_pos = player->GetPosition();
 
 		//プレイヤーの移動
-		if (input->LeftStickAngle().x)
+		if (is_attack == false)
 		{
-			p_pos.x += input->LeftStickAngle().x / (1.0f / p_max_speed) * 1.0f; // * 1.0f = 何倍速か
-
-			//進行方向に向きを変える
-			if (input->LeftStickAngle().x >= 0)
+			if (input->LeftStickAngle().x)
 			{
+				p_pos.x += input->LeftStickAngle().x / (1.0f / p_max_speed) * 1.0f; // * 1.0f = 何倍速か
+
+				//進行方向に向きを変える
+				if (input->LeftStickAngle().x >= 0)
+				{
+					player->SetRotation(XMFLOAT3(0, 0, 0));
+				} else
+				{
+					player->SetRotation(XMFLOAT3(0, 180, 0));
+				}
+			}
+			//キーボード用
+			if (input->PushKey(DIK_D))
+			{
+				p_pos.x += 0.5f;
 				player->SetRotation(XMFLOAT3(0, 0, 0));
 			}
-			else
+			if (input->PushKey(DIK_A))
 			{
+				p_pos.x -= 0.5f;
 				player->SetRotation(XMFLOAT3(0, 180, 0));
 			}
-		}
-		//キーボード用
-		if (input->PushKey(DIK_D))
-		{
-			p_pos.x += 0.5f;
-			player->SetRotation(XMFLOAT3(0, 0, 0));
-		}
-		if (input->PushKey(DIK_A))
-		{
-			p_pos.x -= 0.5f;
-			player->SetRotation(XMFLOAT3(0, 180, 0));
 		}
 		//プレイヤーの攻撃
 		if ((input->TriggerKey(DIK_SPACE) || input->PushButton(Button_B)) && is_attack == false && is_catch)
@@ -143,7 +145,7 @@ void GamePlayScene::Update()
 			}
 		}
 		//プレイヤーのジャンプ
-		if ((input->TriggerKey(DIK_W) || input->TriggerButton(Button_A)) && is_air == false && is_jump == false)
+		if ((input->TriggerKey(DIK_W) || input->TriggerButton(Button_A)) && is_air == false && is_jump == false && is_attack == false)
 		{
 			is_jump = true;
 
@@ -463,7 +465,7 @@ bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapN
 				w = 2.5f * objBlock[b_y][b_x]->GetScale().x;
 				h = 2.5f * objBlock[b_y][b_x]->GetScale().y;
 
-				if (powf(y - b, 2) < powf(h + r, 2) && (x - w <= a && a <= x + w))
+				if (powf(y - b, 2) <= powf(h + r, 2) && (x - w <= a && a <= x + w))
 				{
 					XMFLOAT3 pos = object->GetPosition();
 					//下
@@ -488,7 +490,7 @@ bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapN
 					object->SetPosition(pos);
 					object->Update();
 				}
-				else if (powf(x - a, 2) < powf(w + r, 2) && (y - h <= b  && b <= y + h))
+				else if (powf(x - a, 2) <= powf(w + r, 2) && (y - h <= b  && b <= y + h))
 				{
 					XMFLOAT3 pos = object->GetPosition();
 					//右
