@@ -469,7 +469,55 @@ bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapN
 				r_x = 2.5f * objBlock[b_y][b_x]->GetScale().x;
 				r_y = 2.5f * objBlock[b_y][b_x]->GetScale().y;
 
-				
+				/*if (powf(y - b, 2) < powf(r_y + r, 2) && (x - r_x <= a && a <= x + r_x))
+				{
+					XMFLOAT3 pos = object->GetPosition();
+					//‰º
+					if (y - b < 0)
+					{
+						pos.y = y + r_y + r;
+						is_hit = true;
+					}
+					//ã
+					else if (y - b > 0)
+					{
+						pos.y = y - r_y - r;
+						if (!is_jump)
+						{
+							is_hit = true;
+						} 
+						else
+						{
+							p_add = 0;
+						}
+					}
+					object->SetPosition(pos);
+					object->Update();
+				}
+				else if (powf(x - a, 2) < powf(r_x + r, 2) && (y - r_y <= b && b <= y + r_y))
+				{
+					XMFLOAT3 pos = object->GetPosition();
+					//‰E
+					if (x - a < 0)
+					{
+						pos.x = x + r_x + r;
+						if (!is_jump)
+						{
+							is_hit = true;
+						}
+					}
+					//¶
+					else if (x - a > 0)
+					{
+						pos.x = x - r_x - r;
+						if (!is_jump)
+						{
+							is_hit = true;
+						}
+					}
+					object->SetPosition(pos);
+					object->Update();
+				}*/
 			}
 		}
 	}
