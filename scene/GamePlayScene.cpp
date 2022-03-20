@@ -455,12 +455,16 @@ bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapN
 	float r_x = 0;
 	float r_y = 0;
 
-	//”»’è
-	bool is_hit = false;
+	//ã‰º¶‰E‚É‹ó‚«‚ª‚ ‚é‚©
+	bool is_space = false;
 
-	for (int b_y = map_max_y - 1; b_y >= 0; b_y--) //y‚ª12
+	//”»’è
+	bool x_hit = false;
+	bool y_hit = false;
+
+	for (int b_x = map_max_x - 1; b_x >= 0; b_x--) //y‚ª12
 	{
-		for (int b_x = map_max_x - 1; b_x >= 0; b_x--) //x‚ª52
+		for (int b_y = map_max_y - 1; b_y >= 0; b_y--) //x‚ª52
 		{
 			if (Mapchip::GetChipNum(b_x, b_y, map[mapNumber]) == Ground)
 			{
@@ -469,22 +473,22 @@ bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapN
 				r_x = 2.5f * objBlock[b_y][b_x]->GetScale().x;
 				r_y = 2.5f * objBlock[b_y][b_x]->GetScale().y;
 
-				/*if (powf(y - b, 2) < powf(r_y + r, 2) && (x - r_x <= a && a <= x + r_x))
+				if (powf(y - b, 2) <= powf(r_y + r, 2) && (x - r_x <= a && a <= x + r_x))
 				{
 					XMFLOAT3 pos = object->GetPosition();
 					//‰º
-					if (y - b < 0)
+					if (y < old_pos.y)
 					{
 						pos.y = y + r_y + r;
-						is_hit = true;
+						y_hit = true;
 					}
 					//ã
-					else if (y - b > 0)
+					else
 					{
 						pos.y = y - r_y - r;
 						if (!is_jump)
 						{
-							is_hit = true;
+							y_hit = true;
 						} 
 						else
 						{
@@ -493,36 +497,72 @@ bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapN
 					}
 					object->SetPosition(pos);
 					object->Update();
+					b = pos.y;
 				}
-				else if (powf(x - a, 2) < powf(r_x + r, 2) && (y - r_y <= b && b <= y + r_y))
+				if (y_hit)
+				{
+					break;
+				}
+			}
+		}
+		if (y_hit)
+		{
+			break;
+		}
+	}
+	for (int b_y = map_max_y - 1; b_y >= 0; b_y--) //x‚ª52
+	{
+		for (int b_x = map_max_x - 1; b_x >= 0; b_x--) //y‚ª12
+		{
+			if (Mapchip::GetChipNum(b_x, b_y, map[mapNumber]) == Ground)
+			{
+				x = objBlock[b_y][b_x]->GetPosition().x;
+				y = objBlock[b_y][b_x]->GetPosition().y;
+				r_x = 2.5f * objBlock[b_y][b_x]->GetScale().x;
+				r_y = 2.5f * objBlock[b_y][b_x]->GetScale().y;
+
+				if (powf(x - a, 2) <= powf(r_x + r, 2) && (y - r_y <= b && b <= y + r_y))
 				{
 					XMFLOAT3 pos = object->GetPosition();
 					//‰E
-					if (x - a < 0)
+					if (x < old_pos.x)
 					{
 						pos.x = x + r_x + r;
 						if (!is_jump)
 						{
-							is_hit = true;
+							x_hit = true;
 						}
 					}
 					//¶
-					else if (x - a > 0)
+					else
 					{
 						pos.x = x - r_x - r;
 						if (!is_jump)
 						{
-							is_hit = true;
+							x_hit = true;
 						}
 					}
 					object->SetPosition(pos);
 					object->Update();
-				}*/
+				}
+				if (x_hit)
+				{
+					break;
+				}
 			}
+		}
+		if (x_hit)
+		{
+			break;
 		}
 	}
 
-	return is_hit;
+	if (x_hit || y_hit)
+	{
+		return true;
+	}
+
+	return false;
 }
 
 void GamePlayScene::RopeMove()
