@@ -78,7 +78,7 @@ public:
 	bool is_air = false;//空中フラグ
 
 	//エネミー
-<<<<<<< HEAD
+//<<<<<<< HEAD
 	static const int EnemySpawnMax = 10;
 	std::unique_ptr<Object3d> enemy[EnemySpawnMax]; //オブジェクトクラス
 	XMFLOAT3 e_pos[10]; //座標
@@ -88,17 +88,7 @@ public:
 	bool is_alive[10]; //捕縛状態
 	float e_speed[10]; //移動量
 	float e_down[10]; //下降度
-=======
-	std::unique_ptr<Object3d> enemy; //オブジェクトクラス
-	XMFLOAT3 e_pos = {110, 5, 0}; //座標
-	std::unique_ptr<Object3d> mini_enemy; //オブジェクトクラス
-	XMFLOAT3 mini_e_pos = { 0, 0, 0 }; //座標
-	bool is_normal = false; //通常状態
-	bool is_chase = false; //追跡状態
-	bool is_catch = true; //捕縛状態
-	float e_add = 0.25f; //移動量
-	float e_down = 0; //下降度
->>>>>>> MyWorkSpace
+//=======
 
 	//ロープ
 	std::unique_ptr<Object3d> Rope = nullptr; //オブジェクトクラス
