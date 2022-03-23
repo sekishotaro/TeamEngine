@@ -191,6 +191,8 @@ void GamePlayScene::Update()
 		//プレイヤーとエネミーが接触したら
 		if (CollisionObject(player, enemy))
 		{
+			is_normal = false;
+			is_chase = false;
 			is_catch = true;
 		}
 
@@ -213,7 +215,7 @@ void GamePlayScene::Update()
 			e_pos.x += e_add;
 
 			//端まで行ったら
-			if (e_pos.x >= 50.0f || e_pos.x <= -50.0f)
+			if (true)
 			{
 				e_add = -e_add;
 

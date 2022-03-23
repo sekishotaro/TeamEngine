@@ -84,7 +84,7 @@ public:
 	XMFLOAT3 old_e_pos;
 	std::unique_ptr<Object3d> mini_enemy; //オブジェクトクラス
 	XMFLOAT3 mini_e_pos = { 0, 0, 0 }; //座標
-	bool is_normal = false; //通常状態
+	bool is_normal = true; //通常状態
 	bool is_chase = false; //追跡状態
 	bool is_catch = false; //捕縛状態
 	float e_add = 0.25f; //移動量
