@@ -242,7 +242,7 @@ void GamePlayScene::Update()
 			player->SetPosition(p_pos);
 			player->Update();
 
-			if (MapCollide(player, 0, old_p_pos))
+			if (MapCollide(player, 0, old_p_pos, is_air))
 			{
 				//èâä˙âª
 				p_down = 0;
@@ -572,7 +572,7 @@ bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapN
 				r_x = 2.5f * objBlock[b_y][b_x]->GetScale().x;
 				r_y = 2.5f * objBlock[b_y][b_x]->GetScale().y;
 
-				if (powf(y - b, 2) <= powf(r_y + r, 2) && (x - r_x <= a && a <= x + r_x))
+				if (powf(y - b, 2) < powf(r_y + r, 2) && (x - r_x <= a && a <= x + r_x))
 				{
 					XMFLOAT3 pos = object->GetPosition();
 					//â∫
@@ -620,7 +620,7 @@ bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapN
 				r_x = 2.5f * objBlock[b_y][b_x]->GetScale().x;
 				r_y = 2.5f * objBlock[b_y][b_x]->GetScale().y;
 
-				if (powf(x - a, 2) <= powf(r_x + r, 2) && (y - r_y <= b && b <= y + r_y))
+				if (powf(x - a, 2) < powf(r_x + r, 2) && (y - r_y <= b && b <= y + r_y))
 				{
 					XMFLOAT3 pos = object->GetPosition();
 					//âE
