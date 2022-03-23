@@ -48,7 +48,7 @@ public:
 	/// </summary>
 	Sprite* spriteBG = nullptr;
 	Sprite* miniplayer = nullptr;
-	Sprite* minienemy = nullptr;
+	Sprite* minienemy[10];
 	Sprite* minimap = nullptr;
 	Model *model = nullptr;
 	Camera *camera = nullptr;
@@ -69,7 +69,7 @@ public:
 
 	//プレイヤー
 	std::unique_ptr<Object3d> player = nullptr; //オブジェクトクラス
-	XMFLOAT3 p_pos = {0, 5, 0}; //座標
+	XMFLOAT3 p_pos = {10, 10, 0}; //座標
 	XMFLOAT3 old_p_pos;
 	float p_max_speed = 0.5f; //最高速度
 	bool is_jump = false; // ジャンプフラグ
@@ -79,16 +79,18 @@ public:
 	bool is_air = false;//空中フラグ
 
 	//エネミー
-	std::unique_ptr<Object3d> enemy; //オブジェクトクラス
-	XMFLOAT3 e_pos = {20, 5, 0}; //座標
-	XMFLOAT3 old_e_pos;
-	std::unique_ptr<Object3d> mini_enemy; //オブジェクトクラス
-	XMFLOAT3 mini_e_pos = { 0, 0, 0 }; //座標
-	bool is_normal = false; //通常状態
-	bool is_chase = false; //追跡状態
-	bool is_catch = false; //捕縛状態
-	float e_add = 0.25f; //移動量
-	float e_down = 0; //下降度
+//<<<<<<< HEAD
+	static const int EnemySpawnMax = 5;
+	std::unique_ptr<Object3d> enemy[EnemySpawnMax]; //オブジェクトクラス
+	XMFLOAT3 e_pos[10]; //座標
+	XMFLOAT3 old_e_pos[10];
+	bool is_normal[10]; //通常状態
+	bool is_chase[10]; //追跡状態
+	bool is_catch[10]; //捕縛状態
+	bool is_alive[10]; //捕縛状態
+	float e_speed[10]; //移動量
+	float e_down[10]; //下降度
+//=======
 
 	//ロープ
 	std::unique_ptr<Object3d> Rope = nullptr; //オブジェクトクラス
@@ -97,7 +99,7 @@ public:
 	/// <summary>
 	/// エネミー生成
 	/// </summary>
-	void SpawnEnemy();
+	void SpawnEnemy(int mapNumber, int enemyNumber);
 
 	/// <summary>
 	/// 円運動
@@ -112,7 +114,7 @@ public:
 	/// <summary>
 	/// マップチップ当たり判定
 	/// </summary>
-	bool MapCollide(const std::unique_ptr<Object3d>& object, int mapNumber, const XMFLOAT3 old_pos, bool is_jump = false);
+	bool MapCollide(const std::unique_ptr<Object3d>& object, int mapNumber,const XMFLOAT3 old_pos, bool is_jump = false);
 
 	/// <summary>
 	/// ロープの角度変更
