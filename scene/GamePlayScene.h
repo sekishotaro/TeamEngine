@@ -93,8 +93,8 @@ public:
 //=======
 
 	//ロープ
-	std::unique_ptr<Object3d> Rope = nullptr; //オブジェクトクラス
-	float max_rope = 15.0f;
+	std::unique_ptr<Object3d> Rope[EnemySpawnMax]; //オブジェクトクラス
+	float max_rope[10];
 
 	/// <summary>
 	/// エネミー生成

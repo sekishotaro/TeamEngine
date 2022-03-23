@@ -51,10 +51,9 @@ void GamePlayScene::Initialize()
 	for (int i = 0; i < EnemySpawnMax; i++)
 	{
 		enemy[i] = Object3d::Create();
+		Rope[i] = Object3d::Create();
 	}
 	player = Object3d::Create();
-
-	Rope = Object3d::Create();
 
 	//マップチップ用のCSV読み込み
 	//(map, "Resource/scv/なんたら.csv")で追加可能
@@ -86,15 +85,13 @@ void GamePlayScene::Initialize()
 		e_down[i] = 0.0f; //下降度
 		enemy[i]->SetModel(model);
 		enemy[i]->SetPosition(e_pos[i]);
-		//enemy[i]->Update();
+
+		max_rope[i] = 15.0f;
+		Rope[i]->SetModel(rope);
+		Rope[i]->SetScale({ 0.3, 5, 0.3 });
 	}
 	player->SetModel(model);
 	player->SetPosition(p_pos);
-	player->Update();
-
-	Rope->SetModel(rope);
-	Rope->SetScale({ 0.3, 5, 0.3 });
-	Rope->Update();
 }
 
 void GamePlayScene::Finalize()
@@ -343,14 +340,14 @@ void GamePlayScene::Update()
 
 		if (is_catch[i]) {
 
-			Rope->SetPosition({ (player->GetPosition().x + enemy[i]->GetPosition().x) / 2, (player->GetPosition().y + enemy[i]->GetPosition().y) / 2, (player->GetPosition().z + enemy[i]->GetPosition().z) / 2 });
+			Rope[i]->SetPosition({ (player->GetPosition().x + enemy[i]->GetPosition().x) / 2, (player->GetPosition().y + enemy[i]->GetPosition().y) / 2, (player->GetPosition().z + enemy[i]->GetPosition().z) / 2 });
 
 		}
 		//ロープの更新
 		RopeMove();
 		if (is_catch[i]) {
 
-			Rope->SetPosition({ (player->GetPosition().x + enemy[i]->GetPosition().x) / 2, (player->GetPosition().y + enemy[i]->GetPosition().y) / 2, (player->GetPosition().z + enemy[i]->GetPosition().z) / 2 });
+			Rope[i]->SetPosition({ (player->GetPosition().x + enemy[i]->GetPosition().x) / 2, (player->GetPosition().y + enemy[i]->GetPosition().y) / 2, (player->GetPosition().z + enemy[i]->GetPosition().z) / 2 });
 
 		}
 		//ミニマップ用座標変換
@@ -387,7 +384,7 @@ void GamePlayScene::Update()
 		camera->Update();
 		enemy[i]->Update();
 		player->Update();
-		Rope->Update();
+		Rope[i]->Update();
 		for (int y = 0; y < map_max_y; y++)
 		{
 			for (int x = 0; x < map_max_x; x++)
@@ -399,10 +396,10 @@ void GamePlayScene::Update()
 		//プレイヤーの座標（X：Y）
 		DebugText::GetInstance()->Print(50, 30 * 1, 2, "%f", objBlock[8][0]->GetPosition().x);
 		DebugText::GetInstance()->Print(50, 30 * 2, 2, "%f", objBlock[8][0]->GetPosition().y);
-		DebugText::GetInstance()->Print(50, 30 * 3, 2, "rope_X:%f", Rope->GetPosition().x);
-		DebugText::GetInstance()->Print(50, 30 * 4, 2, "rope_Y:%f", Rope->GetPosition().y);
+		DebugText::GetInstance()->Print(50, 30 * 3, 2, "rope_X:%f", Rope[0]->GetPosition().x);
+		DebugText::GetInstance()->Print(50, 30 * 4, 2, "rope_Y:%f", Rope[0]->GetPosition().y);
 		DebugText::GetInstance()->Print(50, 30 * 5, 2, "player_X:%f", player->GetPosition().y);
-		DebugText::GetInstance()->Print(50, 30 * 6, 2, "enemy_Y:%f", enemy[i]->GetPosition().y);
+		DebugText::GetInstance()->Print(50, 30 * 6, 2, "enemy_Y:%f", enemy[0]->GetPosition().y);
 	}
 }
 
@@ -440,7 +437,7 @@ void GamePlayScene::Draw()
 
 		if (is_catch[i])
 		{
-			Rope->Draw();
+			Rope[i]->Draw();
 		}
 	}
 	player->Draw();
@@ -648,33 +645,33 @@ void GamePlayScene::RopeMove()
 	for (int i = 0; i < EnemySpawnMax; i++) {
 		if (is_catch[i])
 		{
-			Rope->Update();
+			Rope[i]->Update();
 
 			//プレイヤーの位置を取得
 			XMFLOAT3 playerPosition = player->GetPosition();
 			//エネミーの位置
 			XMFLOAT3 enemyPosition = enemy[i]->GetPosition();
 			//ロープの位置を取得
-			XMFLOAT3 ropePosition = Rope->GetPosition();
+			XMFLOAT3 ropePosition = Rope[i]->GetPosition();
 
 			//プレイヤーとエネミーの距離
 			XMFLOAT2 length = { playerPosition.x - enemyPosition.x, playerPosition.y - enemyPosition.y };
 			float len = GetLengthObject(playerPosition, enemyPosition);
 			//最大値より大きいなら
-			if (len > max_rope)
+			if (len > max_rope[i])
 			{
-				float wq = len / max_rope;
-				len = max_rope;
+				float wq = len / max_rope[i];
+				len = max_rope[i];
 				enemy[i]->SetPosition({ playerPosition.x - length.x / wq, playerPosition.y - length.y / wq, 0 });
 				enemy[i]->Update();
 			}
 
 			//ロープの長さ
-			Rope->SetScale({ 0.3f, len / 2, 0.3f });
+			Rope[i]->SetScale({ 0.3f, len / 2, 0.3f });
 
 			float angleX = rope_angle->PosForAngle(playerPosition.x, ropePosition.y, ropePosition.x, playerPosition.y);
 
-			Rope->SetRotation({ 0, 0 ,XMConvertToDegrees(angleX) });
+			Rope[i]->SetRotation({ 0, 0 ,XMConvertToDegrees(angleX) });
 		}
 	}
 }
