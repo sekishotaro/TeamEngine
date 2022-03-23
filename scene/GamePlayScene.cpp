@@ -209,13 +209,19 @@ void GamePlayScene::Update()
 		e_pos = enemy->GetPosition();
 
 		//通常状態
-		if (is_normal && is_attack == false)
+		if (is_normal && !is_attack)
 		{
 			//移動
 			e_pos.x += e_add;
+			enemy->SetPosition(e_pos);
+			enemy->Update();
 
 			//端まで行ったら
-			if (true)
+			for (int i = 0; i < map_max_y; i++)
+			{
+				XMFLOAT3 c = objBlock[i][0]->GetPosition();
+			}
+			if (objBlock[0][0]->GetPosition().x > e_pos.x || e_pos.x < objBlock[0][map_max_x - 1]->GetPosition().x || MapCollide(enemy, 0, old_e_pos, false))
 			{
 				e_add = -e_add;
 
@@ -230,7 +236,7 @@ void GamePlayScene::Update()
 			}
 		}
 		//プレイヤーを追尾
-		else if (is_chase && is_attack == false)
+		else if (is_chase && !is_attack)
 		{
 			//プレイヤーとエネミーの距離
 			XMFLOAT2 pe_len = { p_pos.x - e_pos.x, p_pos.y - e_pos.y };
@@ -276,24 +282,24 @@ void GamePlayScene::Update()
 			{
 				e_down = 0;
 				is_attack = false;
-				//is_catch = false;
+				is_catch = false;
 			}
 		}
+		//プレイヤーの自由落下
 		else
 		{
-			//プレイヤーの自由落下
 			//下降度をマイナス
 			e_pos = enemy->GetPosition();
 			e_down -= gravity;
 			e_pos.y += e_down;
 			enemy->SetPosition(e_pos);
 			enemy->Update();
+		}
 
-			if (MapCollide(enemy, 0, old_e_pos))
-			{
-				//初期化
-				e_down = 0;
-			}
+		if (MapCollide(enemy, 0, old_e_pos))
+		{
+			//初期化
+			e_down = 0;
 		}
 		enemy->Update();
 	}
