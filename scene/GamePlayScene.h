@@ -86,7 +86,7 @@ public:
 	XMFLOAT3 mini_e_pos = { 0, 0, 0 }; //À•W
 	bool is_normal = false; //’Êíó‘Ô
 	bool is_chase = false; //’ÇÕó‘Ô
-	bool is_catch = true; //•ß”›ó‘Ô
+	bool is_catch = false; //•ß”›ó‘Ô
 	float e_add = 0.25f; //ˆÚ“®—Ê
 	float e_down = 0; //‰º~“x
 
