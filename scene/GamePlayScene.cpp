@@ -103,14 +103,11 @@ void GamePlayScene::Initialize()
 		max_rope[i] = 15.0f;
 		Rope[i]->SetModel(rope);
 		Rope[i]->SetScale({ 0.3, 5, 0.3 });
+		Rope[i]->Update();
 	}
 	player->SetModel(model);
 	player->SetPosition(p_pos);
 	player->Update();
-
-	Rope->SetModel(rope);
-	Rope->SetScale({ 0.3, 5, 0.3 });
-	Rope->Update();
 
 	for (int i = 0; i < EnemySpawnMax; i++)
 	{
@@ -338,12 +335,16 @@ void GamePlayScene::Update()
 				//マップの当たり判定
 				if (MapCollide(enemy[i], 0, old_e_pos[i]))
 				{
-					e_down[i] = 0;
-					for (int i = 0; i < EnemySpawnMax; i++) {
-						is_catch[i] = false;
-					}
-					is_attack = false;
+					is_catch[i] = false;
 					enemy[i]->Update();
+					is_attack = false;
+					for (int i = 0; i < EnemySpawnMax; i++)
+					{
+						if (is_catch[i])
+						{
+							is_attack = true;
+						}
+					}
 				}
 			}
 			else
@@ -365,7 +366,7 @@ void GamePlayScene::Update()
 
 		if (is_catch[i]) 
 		{
-			Rope->SetPosition({ (player->GetPosition().x + enemy[i]->GetPosition().x) / 2, (player->GetPosition().y + enemy[i]->GetPosition().y) / 2, (player->GetPosition().z + enemy[i]->GetPosition().z) / 2 });
+			Rope[i]->SetPosition({ (player->GetPosition().x + enemy[i]->GetPosition().x) / 2, (player->GetPosition().y + enemy[i]->GetPosition().y) / 2, (player->GetPosition().z + enemy[i]->GetPosition().z) / 2 });
 		}
 
 		//ロープの更新
@@ -373,7 +374,7 @@ void GamePlayScene::Update()
 
 		if (is_catch[i]) 
 		{
-			Rope->SetPosition({ (player->GetPosition().x + enemy[i]->GetPosition().x) / 2, (player->GetPosition().y + enemy[i]->GetPosition().y) / 2, (player->GetPosition().z + enemy[i]->GetPosition().z) / 2 });
+			Rope[i]->SetPosition({ (player->GetPosition().x + enemy[i]->GetPosition().x) / 2, (player->GetPosition().y + enemy[i]->GetPosition().y) / 2, (player->GetPosition().z + enemy[i]->GetPosition().z) / 2 });
 		}
 
 		//ミニマップ用座標変換
