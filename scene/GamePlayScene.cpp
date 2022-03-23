@@ -28,19 +28,33 @@ void GamePlayScene::Initialize()
 
 	// テクスチャ読み込み
 
-	Sprite::LoadTexture(1, L"Resources/background.png");
-	Sprite::LoadTexture(2, L"Resources/minimap.png");
-	Sprite::LoadTexture(3, L"Resources/miniplayer.png");
-	Sprite::LoadTexture(4, L"Resources/minienemy.png");
+	Sprite::LoadTexture(1, L"Resources/Number1.png");
+	Sprite::LoadTexture(2, L"Resources/Number2.png");
+	Sprite::LoadTexture(3, L"Resources/Number3.png");
+	Sprite::LoadTexture(4, L"Resources/Number4.png");
+	Sprite::LoadTexture(5, L"Resources/Number5.png");
+	Sprite::LoadTexture(6, L"Resources/Number6.png");
+	Sprite::LoadTexture(7, L"Resources/Number7.png");
+	Sprite::LoadTexture(8, L"Resources/Number8.png");
+	Sprite::LoadTexture(9, L"Resources/Number9.png");
+	Sprite::LoadTexture(10, L"Resources/Number0.png");
+	Sprite::LoadTexture(11, L"Resources/background.png");
+	Sprite::LoadTexture(12, L"Resources/minimap.png");
+	Sprite::LoadTexture(13, L"Resources/miniplayer.png");
+	Sprite::LoadTexture(14, L"Resources/minienemy.png");
 	// 背景スプライト生成
-	spriteBG = Sprite::Create(1, { 0.0f,0.0f });
+	spriteBG = Sprite::Create(11, { 0.0f,0.0f });
 
 	//スプライト生成
-	minimap = Sprite::Create(2, { 0.0f,0.0f });
-	miniplayer = Sprite::Create(3, { 20.0f,20.0f });
+	minimap = Sprite::Create(12, { 0.0f,0.0f });
+	miniplayer = Sprite::Create(13, { 20.0f,20.0f });
 	for (int i = 0; i < EnemySpawnMax; i++)
 	{
-		minienemy[i] = Sprite::Create(4, { 40.0f,20.0f });
+		minienemy[i] = Sprite::Create(14, { 40.0f,20.0f });
+	}
+	for (int i = 0; i < 10; i++)
+	{
+		spriteNumber[i] = Sprite::Create(i, { 0,0 });
 	}
 
 	// オブジェクト生成
@@ -470,6 +484,7 @@ void GamePlayScene::Draw()
 		}
 	}
 	miniplayer->Draw();
+	spriteNumber[score % 10]->Draw();
 
 	// デバッグテキストの描画
 	DebugText::GetInstance()->DrawAll(cmdList);

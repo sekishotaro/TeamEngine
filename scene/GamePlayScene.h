@@ -49,6 +49,7 @@ public:
 	Sprite* spriteBG = nullptr;
 	Sprite* miniplayer = nullptr;
 	Sprite* minienemy[10];
+	Sprite* spriteNumber[10];
 	Sprite* minimap = nullptr;
 	Model *model = nullptr;
 	Camera *camera = nullptr;
@@ -77,6 +78,7 @@ public:
 	float p_down = 0; //下降度
 	bool is_attack = false; //攻撃フラグ
 	bool is_air = false;//空中フラグ
+	int score = 1;
 
 	//エネミー
 //<<<<<<< HEAD
