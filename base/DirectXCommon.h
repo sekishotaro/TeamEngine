@@ -82,6 +82,7 @@ private:
 	
 	//メンバ関数
 private:
+	~DirectXCommon();
 
 	//フェンスの初期化
 	void InitializeFence();
@@ -130,6 +131,4 @@ private:
 	/// </summary>
 	/// <returns>成否</returns>
 	bool CreateFence();
-
-
 };

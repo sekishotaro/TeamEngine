@@ -140,6 +140,16 @@ void DirectXCommon::ClearDepthBuffer()
 	cmdList->ClearDepthStencilView(dsvH, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 }
 
+DirectXCommon::~DirectXCommon()
+{
+	ID3D12DebugDevice* debugInterface;
+	if (SUCCEEDED(dev.Get()->QueryInterface(&debugInterface)))
+	{
+		debugInterface->ReportLiveDeviceObjects(D3D12_RLDO_DETAIL | D3D12_RLDO_IGNORE_INTERNAL);
+		debugInterface->Release();
+	}
+}
+
 bool DirectXCommon::InitializeDevice()
 {
 	HRESULT result = S_FALSE;

@@ -66,7 +66,7 @@ public:
 
 	//汎用変数
 	float gravity = 0.15f; //重力加速度
-	int angle = 0; //円運動の角度
+	int angle[10]; //円運動の角度
 
 	//プレイヤー
 	std::unique_ptr<Object3d> player = nullptr; //オブジェクトクラス
@@ -81,7 +81,6 @@ public:
 	int score = 1;
 
 	//エネミー
-//<<<<<<< HEAD
 	static const int EnemySpawnMax = 5;
 	std::unique_ptr<Object3d> enemy[EnemySpawnMax]; //オブジェクトクラス
 	XMFLOAT3 e_pos[10]; //座標
@@ -92,7 +91,6 @@ public:
 	bool is_alive[10]; //捕縛状態
 	float e_speed[10]; //移動量
 	float e_down[10]; //下降度
-//=======
 
 	//ロープ
 	std::unique_ptr<Object3d> Rope[EnemySpawnMax]; //オブジェクトクラス
