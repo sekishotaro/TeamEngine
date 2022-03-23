@@ -17,6 +17,10 @@ BaseScene *SceneFactory::CreateScene(const std::string &sceneName)
     {
         newScene = new GamePlayScene();
     }
+    else
+    {
+        assert(0);
+    }
 
     return newScene;
 }

@@ -18,7 +18,6 @@ SceneManager *SceneManager::GetInstance()
 void SceneManager::ChangeScene(const std::string &sceneName)
 {
 	assert(sceneFactory_);
-	assert(nextScene_ == nullptr);
 
 	//ŽŸƒV[ƒ“‚ð¶¬
 	nextScene_ = sceneFactory_->CreateScene(sceneName);

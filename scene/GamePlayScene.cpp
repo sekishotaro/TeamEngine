@@ -140,6 +140,13 @@ void GamePlayScene::Update()
 	if (input->TriggerKey(DIK_M) || true)
 	{
 		MapCreate(0);
+		for (int y = 0; y < map_max_y; y++)
+		{
+			for (int x = 0; x < map_max_x; x++)
+			{
+				objBlock[y][x]->Update();
+			}
+		}
 	}
 
 	old_p_pos = player->GetPosition();
@@ -260,8 +267,7 @@ void GamePlayScene::Update()
 		if (!is_alive[i])
 		{
 			SpawnEnemy(0, i);
-		}
-		else if (is_alive[i])
+		} else if (is_alive[i])
 		{
 			e_pos[i] = enemy[i]->GetPosition();
 			//プレイヤーとエネミーが接触したら
@@ -343,6 +349,7 @@ void GamePlayScene::Update()
 						if (is_catch[i])
 						{
 							is_attack = true;
+							break;
 						}
 					}
 				}
@@ -364,7 +371,7 @@ void GamePlayScene::Update()
 			}
 		}
 
-		if (is_catch[i]) 
+		if (is_catch[i])
 		{
 			Rope[i]->SetPosition({ (player->GetPosition().x + enemy[i]->GetPosition().x) / 2, (player->GetPosition().y + enemy[i]->GetPosition().y) / 2, (player->GetPosition().z + enemy[i]->GetPosition().z) / 2 });
 		}
@@ -372,7 +379,7 @@ void GamePlayScene::Update()
 		//ロープの更新
 		RopeMove();
 
-		if (is_catch[i]) 
+		if (is_catch[i])
 		{
 			Rope[i]->SetPosition({ (player->GetPosition().x + enemy[i]->GetPosition().x) / 2, (player->GetPosition().y + enemy[i]->GetPosition().y) / 2, (player->GetPosition().z + enemy[i]->GetPosition().z) / 2 });
 		}
@@ -387,9 +394,7 @@ void GamePlayScene::Update()
 			player->SetPosition({ 0, 10, 0 });
 			p_down = 0;
 		}
-
 		limit_y = enemy[i]->GetPosition().y;
-
 		if (limit_y < -500.0f)
 		{
 			enemy[i]->SetPosition({ 0, 10, 0 });
@@ -398,36 +403,30 @@ void GamePlayScene::Update()
 
 		MapCollide(enemy[i], 0, old_e_pos[i]);
 
-		if (input->TriggerKey(DIK_RETURN))
-		{
-			//BGM止める
-			//Audio::GetInstance()->SoundStop("zaza.wav");
-
-			//シーン切り替え
-			SceneManager::GetInstance()->ChangeScene("TITLE");
-		}
-
 		//オブジェクト情報の更新
-		camera->Update();
 		enemy[i]->Update();
-		player->Update();
 		Rope[i]->Update();
-		for (int y = 0; y < map_max_y; y++)
-		{
-			for (int x = 0; x < map_max_x; x++)
-			{
-				objBlock[y][x]->Update();
-			}
-		}
-
-		//プレイヤーの座標（X：Y）
-		DebugText::GetInstance()->Print(50, 30 * 1, 2, "%f", objBlock[8][0]->GetPosition().x);
-		DebugText::GetInstance()->Print(50, 30 * 2, 2, "%f", objBlock[8][0]->GetPosition().y);
-		DebugText::GetInstance()->Print(50, 30 * 3, 2, "rope_X:%f", Rope[0]->GetPosition().x);
-		DebugText::GetInstance()->Print(50, 30 * 4, 2, "rope_Y:%f", Rope[0]->GetPosition().y);
-		DebugText::GetInstance()->Print(50, 30 * 5, 2, "player_X:%f", player->GetPosition().y);
-		DebugText::GetInstance()->Print(50, 30 * 6, 2, "enemy_Y:%f", enemy[0]->GetPosition().y);
+		player->Update();
 	}
+
+	camera->Update();
+
+	if (input->TriggerKey(DIK_RETURN))
+	{
+		//BGM止める
+		//Audio::GetInstance()->SoundStop("zaza.wav");
+
+		//シーン切り替え
+		SceneManager::GetInstance()->ChangeScene("TITLE");
+	}
+
+	//プレイヤーの座標（X：Y）
+	DebugText::GetInstance()->Print(50, 30 * 1, 2, "%f", objBlock[8][0]->GetPosition().x);
+	DebugText::GetInstance()->Print(50, 30 * 2, 2, "%f", objBlock[8][0]->GetPosition().y);
+	DebugText::GetInstance()->Print(50, 30 * 3, 2, "rope_X:%f", Rope[0]->GetPosition().x);
+	DebugText::GetInstance()->Print(50, 30 * 4, 2, "rope_Y:%f", Rope[0]->GetPosition().y);
+	DebugText::GetInstance()->Print(50, 30 * 5, 2, "player_X:%f", player->GetPosition().y);
+	DebugText::GetInstance()->Print(50, 30 * 6, 2, "enemy_Y:%f", enemy[0]->GetPosition().y);
 }
 
 void GamePlayScene::Draw()
