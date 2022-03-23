@@ -530,9 +530,6 @@ bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapN
 	float r_x = 0;
 	float r_y = 0;
 
-	//ã‰º¶‰E‚É‹ó‚«‚ª‚ ‚é‚©
-	bool is_space = false;
-
 	//”»’è
 	bool x_hit = false;
 	bool y_hit = false;
