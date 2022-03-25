@@ -388,16 +388,10 @@ void GamePlayScene::Update()
 		minienemy[i]->SetPosition({ e_pos[i].x , -e_pos[i].y + 28 });
 
 		//落下の最大値を超えたら
-		float limit_y = player->GetPosition().y;
+		float limit_y = enemy[i]->GetPosition().y;
 		if (limit_y < -500.0f)
 		{
-			player->SetPosition({ 0, 10, 0 });
-			p_down = 0;
-		}
-		limit_y = enemy[i]->GetPosition().y;
-		if (limit_y < -500.0f)
-		{
-			enemy[i]->SetPosition({ 0, 10, 0 });
+			enemy[i]->SetPosition({ 20, 10, 0 });
 			e_down[i] = 0;
 		}
 
@@ -406,8 +400,15 @@ void GamePlayScene::Update()
 		//オブジェクト情報の更新
 		enemy[i]->Update();
 		Rope[i]->Update();
-		player->Update();
 	}
+
+	float limit_y = player->GetPosition().y;
+	if (limit_y < -500.0f)
+	{
+		player->SetPosition({ 0, 10, 0 });
+		p_down = 0;
+	}
+	player->Update();
 
 	camera->Update();
 
@@ -459,8 +460,6 @@ void GamePlayScene::Draw()
 		{
 			enemy[i]->Draw();
 		}
-
-
 		if (is_catch[i])
 		{
 			Rope[i]->Draw();
@@ -561,9 +560,9 @@ bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapN
 	bool x_hit = false;
 	bool y_hit = false;
 
-	for (int b_x = map_max_x - 1; b_x >= 0; b_x--) //yが12
+	for (int b_x = 0; b_x < map_max_x; b_x++) //yが12
 	{
-		for (int b_y = map_max_y - 1; b_y >= 0; b_y--) //xが52
+		for (int b_y = 0; b_y < map_max_y; b_y++) //xが52
 		{
 			if (Mapchip::GetChipNum(b_x, b_y, map[mapNumber]) == Ground)
 			{
@@ -571,35 +570,33 @@ bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapN
 				y = objBlock[b_y][b_x]->GetPosition().y;
 				r_x = 2.5f * objBlock[b_y][b_x]->GetScale().x;
 				r_y = 2.5f * objBlock[b_y][b_x]->GetScale().y;
-
-				if (powf(y - b, 2) < powf(r_y + r, 2) && (x - r_x <= a && a <= x + r_x))
+				//下
+				if (b - r < y + r_y && y < old_pos.y - r && (x - r_x <= a && a <= x + r_x))
 				{
 					XMFLOAT3 pos = object->GetPosition();
-					//下
-					if (y < old_pos.y)
-					{
-						pos.y = y + r_y + r;
-						y_hit = true;
-					}
-					//上
-					else
-					{
-						pos.y = y - r_y - r;
-						if (!is_jump)
-						{
-							y_hit = true;
-						}
-						else
-						{
-							p_add = 0;
-						}
-					}
+					pos.y = y + r_y + r;
+					b = pos.y;
 					object->SetPosition(pos);
 					object->Update();
-					b = pos.y;
-				}
-				if (y_hit)
+					y_hit = true;
+					break;
+				} 
+				//上
+				else if (b + r > y - r_y && old_pos.y + r < y && (x - r_x <= a && a <= x + r_x))
 				{
+					XMFLOAT3 pos = object->GetPosition();
+					pos.y = y - r_y - r;
+					b = pos.y;
+					object->SetPosition(pos);
+					object->Update();
+					if (!is_jump)
+					{
+						y_hit = true;
+					}
+					else
+					{
+						p_add = 0;
+					}
 					break;
 				}
 			}
@@ -609,9 +606,9 @@ bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapN
 			break;
 		}
 	}
-	for (int b_y = map_max_y - 1; b_y >= 0; b_y--) //xが52
+	for (int b_y = 0; b_y < map_max_y; b_y++) //xが52
 	{
-		for (int b_x = map_max_x - 1; b_x >= 0; b_x--) //yが12
+		for (int b_x = 0; b_x < map_max_x; b_x++) //yが12
 		{
 			if (Mapchip::GetChipNum(b_x, b_y, map[mapNumber]) == Ground)
 			{
@@ -619,33 +616,32 @@ bool GamePlayScene::MapCollide(const std::unique_ptr<Object3d>& object, int mapN
 				y = objBlock[b_y][b_x]->GetPosition().y;
 				r_x = 2.5f * objBlock[b_y][b_x]->GetScale().x;
 				r_y = 2.5f * objBlock[b_y][b_x]->GetScale().y;
-
-				if (powf(x - a, 2) < powf(r_x + r, 2) && (y - r_y <= b && b <= y + r_y))
+				//左
+				if (a - r < x + r_x && x < old_pos.x - r && (y - r_y <= b && b <= y + r_y))
 				{
 					XMFLOAT3 pos = object->GetPosition();
-					//右
-					if (x < old_pos.x)
-					{
-						pos.x = x + r_x + r;
-						if (!is_jump)
-						{
-							x_hit = true;
-						}
-					}
-					//左
-					else
-					{
-						pos.x = x - r_x - r;
-						if (!is_jump)
-						{
-							x_hit = true;
-						}
-					}
+					pos.x = x + r_x + r;
+					a = pos.x;
 					object->SetPosition(pos);
 					object->Update();
+					if (!is_jump)
+					{
+						x_hit = true;
+					}
+					break;
 				}
-				if (x_hit)
+				//右
+				else if (a + r > x - r_x && old_pos.x + r < x && (y - r_y <= b && b <= y + r_y))
 				{
+					XMFLOAT3 pos = object->GetPosition();
+					pos.x = x - r_x - r;
+					a = pos.x;
+					object->SetPosition(pos);
+					object->Update();
+					if (!is_jump)
+					{
+						x_hit = true;
+					}
 					break;
 				}
 			}
