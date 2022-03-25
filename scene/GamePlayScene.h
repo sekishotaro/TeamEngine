@@ -83,18 +83,18 @@ public:
 	//エネミー
 	static const int EnemySpawnMax = 5;
 	std::unique_ptr<Object3d> enemy[EnemySpawnMax]; //オブジェクトクラス
-	XMFLOAT3 e_pos[10]; //座標
-	XMFLOAT3 old_e_pos[10];
-	bool is_normal[10]; //通常状態
-	bool is_chase[10]; //追跡状態
-	bool is_catch[10]; //捕縛状態
-	bool is_alive[10]; //捕縛状態
-	float e_speed[10]; //移動量
-	float e_down[10]; //下降度
+	XMFLOAT3 e_pos[EnemySpawnMax]; //座標
+	XMFLOAT3 old_e_pos[EnemySpawnMax];
+	bool is_normal[EnemySpawnMax]; //通常状態
+	bool is_chase[EnemySpawnMax]; //追跡状態
+	bool is_catch[EnemySpawnMax]; //捕縛状態
+	bool is_alive[EnemySpawnMax]; //捕縛状態
+	float e_speed[EnemySpawnMax]; //移動量
+	float e_down[EnemySpawnMax]; //下降度
 
 	//ロープ
 	std::unique_ptr<Object3d> Rope[EnemySpawnMax]; //オブジェクトクラス
-	float max_rope[10];
+	float max_rope[EnemySpawnMax];
 
 	/// <summary>
 	/// エネミー生成

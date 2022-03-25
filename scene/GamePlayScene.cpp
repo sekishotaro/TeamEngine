@@ -424,12 +424,12 @@ void GamePlayScene::Update()
 	}
 
 	//プレイヤーの座標（X：Y）
-	DebugText::GetInstance()->Print(50, 30 * 1, 2, "%f", objBlock[8][0]->GetPosition().x);
-	DebugText::GetInstance()->Print(50, 30 * 2, 2, "%f", objBlock[8][0]->GetPosition().y);
-	DebugText::GetInstance()->Print(50, 30 * 3, 2, "rope_X:%f", Rope[0]->GetPosition().x);
-	DebugText::GetInstance()->Print(50, 30 * 4, 2, "rope_Y:%f", Rope[0]->GetPosition().y);
-	DebugText::GetInstance()->Print(50, 30 * 5, 2, "player_X:%f", player->GetPosition().y);
-	DebugText::GetInstance()->Print(50, 30 * 6, 2, "enemy_Y:%f", enemy[0]->GetPosition().y);
+	DebugText::GetInstance()->Print(50, 35 * 1, 2, "%f", objBlock[8][0]->GetPosition().x);
+	DebugText::GetInstance()->Print(50, 35 * 2, 2, "%f", objBlock[8][0]->GetPosition().y);
+	DebugText::GetInstance()->Print(50, 35 * 3, 2, "rope_X:%f", Rope[0]->GetPosition().x);
+	DebugText::GetInstance()->Print(50, 35 * 4, 2, "rope_Y:%f", Rope[0]->GetPosition().y);
+	DebugText::GetInstance()->Print(50, 35 * 5, 2, "player_Y:%f", player->GetPosition().y);
+	DebugText::GetInstance()->Print(50, 35 * 6, 2, "enemy_Y:%f", enemy[0]->GetPosition().y);
 }
 
 void GamePlayScene::Draw()
