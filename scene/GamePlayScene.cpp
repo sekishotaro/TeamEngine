@@ -267,7 +267,8 @@ void GamePlayScene::Update()
 		if (!is_alive[i])
 		{
 			SpawnEnemy(0, i);
-		} else if (is_alive[i])
+		} 
+		else if (is_alive[i])
 		{
 			e_pos[i] = enemy[i]->GetPosition();
 			//プレイヤーとエネミーが接触したら
@@ -341,8 +342,8 @@ void GamePlayScene::Update()
 				//マップの当たり判定
 				if (MapCollide(enemy[i], 0, old_e_pos[i]))
 				{
+					is_alive[i] = false;
 					is_catch[i] = false;
-					enemy[i]->Update();
 					is_attack = false;
 					for (int i = 0; i < EnemySpawnMax; i++)
 					{
@@ -352,6 +353,7 @@ void GamePlayScene::Update()
 							break;
 						}
 					}
+					enemy[i]->Update();
 				}
 			}
 			else
