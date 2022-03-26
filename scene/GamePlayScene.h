@@ -46,55 +46,76 @@ public:
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
-	Sprite* spriteBG = nullptr;
-	Sprite* miniplayer = nullptr;
-	Sprite* minienemy[10];
-	Sprite* spriteNumber[10];
-	Sprite* minimap = nullptr;
-	Model *model = nullptr;
-	Camera *camera = nullptr;
-	Model* block = nullptr;
-	Model* rope = nullptr;
-	Angle* rope_angle = new Angle();
-	std::vector<std::vector<int>> map;
-	std::vector<Object3d*> box;
-	std::unique_ptr<Object3d> objBlock[12][52];
-	enum MapNumber //マップチップの番号
+	
+	//定数
+	static const int EnemySpawnMax = 5;
+
+	//マップチップの番号
+	enum MapNumber
 	{
 		None, Ground
 	};
 
+	//クラス
+	Angle* rope_angle = new Angle(); //Angle
+	Camera* camera = nullptr; //カメラ
+
+	//モデル
+	Model* model = nullptr;
+	Model* block = nullptr;
+	Model* rope = nullptr;
+
+	//オブジェクト
+	std::vector<std::vector<int>> map; //マップチップ
+	std::unique_ptr<Object3d> objBlock[12][52]; //ステージブロック
+	std::unique_ptr<Object3d> player = nullptr; //プレイヤー
+	std::unique_ptr<Object3d> enemy[EnemySpawnMax]; //エネミー
+	std::unique_ptr<Object3d> Rope[EnemySpawnMax]; //ロープ
+
+	//スプライト
+	Sprite* spriteBG = nullptr; //背景
+	Sprite* miniplayer = nullptr; //プレイヤー(ミニマップ)
+	Sprite* minienemy[EnemySpawnMax]; //エネミー(ミニマップ)
+	Sprite* spriteNumber[10]; //スコア
+	Sprite* minimap = nullptr; //ステージ(ミニマップ)
+
+	//UI・スコアなど
+	int score = 1; //スコア
+
 	//汎用変数
 	float gravity = 0.15f; //重力加速度
-	int angle[10]; //円運動の角度
 
 	//プレイヤー
-	std::unique_ptr<Object3d> player = nullptr; //オブジェクトクラス
-	XMFLOAT3 p_pos = {10, 10, 0}; //座標
-	XMFLOAT3 old_p_pos;
-	float p_max_speed = 0.5f; //最高速度
-	bool is_jump = false; // ジャンプフラグ
-	float p_add = 0; //上昇度
-	float p_down = 0; //下降度
-	bool is_attack = false; //攻撃フラグ
-	bool is_air = false;//空中フラグ
-	int score = 1;
+	XMFLOAT3 p_pos; //座標
+	XMFLOAT3 old_p_pos; //1フレーム前の座標
+
+	float p_x_radius; //中心点からxの最大値まで
+	float p_y_radius; //中心点からyの最大値まで
+
+	bool is_jump; // ジャンプフラグ
+
+	float p_add; //上昇度
+	float p_down; //下降度
+
+	bool is_attack; //攻撃フラグ
+	bool is_air;//空中フラグ
 
 	//エネミー
-	static const int EnemySpawnMax = 5;
-	std::unique_ptr<Object3d> enemy[EnemySpawnMax]; //オブジェクトクラス
 	XMFLOAT3 e_pos[EnemySpawnMax]; //座標
-	XMFLOAT3 old_e_pos[EnemySpawnMax];
+	XMFLOAT3 old_e_pos[EnemySpawnMax]; //1フレーム前の座標
+
 	bool is_normal[EnemySpawnMax]; //通常状態
 	bool is_chase[EnemySpawnMax]; //追跡状態
 	bool is_catch[EnemySpawnMax]; //捕縛状態
-	bool is_alive[EnemySpawnMax]; //捕縛状態
+	bool is_alive[EnemySpawnMax]; //生死
+
 	float e_speed[EnemySpawnMax]; //移動量
 	float e_down[EnemySpawnMax]; //下降度
 
+	int angle[EnemySpawnMax]; //円運動の角度
+
 	//ロープ
-	std::unique_ptr<Object3d> Rope[EnemySpawnMax]; //オブジェクトクラス
-	float max_rope[EnemySpawnMax];
+	float max_rope; //ロープの最大
 
 	/// <summary>
 	/// エネミー生成
@@ -114,12 +135,12 @@ public:
 	/// <summary>
 	/// マップチップ当たり判定
 	/// </summary>
-	bool MapCollide(const std::unique_ptr<Object3d>& object, int mapNumber,const XMFLOAT3 old_pos, bool is_jump = false);
+	bool MapCollide(XMFLOAT3& pos, float radiusX, float radiusY, int mapNumber,const XMFLOAT3 old_pos, bool is_jump = false);
 
 	/// <summary>
 	/// ロープの角度変更
 	/// <summary>
-	void RopeMove();
+	void RopeMove(const int num);
 
 	//オブジェクト同士の当たり判定
 	bool CollisionObject(const std::unique_ptr<Object3d>& object_a, const std::unique_ptr<Object3d>& object_b);
