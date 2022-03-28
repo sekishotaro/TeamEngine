@@ -79,8 +79,12 @@ public:
 	Sprite* spriteNumber[10]; //スコア
 	Sprite* minimap = nullptr; //ステージ(ミニマップ)
 
-	//UI・スコアなど
+	//UI・スコアetc
 	int score; //スコア
+	bool is_shake; //シェイクフラグ
+	int shake_time; //シェイク時間
+	float shake_x; //x軸の幅
+	float shake_y; //y軸の幅
 
 	//汎用変数
 	float gravity; //重力加速度

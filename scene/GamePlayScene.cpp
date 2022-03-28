@@ -86,14 +86,20 @@ void GamePlayScene::Initialize()
 		}
 	}
 
+	//etc
 	score = 1;
+	is_shake = false;
+	shake_time = 0;
+	shake_x = 0;
+	shake_y = 0;
+
 	gravity = 0.15f;
 
 	//オブジェクトにモデルをひも付ける
 	//エネミー
 	for (int i = 0; i < EnemySpawnMax; i++)
 	{
-		e_pos[i] = { 20,5,0 };
+		e_pos[i] = { 0, 0, 0 };
 		is_normal[i] = false;
 		is_chase[i] = false;
 		is_catch[i] = false;
@@ -124,6 +130,9 @@ void GamePlayScene::Initialize()
 
 	//ロープ
 	max_rope = 15;
+
+	//乱数
+	srand(time(NULL));
 }
 
 void GamePlayScene::Finalize()
@@ -267,9 +276,6 @@ void GamePlayScene::Update()
 
 		//ミニマップ用座標変換
 		miniplayer->SetPosition({ p_pos.x , -p_pos.y + 28 });
-
-		camera->SetTarget(p_pos);
-		camera->SetEye({ p_pos.x, p_pos.y, p_pos.z - 60.0f });
 	}
 
 
@@ -364,6 +370,7 @@ void GamePlayScene::Update()
 							is_alive[i] = false;
 							is_catch[i] = false;
 							is_attack = false;
+							is_shake = true;
 							for (int i = 0; i < EnemySpawnMax; i++)
 							{
 								if (is_catch[i] == true)
@@ -424,6 +431,23 @@ void GamePlayScene::Update()
 	}
 	player->Update();
 
+	//カメラ更新
+	if (is_shake == true)
+	{
+		shake_x = rand() % 11 / 10.0f;
+		shake_y = rand() % 11 / 10.0f;
+		shake_time++;
+		if (shake_time > 10)
+		{
+			shake_x = 0.0f;
+			shake_y = 0.0f;
+			shake_time = 0;
+			is_shake = false;
+		}
+	}
+	camera->SetTarget({ p_pos.x + shake_x, p_pos.y + shake_y, p_pos.z });
+	camera->SetEye({ p_pos.x + shake_x, p_pos.y + shake_y, p_pos.z - 60.0f });  
+
 	camera->Update();
 
 	if (input->TriggerKey(DIK_RETURN))
@@ -436,12 +460,12 @@ void GamePlayScene::Update()
 	}
 
 	//プレイヤーの座標（X：Y
-	DebugText::GetInstance()->Print(50, 35 * 1, 2, "%f", objBlock[8][0]->GetPosition().x);
+	/*DebugText::GetInstance()->Print(50, 35 * 1, 2, "%f", objBlock[8][0]->GetPosition().x);
 	DebugText::GetInstance()->Print(50, 35 * 2, 2, "%f", objBlock[8][0]->GetPosition().y);
 	DebugText::GetInstance()->Print(50, 35 * 3, 2, "rope_X:%f", Rope[0]->GetPosition().x);
 	DebugText::GetInstance()->Print(50, 35 * 4, 2, "rope_Y:%f", Rope[0]->GetPosition().y);
 	DebugText::GetInstance()->Print(50, 35 * 5, 2, "player_Y:%f", player->GetPosition().y);
-	DebugText::GetInstance()->Print(50, 35 * 6, 2, "enemy_Y:%f", enemy[0]->GetPosition().y);
+	DebugText::GetInstance()->Print(50, 35 * 6, 2, "enemy_Y:%f", enemy[0]->GetPosition().y);*/
 }
 
 void GamePlayScene::Draw()
@@ -588,7 +612,7 @@ bool GamePlayScene::MapCollide(XMFLOAT3& pos, float radiusX, float radiusY, int 
 				r_x = 2.5f * objBlock[b_y][b_x]->GetScale().x;
 				r_y = 2.5f * objBlock[b_y][b_x]->GetScale().y;
 				//下
-				if (b - r_b < y + r_y && y < old_pos.y - r_b && (x - r_x <= a && a <= x + r_x))
+				if (b - r_b < y + r_y && y < old_pos.y - r_b && (x - r_x < a + r_a && a - r_a < x + r_x))
 				{
 					b = y + r_y + r_b;
 					pos.y = b;
@@ -596,7 +620,7 @@ bool GamePlayScene::MapCollide(XMFLOAT3& pos, float radiusX, float radiusY, int 
 					break;
 				} 
 				//上
-				else if (b + r_b > y - r_y && old_pos.y + r_b < y && (x - r_x <= a && a <= x + r_x))
+				else if (b + r_b > y - r_y && old_pos.y + r_b < y && (x - r_x < a + r_a && a - r_a < x + r_x))
 				{
 					b = y - r_y - r_b;
 					pos.y = b;
@@ -628,7 +652,7 @@ bool GamePlayScene::MapCollide(XMFLOAT3& pos, float radiusX, float radiusY, int 
 				r_x = 2.5f * objBlock[b_y][b_x]->GetScale().x;
 				r_y = 2.5f * objBlock[b_y][b_x]->GetScale().y;
 				//左
-				if (a - r_a < x + r_x && x < old_pos.x - r_a && (y - r_y <= b && b <= y + r_y))
+				if (a - r_a < x + r_x && x < old_pos.x - r_a && (y - r_y < b + r_b && b - r_b < y + r_y))
 				{
 					a = x + r_x + r_a;
 					pos.x = a;
@@ -639,7 +663,7 @@ bool GamePlayScene::MapCollide(XMFLOAT3& pos, float radiusX, float radiusY, int 
 					break;
 				}
 				//右
-				else if (a + r_a > x - r_x && old_pos.x + r_a < x && (y - r_y <= b && b <= y + r_y))
+				else if (a + r_a > x - r_x && old_pos.x + r_a < x && (y - r_y < b + r_b && b - r_b < y + r_y))
 				{
 					a = x - r_x - r_a;
 					pos.x = a;
