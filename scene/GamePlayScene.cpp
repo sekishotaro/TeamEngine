@@ -86,6 +86,9 @@ void GamePlayScene::Initialize()
 		}
 	}
 
+	score = 1;
+	gravity = 0.15f;
+
 	//オブジェクトにモデルをひも付ける
 	//エネミー
 	for (int i = 0; i < EnemySpawnMax; i++)
@@ -161,7 +164,8 @@ void GamePlayScene::Update()
 		}
 	}
 
-	for (int i = 0; i < EnemySpawnMax; i++) {
+	for (int i = 0; i < EnemySpawnMax; i++) 
+	{
 		old_e_pos[i] = enemy[i]->GetPosition();
 	}
 
@@ -362,7 +366,7 @@ void GamePlayScene::Update()
 							is_attack = false;
 							for (int i = 0; i < EnemySpawnMax; i++)
 							{
-								if (is_catch[i])
+								if (is_catch[i] == true)
 								{
 									is_attack = true;
 									break;
@@ -395,6 +399,7 @@ void GamePlayScene::Update()
 		}
 	}
 
+	//エネミー更新
 	for (int i = 0; i < EnemySpawnMax; i++)
 	{
 		enemy[i]->SetPosition(e_pos[i]);
@@ -408,7 +413,8 @@ void GamePlayScene::Update()
 		enemy[i]->Update();
 		Rope[i]->Update();
 	}
-		
+	
+	//プレイヤー更新
 	player->SetPosition(p_pos);
 	if (p_pos.y < -500.0f)
 	{
@@ -536,9 +542,11 @@ void GamePlayScene::SpawnEnemy(int mapNumber, int enemyNumber)
 	spawnY = rand() % map_max_y;
 	spawnX = rand() % map_max_x;
 	const float LAND_SCALE = 5.0f;
+
 	if (Mapchip::GetChipNum(spawnX, spawnY, map[mapNumber]) == None)
 	{
 		enemy[enemyNumber]->SetPosition({ spawnX * LAND_SCALE,  -spawnY * LAND_SCALE, 0 });//位置をセット
+		e_pos[enemyNumber] = { spawnX * LAND_SCALE,  -spawnY * LAND_SCALE, 0 };
 		is_alive[enemyNumber] = true;//スポーン
 	}
 }

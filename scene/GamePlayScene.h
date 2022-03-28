@@ -48,7 +48,7 @@ public:
 	/// </summary>
 	
 	//定数
-	static const int EnemySpawnMax = 5;
+	static const int EnemySpawnMax = 10;
 
 	//マップチップの番号
 	enum MapNumber
@@ -80,10 +80,10 @@ public:
 	Sprite* minimap = nullptr; //ステージ(ミニマップ)
 
 	//UI・スコアなど
-	int score = 1; //スコア
+	int score; //スコア
 
 	//汎用変数
-	float gravity = 0.15f; //重力加速度
+	float gravity; //重力加速度
 
 	//プレイヤー
 	XMFLOAT3 p_pos; //座標
