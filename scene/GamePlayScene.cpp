@@ -397,7 +397,7 @@ void GamePlayScene::Update()
 				//ロープの更新
 				if (is_catch[i] == true)
 				{
-					RopeMove(i);
+					RopeMove(e_pos[i], i);
 				}
 
 				//ミニマップ用座標変換
@@ -447,7 +447,6 @@ void GamePlayScene::Update()
 	}
 	camera->SetTarget({ p_pos.x + shake_x, p_pos.y + shake_y, p_pos.z });
 	camera->SetEye({ p_pos.x + shake_x, p_pos.y + shake_y, p_pos.z - 60.0f });  
-
 	camera->Update();
 
 	if (input->TriggerKey(DIK_RETURN))
@@ -689,7 +688,7 @@ bool GamePlayScene::MapCollide(XMFLOAT3& pos, float radiusX, float radiusY, int 
 	return false;
 }
 
-void GamePlayScene::RopeMove(const int num)
+void GamePlayScene::RopeMove(XMFLOAT3& pos, const int num)
 {
 	Rope[num]->SetPosition({ (p_pos.x + e_pos[num].x) / 2, (p_pos.y + e_pos[num].y) / 2, 0 });
 	Rope[num]->Update();
@@ -706,6 +705,8 @@ void GamePlayScene::RopeMove(const int num)
 		float wq = len / max_rope;
 		len = max_rope;
 		e_pos[num] = { p_pos.x - length.x / wq, p_pos.y - length.y / wq, 0 };
+		pos = e_pos[num];
+		MapCollide(pos, p_x_radius, p_y_radius, 0, old_e_pos[num]);
 	}
 
 	//ロープの長さ

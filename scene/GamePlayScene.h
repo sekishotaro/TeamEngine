@@ -144,7 +144,7 @@ public:
 	/// <summary>
 	/// ロープの角度変更
 	/// <summary>
-	void RopeMove(const int num);
+	void RopeMove(XMFLOAT3& pos, const int num);
 
 	//オブジェクト同士の当たり判定
 	bool CollisionObject(const std::unique_ptr<Object3d>& object_a, const std::unique_ptr<Object3d>& object_b);
