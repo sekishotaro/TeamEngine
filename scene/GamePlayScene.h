@@ -49,6 +49,8 @@ public:
 	
 	//定数
 	static const int EnemySpawnMax = 10;
+	//マップチップ1つの大きさ
+	const float LAND_SCALE = 5.0f;
 
 	//マップチップの番号
 	enum MapNumber
@@ -108,8 +110,7 @@ public:
 	XMFLOAT3 e_pos[EnemySpawnMax]; //座標
 	XMFLOAT3 old_e_pos[EnemySpawnMax]; //1フレーム前の座標
 
-	bool is_normal[EnemySpawnMax]; //通常状態
-	bool is_chase[EnemySpawnMax]; //追跡状態
+	bool is_normal[EnemySpawnMax]; //徘徊状態
 	bool is_catch[EnemySpawnMax]; //捕縛状態
 	bool is_alive[EnemySpawnMax]; //生死
 

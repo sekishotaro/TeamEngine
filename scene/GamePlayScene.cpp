@@ -101,7 +101,6 @@ void GamePlayScene::Initialize()
 	{
 		e_pos[i] = { 0, 0, 0 };
 		is_normal[i] = false;
-		is_chase[i] = false;
 		is_catch[i] = false;
 		is_alive[i] = false;
 		e_speed[i] = 0.25f;
@@ -302,13 +301,15 @@ void GamePlayScene::Update()
 				if (is_catch[i] == false && is_attack == false)
 				{
 					//通常状態
-					if (is_normal[i] == true)
+					if (is_normal[i] == false)
 					{
 						//移動
 						e_pos[i].x += e_speed[i];
 
 						//端まで行ったら
-						if (e_pos[i].x >= 50.0f || e_pos[i].x <= -50.0f)
+						if (((Mapchip::GetChipNum(static_cast<int>((e_pos[i].x + p_x_radius) / LAND_SCALE), -static_cast<int>((e_pos[i].y - p_y_radius) / LAND_SCALE - 1), map[0]) == None && e_speed[i] > 0)
+							|| (Mapchip::GetChipNum(static_cast<int>((e_pos[i].x - p_x_radius) / LAND_SCALE), -static_cast<int>((e_pos[i].y - p_y_radius) / LAND_SCALE - 1), map[0]) == None && e_speed[i] < 0))
+							&& Mapchip::GetChipNum(static_cast<int>(e_pos[i].x / LAND_SCALE), -static_cast<int>(e_pos[i].y / LAND_SCALE - 1), map[0]) == Ground)
 						{
 							e_speed[i] = -e_speed[i];
 
@@ -322,30 +323,19 @@ void GamePlayScene::Update()
 							}
 							enemy[i]->SetRotation(e_rot);
 						}
-					}
-					//プレイヤーを追尾
-					else if (is_chase[i] == true)
-					{
-						//プレイヤーとエネミーの距離
-						XMFLOAT2 pe_len = { p_pos.x - e_pos[i].x, p_pos.y - e_pos[i].y };
+						else if (MapCollide(e_pos[i], p_x_radius, p_y_radius, 0, old_e_pos[i]))
+						{
+							e_speed[i] = -e_speed[i];
 
-						//正の値なら
-						if (pe_len.x > 0)
-						{
-							e_pos[i].x += e_speed[i];
-							if (p_pos.x < e_pos[i].x)
+							//向きを変える
+							XMFLOAT3 e_rot;
+							e_rot = enemy[i]->GetRotation();
+							e_rot.y += 180.0f;
+							if (e_rot.y >= 360)
 							{
-								e_pos[i].x = p_pos.x;
+								e_rot.y = 0;
 							}
-						}
-						//負の値なら
-						else if (pe_len.x < 0)
-						{
-							e_pos[i].x -= e_speed[i];
-							if (p_pos.x > e_pos[i].x)
-							{
-								e_pos[i].x = p_pos.x;
-							}
+							enemy[i]->SetRotation(e_rot);
 						}
 					}
 				}
@@ -459,12 +449,13 @@ void GamePlayScene::Update()
 	}
 
 	//プレイヤーの座標（X：Y
-	/*DebugText::GetInstance()->Print(50, 35 * 1, 2, "%f", objBlock[8][0]->GetPosition().x);
-	DebugText::GetInstance()->Print(50, 35 * 2, 2, "%f", objBlock[8][0]->GetPosition().y);
-	DebugText::GetInstance()->Print(50, 35 * 3, 2, "rope_X:%f", Rope[0]->GetPosition().x);
-	DebugText::GetInstance()->Print(50, 35 * 4, 2, "rope_Y:%f", Rope[0]->GetPosition().y);
-	DebugText::GetInstance()->Print(50, 35 * 5, 2, "player_Y:%f", player->GetPosition().y);
-	DebugText::GetInstance()->Print(50, 35 * 6, 2, "enemy_Y:%f", enemy[0]->GetPosition().y);*/
+	//DebugText::GetInstance()->Print(50, 35 * 1, 2, "%f", objBlock[8][0]->GetPosition().x);
+	//DebugText::GetInstance()->Print(50, 35 * 2, 2, "%f", objBlock[8][0]->GetPosition().y);
+	//DebugText::GetInstance()->Print(50, 35 * 3, 2, "rope_X:%f", Rope[0]->GetPosition().x);
+	//DebugText::GetInstance()->Print(50, 35 * 4, 2, "rope_Y:%f", Rope[0]->GetPosition().y);
+	DebugText::GetInstance()->Print(50, 35 * 5, 2, "player_x:%f", p_pos.x);
+	DebugText::GetInstance()->Print(50, 35 * 6, 2, "player_y:%f", p_pos.y);
+	//DebugText::GetInstance()->Print(50, 35 * 7, 2, "enemy_Y:%f", enemy[0]->GetPosition().y);
 }
 
 void GamePlayScene::Draw()
@@ -543,8 +534,6 @@ void GamePlayScene::Draw()
 
 void GamePlayScene::MapCreate(int mapNumber)
 {
-	//マップチップ1つの大きさ
-	const float LAND_SCALE = 5.0f;
 	for (int y = 0; y < map_max_y; y++) {//(yが12)
 		for (int x = 0; x < map_max_x; x++) {//(xが52)
 
