@@ -99,7 +99,7 @@ void GamePlayScene::Initialize()
 	for (int i = 0; i < EnemySpawnMax; i++)
 	{
 		e_pos[i] = { 0, 0, 0 };
-		is_normal[i] = false;
+		is_normal[i] = true;
 		is_catch[i] = false;
 		is_alive[i] = false;
 		e_speed[i] = 0.25f;
@@ -314,9 +314,7 @@ void GamePlayScene::Update()
 						e_pos[i].x += e_speed[i];
 
 						//’[‚Ü‚Ås‚Á‚½‚ç
-						if (((Mapchip::GetChipNum((e_pos[i].x + p_x_radius + LAND_SCALE / 2) / LAND_SCALE, -(e_pos[i].y - p_y_radius + LAND_SCALE / 2) / LAND_SCALE - 1, map[0]) == None && e_speed[i] > 0)
-							|| (Mapchip::GetChipNum((e_pos[i].x - p_x_radius + LAND_SCALE / 2) / LAND_SCALE, -(e_pos[i].y - p_y_radius + LAND_SCALE / 2) / LAND_SCALE - 1, map[0]) == None && e_speed[i] < 0))
-							|| MapCollide(e_pos[i], p_x_radius, p_y_radius, 0, old_e_pos[i]))
+						if (MapCollide(e_pos[i], p_x_radius, p_y_radius, 0, old_e_pos[i]))
 						{
 							e_speed[i] = -e_speed[i];
 
@@ -329,6 +327,51 @@ void GamePlayScene::Update()
 								e_rot.y = 0;
 							}
 							enemy[i]->SetRotation(e_rot);
+						}
+						else if (Mapchip::GetChipNum(static_cast<int>((e_pos[i].x + p_x_radius + LAND_SCALE / 2) / LAND_SCALE), -static_cast<int>((e_pos[i].y - p_y_radius + LAND_SCALE / 2) / LAND_SCALE - 1), map[0]) == None && e_speed[i] > 0)
+						{
+							e_speed[i] = -e_speed[i];
+
+							//Œü‚«‚ð•Ï‚¦‚é
+							XMFLOAT3 e_rot;
+							e_rot = enemy[i]->GetRotation();
+							e_rot.y += 180.0f;
+							if (e_rot.y >= 360)
+							{
+								e_rot.y = 0;
+							}
+							enemy[i]->SetRotation(e_rot);
+						}
+						else if (Mapchip::GetChipNum(static_cast<int>((e_pos[i].x - p_x_radius + LAND_SCALE / 2) / LAND_SCALE), -static_cast<int>((e_pos[i].y - p_y_radius + LAND_SCALE / 2) / LAND_SCALE - 1), map[0]) == None && e_speed[i] < 0)
+						{
+							e_speed[i] = -e_speed[i];
+
+							//Œü‚«‚ð•Ï‚¦‚é
+							XMFLOAT3 e_rot;
+							e_rot = enemy[i]->GetRotation();
+							e_rot.y += 180.0f;
+							if (e_rot.y >= 360)
+							{
+								e_rot.y = 0;
+							}
+							enemy[i]->SetRotation(e_rot);
+						}
+						else if ((e_pos[i].x - p_x_radius + LAND_SCALE / 2) / LAND_SCALE < 0)
+						{
+							if (Mapchip::GetChipNum(-1, -static_cast<int>((e_pos[i].y - p_y_radius + LAND_SCALE / 2) / LAND_SCALE - 1), map[0]) == None && e_speed[i] < 0)
+							{
+								e_speed[i] = -e_speed[i];
+
+								//Œü‚«‚ð•Ï‚¦‚é
+								XMFLOAT3 e_rot;
+								e_rot = enemy[i]->GetRotation();
+								e_rot.y += 180.0f;
+								if (e_rot.y >= 360)
+								{
+									e_rot.y = 0;
+								}
+								enemy[i]->SetRotation(e_rot);
+							}
 						}
 					}
 				}
