@@ -308,7 +308,7 @@ void GamePlayScene::Update()
 				if (is_catch[i] == false && is_attack == false)
 				{
 					//’Êíó‘Ô
-					if (is_normal[i] == false)
+					if (is_normal[i] == true)
 					{
 						//ˆÚ“®
 						e_pos[i].x += e_speed[i];
