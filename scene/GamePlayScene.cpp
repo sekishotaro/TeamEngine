@@ -27,6 +27,7 @@ void GamePlayScene::Initialize()
 	Object3d::SetCamera(camera);
 
 	// テクスチャ読み込み
+	Sprite::LoadTexture(0, L"Resources/Number0.png");
 	Sprite::LoadTexture(1, L"Resources/Number1.png");
 	Sprite::LoadTexture(2, L"Resources/Number2.png");
 	Sprite::LoadTexture(3, L"Resources/Number3.png");
@@ -36,7 +37,6 @@ void GamePlayScene::Initialize()
 	Sprite::LoadTexture(7, L"Resources/Number7.png");
 	Sprite::LoadTexture(8, L"Resources/Number8.png");
 	Sprite::LoadTexture(9, L"Resources/Number9.png");
-	Sprite::LoadTexture(10, L"Resources/Number0.png");
 	Sprite::LoadTexture(11, L"Resources/background.png");
 	Sprite::LoadTexture(12, L"Resources/minimap.png");
 	Sprite::LoadTexture(13, L"Resources/miniplayer.png");
@@ -52,10 +52,8 @@ void GamePlayScene::Initialize()
 	{
 		minienemy[i] = Sprite::Create(14, { 40.0f,20.0f });
 	}
-	for (int i = 0; i < 10; i++)
-	{
-		spriteNumber[i] = Sprite::Create(i, { 0,0 });
-	}
+	spriteNumber[1] = Sprite::Create(1, { 0,0 });
+	spriteNumber[2] = Sprite::Create(1, { 32,0 });
 
 	// オブジェクト生成
 	model = Model::LoadFromOBJ("sphere");
@@ -92,6 +90,7 @@ void GamePlayScene::Initialize()
 	shake_time = 0;
 	shake_x = 0;
 	shake_y = 0;
+	lastTime = 60.0f;
 
 	gravity = 0.15f;
 
@@ -156,8 +155,16 @@ void GamePlayScene::Finalize()
 
 void GamePlayScene::Update()
 {
+
 	// ゲームシーンの毎フレーム処理
 	Input* input = Input::GetInstance();
+
+	if (lastTime > 0)
+	{
+		lastTime -= 0.02;
+	}
+	spriteNumber[2]->ChangeTex((int)lastTime % 10);
+	spriteNumber[1]->ChangeTex((int)lastTime / 10);
 
 	//Mキーでマップチップ設置
 	if (input->TriggerKey(DIK_M) || true)
@@ -523,8 +530,8 @@ void GamePlayScene::Draw()
 		}
 	}
 	miniplayer->Draw();
-	spriteNumber[score % 10]->Draw();
-
+	spriteNumber[1]->Draw();
+	spriteNumber[2]->Draw();
 	// デバッグテキストの描画
 	DebugText::GetInstance()->DrawAll(cmdList);
 

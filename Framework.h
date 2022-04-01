@@ -60,7 +60,7 @@ protected:
 
 	//デバックテキスト
 	DebugText *debugText = nullptr;
-	static const int debugTextTexNumber = 0;
+	static const int debugTextTexNumber = 100;
 
 	//シーンファクトリー
 	std::unique_ptr<AbstractSceneFactory> sceneFactory_;

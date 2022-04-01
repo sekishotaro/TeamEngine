@@ -87,6 +87,7 @@ public:
 	int shake_time; //シェイク時間
 	float shake_x; //x軸の幅
 	float shake_y; //y軸の幅
+	float lastTime; //残り時間
 
 	//汎用変数
 	float gravity; //重力加速度

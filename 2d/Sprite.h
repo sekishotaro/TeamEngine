@@ -78,7 +78,7 @@ public: //Ã“Iƒƒ“ƒoŠÖ”
 
 
 
-
+	void ChangeTex(int texNumber);
 
 
 
