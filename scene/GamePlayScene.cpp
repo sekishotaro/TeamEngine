@@ -114,7 +114,7 @@ void GamePlayScene::Initialize()
 
 	//プレイヤー
 	player->SetModel(model);
-	p_pos = { 10, 10, 0 };
+	p_pos = { 110, 10, 0 };
 	old_p_pos = { 0, 0, 0 };
 	p_x_radius = 1.0f * player->GetScale().x;
 	p_y_radius = 1.0f * player->GetScale().y;
@@ -314,23 +314,9 @@ void GamePlayScene::Update()
 						e_pos[i].x += e_speed[i];
 
 						//端まで行ったら
-						if (((Mapchip::GetChipNum(static_cast<int>((e_pos[i].x + p_x_radius) / LAND_SCALE), -static_cast<int>((e_pos[i].y - p_y_radius) / LAND_SCALE - 1), map[0]) == None && e_speed[i] > 0)
-							|| (Mapchip::GetChipNum(static_cast<int>((e_pos[i].x - p_x_radius) / LAND_SCALE), -static_cast<int>((e_pos[i].y - p_y_radius) / LAND_SCALE - 1), map[0]) == None && e_speed[i] < 0))
-							&& Mapchip::GetChipNum(static_cast<int>(e_pos[i].x / LAND_SCALE), -static_cast<int>(e_pos[i].y / LAND_SCALE - 1), map[0]) == Ground)
-						{
-							e_speed[i] = -e_speed[i];
-
-							//向きを変える
-							XMFLOAT3 e_rot;
-							e_rot = enemy[i]->GetRotation();
-							e_rot.y += 180.0f;
-							if (e_rot.y >= 360)
-							{
-								e_rot.y = 0;
-							}
-							enemy[i]->SetRotation(e_rot);
-						}
-						else if (MapCollide(e_pos[i], p_x_radius, p_y_radius, 0, old_e_pos[i]))
+						if (((Mapchip::GetChipNum((e_pos[i].x + p_x_radius + LAND_SCALE / 2) / LAND_SCALE, -(e_pos[i].y - p_y_radius + LAND_SCALE / 2) / LAND_SCALE - 1, map[0]) == None && e_speed[i] > 0)
+							|| (Mapchip::GetChipNum((e_pos[i].x - p_x_radius + LAND_SCALE / 2) / LAND_SCALE, -(e_pos[i].y - p_y_radius + LAND_SCALE / 2) / LAND_SCALE - 1, map[0]) == None && e_speed[i] < 0))
+							|| MapCollide(e_pos[i], p_x_radius, p_y_radius, 0, old_e_pos[i]))
 						{
 							e_speed[i] = -e_speed[i];
 
@@ -462,7 +448,8 @@ void GamePlayScene::Update()
 	//DebugText::GetInstance()->Print(50, 35 * 4, 2, "rope_Y:%f", Rope[0]->GetPosition().y);
 	DebugText::GetInstance()->Print(50, 35 * 5, 2, "player_x:%f", p_pos.x);
 	DebugText::GetInstance()->Print(50, 35 * 6, 2, "player_y:%f", p_pos.y);
-	//DebugText::GetInstance()->Print(50, 35 * 7, 2, "enemy_Y:%f", enemy[0]->GetPosition().y);
+	DebugText::GetInstance()->Print(50, 35 * 7, 2, "mapchip_x:%d", static_cast<int>(p_pos.x / LAND_SCALE));
+	DebugText::GetInstance()->Print(50, 35 * 8, 2, "mapchip_y:%d", -static_cast<int>(p_pos.y / LAND_SCALE));
 }
 
 void GamePlayScene::Draw()
@@ -595,6 +582,7 @@ bool GamePlayScene::MapCollide(XMFLOAT3& pos, float radiusX, float radiusY, int 
 	//判定
 	bool x_hit = false;
 	bool y_hit = false;
+	bool is_skip = false;
 
 	for (int b_x = 0; b_x < map_max_x; b_x++) //yが12
 	{
@@ -606,12 +594,14 @@ bool GamePlayScene::MapCollide(XMFLOAT3& pos, float radiusX, float radiusY, int 
 				y = objBlock[b_y][b_x]->GetPosition().y;
 				r_x = 2.5f * objBlock[b_y][b_x]->GetScale().x;
 				r_y = 2.5f * objBlock[b_y][b_x]->GetScale().y;
+
 				//下
 				if (b - r_b < y + r_y && y < old_pos.y - r_b && (x - r_x < a + r_a && a - r_a < x + r_x))
 				{
 					b = y + r_y + r_b;
 					pos.y = b;
 					y_hit = true;
+					is_skip = true;
 					break;
 				} 
 				//上
@@ -619,7 +609,8 @@ bool GamePlayScene::MapCollide(XMFLOAT3& pos, float radiusX, float radiusY, int 
 				{
 					b = y - r_y - r_b;
 					pos.y = b;
-					if (!is_jump)
+					is_skip = true;
+					if (is_jump == false)
 					{
 						y_hit = true;
 					}
@@ -631,12 +622,15 @@ bool GamePlayScene::MapCollide(XMFLOAT3& pos, float radiusX, float radiusY, int 
 				}
 			}
 		}
-		if (y_hit)
+		if (is_skip == true)
 		{
 			break;
 		}
 	}
-	for (int b_y = 0; b_y < map_max_y; b_y++) //xが52
+
+	is_skip = false;
+
+	for (int b_y = map_max_y - 1; b_y >= 0; b_y--) //xが52
 	{
 		for (int b_x = 0; b_x < map_max_x; b_x++) //yが12
 		{
@@ -646,12 +640,14 @@ bool GamePlayScene::MapCollide(XMFLOAT3& pos, float radiusX, float radiusY, int 
 				y = objBlock[b_y][b_x]->GetPosition().y;
 				r_x = 2.5f * objBlock[b_y][b_x]->GetScale().x;
 				r_y = 2.5f * objBlock[b_y][b_x]->GetScale().y;
+
 				//左
 				if (a - r_a < x + r_x && x < old_pos.x - r_a && (y - r_y < b + r_b && b - r_b < y + r_y))
 				{
 					a = x + r_x + r_a;
 					pos.x = a;
-					if (!is_jump)
+					is_skip = true;
+					if (is_jump == false)
 					{
 						x_hit = true;
 					}
@@ -662,7 +658,8 @@ bool GamePlayScene::MapCollide(XMFLOAT3& pos, float radiusX, float radiusY, int 
 				{
 					a = x - r_x - r_a;
 					pos.x = a;
-					if (!is_jump)
+					is_skip = true;
+					if (is_jump == false)
 					{
 						x_hit = true;
 					}
@@ -670,13 +667,13 @@ bool GamePlayScene::MapCollide(XMFLOAT3& pos, float radiusX, float radiusY, int 
 				}
 			}
 		}
-		if (x_hit)
+		if (is_skip == true)
 		{
 			break;
 		}
 	}
 
-	if (x_hit || y_hit)
+	if (x_hit == true || y_hit == true)
 	{
 		return true;
 	}

@@ -23,12 +23,12 @@ void Mapchip::CsvToVector(std::vector<std::vector<int>>& mapData, std::string fN
 }
 
 //マップナンバー指定
-int Mapchip::GetChipNum(int x, int y, std::vector<int> map)
+int Mapchip::GetChipNum(float x, float y, std::vector<int> map)
 {
-	const int X = x / map_size;
-	const int Y = y / map_size;
+	const float X = x / map_size;
+	const float Y = y / map_size;
 
-	if (X < 0 || X >= map_max_x || Y < 0 || Y >= map_max_y)
+	if ((X < 0 || X >= map_max_x) || (Y < 0 || Y >= map_max_y))
 	{
 		return 0;
 	}
