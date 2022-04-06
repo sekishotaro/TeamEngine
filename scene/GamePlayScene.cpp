@@ -620,117 +620,164 @@ void GamePlayScene::CircularMotion(XMFLOAT3& pos, const XMFLOAT3 center_pos, con
 bool GamePlayScene::MapCollide(XMFLOAT3& pos, float radiusX, float radiusY, int mapNumber, const XMFLOAT3 old_pos, bool is_jump)
 {
 	//判定対象
-	float a = pos.x;
-	float b = pos.y;
-	float r_a = radiusX;
-	float r_b = radiusY;
-
-	//マップチップ
+	float r = 0;
 	float x = 0;
 	float y = 0;
-	float r_x = 0;
-	float r_y = 0;
+	float old_x = 0;
+	float old_y = 0;
+
+	//当たったか
+	bool is_hit = false;
 
 	//判定
-	bool x_hit = false;
-	bool y_hit = false;
-	bool is_skip = false;
-
-	for (int b_x = 0; b_x < map_max_x; b_x++) //yが12
+	while (true)
 	{
-		for (int b_y = 0; b_y < map_max_y; b_y++) //xが52
-		{
-			if (Mapchip::GetChipNum(b_x, b_y, map[mapNumber]) == Ground)
-			{
-				x = objBlock[b_y][b_x]->GetPosition().x;
-				y = objBlock[b_y][b_x]->GetPosition().y;
-				r_x = 2.5f * objBlock[b_y][b_x]->GetScale().x;
-				r_y = 2.5f * objBlock[b_y][b_x]->GetScale().y;
+		r = LAND_SCALE / 2;
+		x = pos.x + r;
+		y = pos.y + r;
+		old_x = old_pos.x + r;
+		old_y = old_pos.y + r;
 
-				//下
-				if (b - r_b < y + r_y && y < old_pos.y - r_b && (x - r_x < a + r_a && a - r_a < x + r_x))
-				{
-					b = y + r_y + r_b;
-					pos.y = b;
-					y_hit = true;
-					is_skip = true;
-					break;
-				} 
-				//上
-				else if (b + r_b > y - r_y && old_pos.y + r_b < y && (x - r_x < a + r_a && a - r_a < x + r_x))
-				{
-					b = y - r_y - r_b;
-					pos.y = b;
-					is_skip = true;
-					if (is_jump == false)
-					{
-						y_hit = true;
-					}
-					else
-					{
-						p_add = 0;
-					}
-					break;
-				}
-			}
-		}
-		if (is_skip == true)
+		//下
+		if (true)
 		{
-			break;
+
+
+			continue;
 		}
+		//上
+		if (true)
+		{
+
+
+			continue;
+		}
+		//右
+		if (true)
+		{
+
+
+			continue;
+		}
+		//左
+		if (true)
+		{
+
+
+			continue;
+		}
+
+		break;
 	}
 
-	is_skip = false;
+	return is_hit;
 
-	for (int b_y = map_max_y - 1; b_y >= 0; b_y--) //xが52
-	{
-		for (int b_x = 0; b_x < map_max_x; b_x++) //yが12
-		{
-			if (Mapchip::GetChipNum(b_x, b_y, map[mapNumber]) == Ground)
-			{
-				x = objBlock[b_y][b_x]->GetPosition().x;
-				y = objBlock[b_y][b_x]->GetPosition().y;
-				r_x = 2.5f * objBlock[b_y][b_x]->GetScale().x;
-				r_y = 2.5f * objBlock[b_y][b_x]->GetScale().y;
+	////マップチップ
+	//float x = 0;
+	//float y = 0;
+	//float r_x = 0;
+	//float r_y = 0;
 
-				//左
-				if (a - r_a < x + r_x && x < old_pos.x - r_a && (y - r_y < b + r_b && b - r_b < y + r_y))
-				{
-					a = x + r_x + r_a;
-					pos.x = a;
-					is_skip = true;
-					if (is_jump == false)
-					{
-						x_hit = true;
-					}
-					break;
-				}
-				//右
-				else if (a + r_a > x - r_x && old_pos.x + r_a < x && (y - r_y < b + r_b && b - r_b < y + r_y))
-				{
-					a = x - r_x - r_a;
-					pos.x = a;
-					is_skip = true;
-					if (is_jump == false)
-					{
-						x_hit = true;
-					}
-					break;
-				}
-			}
-		}
-		if (is_skip == true)
-		{
-			break;
-		}
-	}
+	////判定
+	//bool x_hit = false;
+	//bool y_hit = false;
+	//bool is_skip = false;
 
-	if (x_hit == true || y_hit == true)
-	{
-		return true;
-	}
+	//for (int b_x = 0; b_x < map_max_x; b_x++) //yが12
+	//{
+	//	for (int b_y = 0; b_y < map_max_y; b_y++) //xが52
+	//	{
+	//		if (Mapchip::GetChipNum(b_x, b_y, map[mapNumber]) == Ground)
+	//		{
+	//			x = objBlock[b_y][b_x]->GetPosition().x;
+	//			y = objBlock[b_y][b_x]->GetPosition().y;
+	//			r_x = 2.5f * objBlock[b_y][b_x]->GetScale().x;
+	//			r_y = 2.5f * objBlock[b_y][b_x]->GetScale().y;
 
-	return false;
+	//			//下
+	//			if (b - r_b < y + r_y && y < old_pos.y - r_b && (x - r_x < a + r_a && a - r_a < x + r_x))
+	//			{
+	//				b = y + r_y + r_b;
+	//				pos.y = b;
+	//				y_hit = true;
+	//				is_skip = true;
+	//				break;
+	//			} 
+	//			//上
+	//			else if (b + r_b > y - r_y && old_pos.y + r_b < y && (x - r_x < a + r_a && a - r_a < x + r_x))
+	//			{
+	//				b = y - r_y - r_b;
+	//				pos.y = b;
+	//				is_skip = true;
+	//				if (is_jump == false)
+	//				{
+	//					y_hit = true;
+	//				}
+	//				else
+	//				{
+	//					p_add = 0;
+	//				}
+	//				break;
+	//			}
+	//		}
+	//	}
+	//	if (is_skip == true)
+	//	{
+	//		break;
+	//	}
+	//}
+
+	//is_skip = false;
+
+	//for (int b_y = map_max_y - 1; b_y >= 0; b_y--) //xが52
+	//{
+	//	for (int b_x = 0; b_x < map_max_x; b_x++) //yが12
+	//	{
+	//		if (Mapchip::GetChipNum(b_x, b_y, map[mapNumber]) == Ground)
+	//		{
+	//			x = objBlock[b_y][b_x]->GetPosition().x;
+	//			y = objBlock[b_y][b_x]->GetPosition().y;
+	//			r_x = 2.5f * objBlock[b_y][b_x]->GetScale().x;
+	//			r_y = 2.5f * objBlock[b_y][b_x]->GetScale().y;
+
+	//			//左
+	//			if (a - r_a < x + r_x && x < old_pos.x - r_a && (y - r_y < b + r_b && b - r_b < y + r_y))
+	//			{
+	//				a = x + r_x + r_a;
+	//				pos.x = a;
+	//				is_skip = true;
+	//				if (is_jump == false)
+	//				{
+	//					x_hit = true;
+	//				}
+	//				break;
+	//			}
+	//			//右
+	//			else if (a + r_a > x - r_x && old_pos.x + r_a < x && (y - r_y < b + r_b && b - r_b < y + r_y))
+	//			{
+	//				a = x - r_x - r_a;
+	//				pos.x = a;
+	//				is_skip = true;
+	//				if (is_jump == false)
+	//				{
+	//					x_hit = true;
+	//				}
+	//				break;
+	//			}
+	//		}
+	//	}
+	//	if (is_skip == true)
+	//	{
+	//		break;
+	//	}
+	//}
+
+	//if (x_hit == true || y_hit == true)
+	//{
+	//	return true;
+	//}
+
+	//return false;
 }
 
 void GamePlayScene::RopeMove(XMFLOAT3& pos, const int num)
