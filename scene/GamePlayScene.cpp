@@ -43,6 +43,7 @@ void GamePlayScene::Initialize()
 	Sprite::LoadTexture(14, L"Resources/minienemy.png");
 	Sprite::LoadTexture(15, L"Resources/score.png");
 	Sprite::LoadTexture(16, L"Resources/level.png");
+	Sprite::LoadTexture(17, L"Resources/koron.png");
 
 	// ”wŒiƒXƒvƒ‰ƒCƒg¶¬
 	spriteBG = Sprite::Create(11, { 0.0f,0.0f });
@@ -56,8 +57,10 @@ void GamePlayScene::Initialize()
 	{
 		minienemy[i] = Sprite::Create(14, { 40.0f,20.0f });
 	}
-	spriteTimer[1] = Sprite::Create(1, { 0,0 });
-	spriteTimer[2] = Sprite::Create(1, { 32,0 });
+	spriteTimer[0] = Sprite::Create(0, { 0,0 });
+	spriteCoron = Sprite::Create(17, { 32,0 });
+	spriteTimer[1] = Sprite::Create(0, { 64,0 });
+	spriteTimer[2] = Sprite::Create(0, { 96,0 });
 	spriteScore[1] = Sprite::Create(0, { WinApp::window_width - 32,0 });
 	spriteScore[2] = Sprite::Create(0, { WinApp::window_width - 64,0 });
 	spriteLevel[1] = Sprite::Create(0, { WinApp::window_width - 32 ,WinApp::window_height - 64 });
@@ -612,6 +615,8 @@ void GamePlayScene::Draw()
 		}
 	}
 	miniplayer->Draw();
+	spriteTimer[0]->Draw();
+	spriteCoron->Draw();
 	spriteTimer[1]->Draw();
 	spriteTimer[2]->Draw();
 	texLevel->Draw();
