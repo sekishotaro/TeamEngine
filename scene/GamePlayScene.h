@@ -48,7 +48,7 @@ public:
 	/// </summary>
 	
 	//定数
-	static const int EnemySpawnMax = 1;
+	static const int EnemySpawnMax = 10;
 	//マップチップ1つの大きさ
 	const float LAND_SCALE = 5.0f;
 
@@ -114,6 +114,7 @@ public:
 	bool is_normal[EnemySpawnMax]; //徘徊状態
 	bool is_catch[EnemySpawnMax]; //捕縛状態
 	bool is_alive[EnemySpawnMax]; //生死
+	bool is_grand[EnemySpawnMax]; //地面についているか
 
 	float e_speed[EnemySpawnMax]; //移動量
 	float e_down[EnemySpawnMax]; //下降度
