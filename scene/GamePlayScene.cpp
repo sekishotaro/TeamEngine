@@ -41,9 +41,13 @@ void GamePlayScene::Initialize()
 	Sprite::LoadTexture(12, L"Resources/minimap.png");
 	Sprite::LoadTexture(13, L"Resources/miniplayer.png");
 	Sprite::LoadTexture(14, L"Resources/minienemy.png");
+	Sprite::LoadTexture(15, L"Resources/score.png");
+	Sprite::LoadTexture(16, L"Resources/level.png");
 
 	// 背景スプライト生成
 	spriteBG = Sprite::Create(11, { 0.0f,0.0f });
+	texScore = Sprite::Create(15, { WinApp::window_width - 340, 0 });
+	texLevel = Sprite::Create(16, { WinApp::window_width - 100, WinApp::window_height - 64 });
 
 	//スプライト生成
 	minimap = Sprite::Create(12, { 0.0f,0.0f });
@@ -56,6 +60,7 @@ void GamePlayScene::Initialize()
 	spriteTimer[2] = Sprite::Create(1, { 32,0 });
 	spriteScore[1] = Sprite::Create(0, { WinApp::window_width - 32,0 });
 	spriteScore[2] = Sprite::Create(0, { WinApp::window_width - 64,0 });
+	spriteLevel[1] = Sprite::Create(0, { WinApp::window_width - 32 ,WinApp::window_height - 64 });
 
 	// オブジェクト生成
 	model = Model::LoadFromOBJ("sphere");
@@ -475,6 +480,7 @@ void GamePlayScene::Update()
 		level = 2;
 	}
 	enemySpawn = level;
+	spriteLevel[1]->ChangeTex((int)level % 10);
 
 	//エネミー更新
 	for (int i = 0; i < enemySpawn; i++)
@@ -608,6 +614,9 @@ void GamePlayScene::Draw()
 	miniplayer->Draw();
 	spriteTimer[1]->Draw();
 	spriteTimer[2]->Draw();
+	texLevel->Draw();
+	spriteLevel[1]->Draw();
+	texScore->Draw();
 	spriteScore[1]->Draw();
 	spriteScore[2]->Draw();
 	// デバッグテキストの描画

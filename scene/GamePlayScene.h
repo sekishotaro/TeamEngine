@@ -80,6 +80,9 @@ public:
 	Sprite* minienemy[EnemySpawnMax]; //エネミー(ミニマップ)
 	Sprite* spriteTimer[10]; //スコア
 	Sprite* spriteScore[10]; //スコア
+	Sprite* spriteLevel[10]; //スコア
+	Sprite* texScore = nullptr;
+	Sprite* texLevel = nullptr;
 	Sprite* minimap = nullptr; //ステージ(ミニマップ)
 
 	//UI・スコアetc
