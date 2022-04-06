@@ -52,8 +52,10 @@ void GamePlayScene::Initialize()
 	{
 		minienemy[i] = Sprite::Create(14, { 40.0f,20.0f });
 	}
-	spriteNumber[1] = Sprite::Create(1, { 0,0 });
-	spriteNumber[2] = Sprite::Create(1, { 32,0 });
+	spriteTimer[1] = Sprite::Create(1, { 0,0 });
+	spriteTimer[2] = Sprite::Create(1, { 32,0 });
+	spriteScore[1] = Sprite::Create(0, { WinApp::window_width - 32,0 });
+	spriteScore[2] = Sprite::Create(0, { WinApp::window_width - 64,0 });
 
 	// オブジェクト生成
 	model = Model::LoadFromOBJ("sphere");
@@ -85,13 +87,14 @@ void GamePlayScene::Initialize()
 	}
 
 	//etc
-	score = 1;
+	score = 0;
 	is_shake = false;
 	shake_time = 0;
 	shake_x = 0;
 	shake_y = 0;
 	lastTime = 60.0f;
-
+	level = 1;
+	enemySpawn = 1;
 	gravity = 0.15f;
 
 	//オブジェクトにモデルをひも付ける
@@ -148,7 +151,11 @@ void GamePlayScene::Finalize()
 	}
 	for (int i = 0; i < 10; i++)
 	{
-		safe_delete(spriteNumber[i]);
+		safe_delete(spriteTimer[i]);
+	}
+	for (int i = 0; i < 10; i++)
+	{
+		safe_delete(spriteScore[i]);
 	}
 	safe_delete(minimap);
 }
@@ -163,8 +170,8 @@ void GamePlayScene::Update()
 	{
 		lastTime -= 0.02;
 	}
-	spriteNumber[2]->ChangeTex((int)lastTime % 10);
-	spriteNumber[1]->ChangeTex((int)lastTime / 10);
+	spriteTimer[2]->ChangeTex((int)lastTime % 10);
+	spriteTimer[1]->ChangeTex((int)lastTime / 10);
 
 	//Mキーでマップチップ設置
 	if (input->TriggerKey(DIK_M) || true)
@@ -179,7 +186,7 @@ void GamePlayScene::Update()
 		}
 	}
 
-	for (int i = 0; i < EnemySpawnMax; i++) 
+	for (int i = 0; i < enemySpawn; i++) 
 	{
 		old_e_pos[i] = enemy[i]->GetPosition();
 	}
@@ -220,7 +227,7 @@ void GamePlayScene::Update()
 		}
 
 		//攻撃
-		for (int i = 0; i < EnemySpawnMax; i++)
+		for (int i = 0; i < enemySpawn; i++)
 		{
 			if (is_alive[i] == true)
 			{
@@ -288,7 +295,7 @@ void GamePlayScene::Update()
 
 	//エネミー処理
 	{
-		for (int i = 0; i < EnemySpawnMax; i++)
+		for (int i = 0; i < enemySpawn; i++)
 		{
 			//敵のスポーン
 			if (is_alive[i] == false)
@@ -397,7 +404,10 @@ void GamePlayScene::Update()
 							is_catch[i] = false;
 							is_attack = false;
 							is_shake = true;
-							for (int i = 0; i < EnemySpawnMax; i++)
+							score++;
+							spriteScore[1]->ChangeTex((int)score % 10);
+							spriteScore[2]->ChangeTex((int)score / 10);
+							for (int i = 0; i < enemySpawn; i++)
 							{
 								if (is_catch[i] == true)
 								{
@@ -432,8 +442,30 @@ void GamePlayScene::Update()
 		}
 	}
 
+	if (score > 2)
+	{
+		level = 2;
+	}
+	else if (score > 5)
+	{
+		level = 3;
+	}
+	else if (score > 10)
+	{
+		level = 4;
+	}
+	else if (score > 20)
+	{
+		level = 5;
+	}
+	else if (score > 30)
+	{
+		level = 6;
+	}
+	enemySpawn = level;
+
 	//エネミー更新
-	for (int i = 0; i < EnemySpawnMax; i++)
+	for (int i = 0; i < enemySpawn; i++)
 	{
 		enemy[i]->SetPosition(e_pos[i]);
 		//落下の最大値を超えたら
@@ -519,7 +551,7 @@ void GamePlayScene::Draw()
 	Object3d::PreDraw(cmdList);
 
 	// 3Dオブクジェクトの描画
-	for (int i = 0; i < EnemySpawnMax; i++)
+	for (int i = 0; i < enemySpawn; i++)
 	{
 		if (is_alive[i])
 		{
@@ -552,7 +584,7 @@ void GamePlayScene::Draw()
 
 	//ミニマップの描画
 	minimap->Draw();
-	for (int i = 0; i < EnemySpawnMax; i++)
+	for (int i = 0; i < enemySpawn; i++)
 	{
 		if (is_alive[i])
 		{
@@ -560,8 +592,10 @@ void GamePlayScene::Draw()
 		}
 	}
 	miniplayer->Draw();
-	spriteNumber[1]->Draw();
-	spriteNumber[2]->Draw();
+	spriteTimer[1]->Draw();
+	spriteTimer[2]->Draw();
+	spriteScore[1]->Draw();
+	spriteScore[2]->Draw();
 	// デバッグテキストの描画
 	DebugText::GetInstance()->DrawAll(cmdList);
 

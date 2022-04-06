@@ -48,7 +48,7 @@ public:
 	/// </summary>
 	
 	//定数
-	static const int EnemySpawnMax = 1;
+	static const int EnemySpawnMax = 10;
 	//マップチップ1つの大きさ
 	const float LAND_SCALE = 5.0f;
 
@@ -78,7 +78,8 @@ public:
 	Sprite* spriteBG = nullptr; //背景
 	Sprite* miniplayer = nullptr; //プレイヤー(ミニマップ)
 	Sprite* minienemy[EnemySpawnMax]; //エネミー(ミニマップ)
-	Sprite* spriteNumber[10]; //スコア
+	Sprite* spriteTimer[10]; //スコア
+	Sprite* spriteScore[10]; //スコア
 	Sprite* minimap = nullptr; //ステージ(ミニマップ)
 
 	//UI・スコアetc
@@ -88,6 +89,8 @@ public:
 	float shake_x; //x軸の幅
 	float shake_y; //y軸の幅
 	float lastTime; //残り時間
+	int level;
+	int enemySpawn; //敵の数
 
 	//汎用変数
 	float gravity; //重力加速度
