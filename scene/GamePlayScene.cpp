@@ -450,25 +450,29 @@ void GamePlayScene::Update()
 		}
 	}
 
-	if (score > 2)
+	if (score > 50)
 	{
-		level = 2;
+		level = 7;
 	}
-	else if (score > 5)
+	else if (score > 30)
 	{
-		level = 3;
-	}
-	else if (score > 10)
-	{
-		level = 4;
+		level = 6;
 	}
 	else if (score > 20)
 	{
 		level = 5;
 	}
-	else if (score > 30)
+	else if (score > 10)
 	{
-		level = 6;
+		level = 4;
+	}
+	else if (score > 5)
+	{
+		level = 3;
+	}
+	else if (score > 2)
+	{
+		level = 2;
 	}
 	enemySpawn = level;
 
@@ -534,6 +538,7 @@ void GamePlayScene::Update()
 	DebugText::GetInstance()->Print(50, 35 * 7, 2, "mapchip_x:%d", static_cast<int>((p_pos.x + LAND_SCALE / 2) / LAND_SCALE));
 	DebugText::GetInstance()->Print(50, 35 * 8, 2, "mapchip_y:%d", -static_cast<int>((p_pos.y + LAND_SCALE / 2) / LAND_SCALE));
 	DebugText::GetInstance()->Print(50, 35 * 9, 2, "map_pos:%d", Mapchip::GetChipNum((static_cast<int>((p_pos.x + LAND_SCALE / 2) / LAND_SCALE)), (-static_cast<int>((p_pos.y + LAND_SCALE / 2) / LAND_SCALE + 1)), map[0]));
+	DebugText::GetInstance()->Print(50, 35 * 10, 2, "enemySpawn:%d", enemySpawn);
 }
 
 void GamePlayScene::Draw()
