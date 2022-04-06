@@ -117,6 +117,7 @@ public:
 	bool is_normal[EnemySpawnMax]; //œpœjó‘Ô
 	bool is_catch[EnemySpawnMax]; //•ß”›ó‘Ô
 	bool is_alive[EnemySpawnMax]; //¶€
+	bool is_grand[EnemySpawnMax]; //’n–Ê‚É‚Â‚¢‚Ä‚¢‚é‚©
 
 	float e_speed[EnemySpawnMax]; //ˆÚ“®—Ê
 	float e_down[EnemySpawnMax]; //‰º~“x
