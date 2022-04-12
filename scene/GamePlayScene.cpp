@@ -44,6 +44,7 @@ void GamePlayScene::Initialize()
 	Sprite::LoadTexture(15, L"Resources/score.png");
 	Sprite::LoadTexture(16, L"Resources/level.png");
 	Sprite::LoadTexture(17, L"Resources/koron.png");
+	Sprite::LoadTexture(18, L"Resources/timer.png");
 
 	// 背景スプライト生成
 	spriteBG = Sprite::Create(11, { 0.0f,0.0f });
@@ -57,10 +58,11 @@ void GamePlayScene::Initialize()
 	{
 		minienemy[i] = Sprite::Create(14, { 40.0f,20.0f });
 	}
-	spriteTimer[0] = Sprite::Create(0, { 0,0 });
-	spriteCoron = Sprite::Create(17, { 32,0 });
-	spriteTimer[1] = Sprite::Create(0, { 64,0 });
-	spriteTimer[2] = Sprite::Create(0, { 96,0 });
+	spriteTime[0] = Sprite::Create(0, { 64,0 });
+	spriteCoron = Sprite::Create(17, { 96,0 });
+	spriteTimer = Sprite::Create(18, { 0,0 });
+	spriteTime[1] = Sprite::Create(0, { 128,0 });
+	spriteTime[2] = Sprite::Create(0, { 160,0 });
 	spriteScore[1] = Sprite::Create(0, { WinApp::window_width - 32,0 });
 	spriteScore[2] = Sprite::Create(0, { WinApp::window_width - 64,0 });
 	spriteLevel[1] = Sprite::Create(0, { WinApp::window_width - 32 ,WinApp::window_height - 64 });
@@ -161,7 +163,7 @@ void GamePlayScene::Finalize()
 	}
 	for (int i = 0; i < 10; i++)
 	{
-		safe_delete(spriteTimer[i]);
+		safe_delete(spriteTime[i]);
 	}
 	for (int i = 0; i < 10; i++)
 	{
@@ -180,8 +182,8 @@ void GamePlayScene::Update()
 	{
 		lastTime -= 0.02;
 	}
-	spriteTimer[2]->ChangeTex((int)lastTime % 10);
-	spriteTimer[1]->ChangeTex((int)lastTime / 10);
+	spriteTime[2]->ChangeTex((int)lastTime % 10);
+	spriteTime[1]->ChangeTex((int)lastTime / 10);
 
 	//Mキーでマップチップ設置
 	if (input->TriggerKey(DIK_M) || true)
@@ -615,10 +617,11 @@ void GamePlayScene::Draw()
 		}
 	}
 	miniplayer->Draw();
-	spriteTimer[0]->Draw();
+	spriteTime[0]->Draw();
 	spriteCoron->Draw();
-	spriteTimer[1]->Draw();
-	spriteTimer[2]->Draw();
+	spriteTime[1]->Draw();
+	spriteTime[2]->Draw();
+	spriteTimer->Draw();
 	texLevel->Draw();
 	spriteLevel[1]->Draw();
 	texScore->Draw();

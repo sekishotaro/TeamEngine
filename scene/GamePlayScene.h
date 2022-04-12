@@ -78,12 +78,13 @@ public:
 	Sprite* spriteBG = nullptr; //背景
 	Sprite* miniplayer = nullptr; //プレイヤー(ミニマップ)
 	Sprite* minienemy[EnemySpawnMax]; //エネミー(ミニマップ)
-	Sprite* spriteTimer[10]; //スコア
+	Sprite* spriteTime[10]; //スコア
 	Sprite* spriteScore[10]; //スコア
 	Sprite* spriteLevel[10]; //スコア
 	Sprite* spriteCoron = nullptr;
 	Sprite* texScore = nullptr;
 	Sprite* texLevel = nullptr;
+	Sprite* spriteTimer = nullptr;
 	Sprite* minimap = nullptr; //ステージ(ミニマップ)
 
 	//UI・スコアetc
