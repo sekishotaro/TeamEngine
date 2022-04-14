@@ -21,8 +21,33 @@ private: // エイリアス
 	using XMMATRIX = DirectX::XMMATRIX;
 	using XMVECTOR = DirectX::XMVECTOR;
 
-public:
+public: //サブクラス
+	enum EnemyType
+	{
+		NORMAL, 
+	};
 
+	struct EnemyData
+	{
+		XMFLOAT3 e_pos; //座標
+		XMFLOAT3 old_e_pos; //1フレーム前の座標
+
+		bool is_normal; //徘徊状態
+		bool is_catch; //捕縛状態
+		bool is_alive; //生死
+		bool is_grand; //地面についているか
+
+		float e_speed; //移動量
+		float e_down; //下降度
+
+		int angle; //円運動の角度
+
+		int enemy_type; //エネミーの種類
+
+		bool is_add; //加算するか
+	};
+
+public: 
 	/// <summary>
 	/// 初期化
 	/// </summary>
@@ -116,18 +141,7 @@ public:
 	bool is_air;//空中フラグ
 
 	//エネミー
-	XMFLOAT3 e_pos[EnemySpawnMax]; //座標
-	XMFLOAT3 old_e_pos[EnemySpawnMax]; //1フレーム前の座標
-
-	bool is_normal[EnemySpawnMax]; //徘徊状態
-	bool is_catch[EnemySpawnMax]; //捕縛状態
-	bool is_alive[EnemySpawnMax]; //生死
-	bool is_grand[EnemySpawnMax]; //地面についているか
-
-	float e_speed[EnemySpawnMax]; //移動量
-	float e_down[EnemySpawnMax]; //下降度
-
-	int angle[EnemySpawnMax]; //円運動の角度
+	EnemyData enemy_data[EnemySpawnMax]; //エネミーのデータ
 
 	//ロープ
 	float max_rope; //ロープの最大
