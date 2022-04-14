@@ -246,11 +246,12 @@ void GamePlayScene::Update()
 				if ((input->TriggerKey(DIK_SPACE) || input->PushButton(Button_B)) && is_attack == false && enemy_data[i].is_catch)
 				{
 					//プレイヤーの向きで投げる方向を変える
-					if (player->GetRotation().y == 0 && p_pos.x >= enemy[i]->GetPosition().x)
+					if (player->GetRotation().y == 0 && p_pos.x > enemy[i]->GetPosition().x)
 					{
 						enemy_data[i].angle = static_cast<int>(XMConvertToDegrees(rope_angle->PosForAngle(p_pos.x, enemy[i]->GetPosition().y, enemy[i]->GetPosition().x, p_pos.y))) - 90;
 						is_attack = true;
-					} else if (player->GetRotation().y == 180 && p_pos.x < enemy[i]->GetPosition().x)
+					} 
+					else if (player->GetRotation().y == 180 && p_pos.x < enemy[i]->GetPosition().x)
 					{
 						enemy_data[i].angle = static_cast<int>(XMConvertToDegrees(rope_angle->PosForAngle(p_pos.x, enemy[i]->GetPosition().y, enemy[i]->GetPosition().x, p_pos.y))) - 90;
 						is_attack = true;
@@ -552,8 +553,8 @@ void GamePlayScene::Update()
 			is_shake = false;
 		}
 	}
-	camera->SetTarget({ p_pos.x + shake_x, p_pos.y + shake_y, p_pos.z });
-	camera->SetEye({ p_pos.x + shake_x, p_pos.y + shake_y, p_pos.z - 60.0f });  
+	camera->SetTarget({ old_p_pos.x + shake_x, old_p_pos.y + shake_y, p_pos.z });
+	camera->SetEye({ old_p_pos.x + shake_x, old_p_pos.y + shake_y, p_pos.z - 60.0f });  
 	camera->Update();
 
 	if (input->TriggerKey(DIK_RETURN))
@@ -565,11 +566,26 @@ void GamePlayScene::Update()
 		SceneManager::GetInstance()->ChangeScene("TITLE");
 	}
 
+	int cx = 0;
+	int dx = 0;
+	for (int i = 0; i < enemySpawn; i++)
+	{
+		if (enemy_data[i].is_catch == true)
+		{
+			cx++;
+		}
+		else
+		{
+			dx++;
+		}
+	}
 	//プレイヤーの座標（X：Y)
 	DebugText::GetInstance()->Print(50, 35 * 3, 2, "player_x:%f", p_pos.x);
 	DebugText::GetInstance()->Print(50, 35 * 4, 2, "player_y:%f", p_pos.y);
-	DebugText::GetInstance()->Print(50, 35 * 5, 2, "enemySpawn:%d", enemySpawn);
-	DebugText::GetInstance()->Print(50, 35 * 6, 2, "enemySpawn:%f", max_rope);
+	DebugText::GetInstance()->Print(50, 35 * 5, 2, "rope_len:%f", max_rope);
+	DebugText::GetInstance()->Print(50, 35 * 6, 2, "enemySpawn:%d", enemySpawn);
+	DebugText::GetInstance()->Print(50, 35 * 7, 2, "is_catch:%d", cx);
+	DebugText::GetInstance()->Print(50, 35 * 8, 2, "not_is_catch:%d", dx);
 }
 
 void GamePlayScene::Draw()
@@ -647,6 +663,7 @@ void GamePlayScene::Draw()
 	texScore->Draw();
 	spriteScore[1]->Draw();
 	spriteScore[2]->Draw();
+
 	// デバッグテキストの描画
 	DebugText::GetInstance()->DrawAll(cmdList);
 
@@ -677,12 +694,12 @@ void GamePlayScene::SpawnEnemy(int mapNumber, int enemyNumber)
 	spawnX = rand() % map_max_x;
 	const float LAND_SCALE = 5.0f;
 
-	if (Mapchip::GetChipNum(spawnX, spawnY, map[mapNumber]) == None && Mapchip::GetChipNum(spawnX, spawnY, map[mapNumber]) == None)
+	if (Mapchip::GetChipNum(spawnX, spawnY, map[mapNumber]) == None && Mapchip::GetChipNum(spawnX + 1, spawnY, map[mapNumber]) == None)
 	{
 		enemy[enemyNumber]->SetPosition({ spawnX * LAND_SCALE,  -spawnY * LAND_SCALE, 0 });//位置をセット
 		enemy_data[enemyNumber].e_pos = { spawnX * LAND_SCALE,  -spawnY * LAND_SCALE, 0 };
 		enemy_data[enemyNumber].is_alive = true;//スポーン
-		enemy[enemyNumber + 1]->SetPosition({spawnX * LAND_SCALE,  -spawnY * LAND_SCALE, 0});//位置をセット
+		enemy[enemyNumber + 1]->SetPosition({ (spawnX + 1) * LAND_SCALE,  -spawnY * LAND_SCALE, 0 });//位置をセット
 		enemy_data[enemyNumber + 1].e_pos = { (spawnX + 1) * LAND_SCALE,  -spawnY * LAND_SCALE, 0 };
 		enemy_data[enemyNumber + 1].is_alive = true;//スポーン
 	}
