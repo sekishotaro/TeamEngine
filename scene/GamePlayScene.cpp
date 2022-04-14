@@ -319,8 +319,8 @@ void GamePlayScene::Update()
 					}
 					if (i % 2 == 1)
 					{
-						enemy_data[i + 1].is_alive = false;
-						enemy_data[i + 1].is_catch = false;
+						enemy_data[i - 1].is_alive = false;
+						enemy_data[i - 1].is_catch = false;
 					}
 				}
 				if (i % 2 == 0)
@@ -553,8 +553,8 @@ void GamePlayScene::Update()
 			is_shake = false;
 		}
 	}
-	camera->SetTarget({ old_p_pos.x + shake_x, old_p_pos.y + shake_y, p_pos.z });
-	camera->SetEye({ old_p_pos.x + shake_x, old_p_pos.y + shake_y, p_pos.z - 60.0f });  
+	camera->SetTarget({ p_pos.x + shake_x, p_pos.y + shake_y, p_pos.z });
+	camera->SetEye({ p_pos.x + shake_x, p_pos.y + shake_y, p_pos.z - 60.0f });  
 	camera->Update();
 
 	if (input->TriggerKey(DIK_RETURN))
