@@ -312,7 +312,23 @@ void GamePlayScene::Update()
 			//敵のスポーン
 			if (is_alive[i] == false)
 			{
-				SpawnEnemy(0, i);
+				if (is_attack == false)
+				{
+					if (i % 2 == 0)
+					{
+						is_alive[i + 1] = false;
+						is_catch[i + 1] = false;
+					}
+					if (i % 2 == 1)
+					{
+						is_alive[i - 1] = false;
+						is_catch[i - 1] = false;
+					}
+				}
+				if (i % 2 == 0)
+				{
+					SpawnEnemy(0, i);
+				}
 			}
 			//敵の処理
 			else
@@ -484,7 +500,7 @@ void GamePlayScene::Update()
 	{
 		level = 2;
 	}
-	enemySpawn = level;
+	enemySpawn = level * 2;
 	spriteLevel[1]->ChangeTex((int)level % 10);
 
 	//エネミー更新
@@ -657,11 +673,14 @@ void GamePlayScene::SpawnEnemy(int mapNumber, int enemyNumber)
 	spawnX = rand() % map_max_x;
 	const float LAND_SCALE = 5.0f;
 
-	if (Mapchip::GetChipNum(spawnX, spawnY, map[mapNumber]) == None)
+	if (Mapchip::GetChipNum(spawnX, spawnY, map[mapNumber]) == None && Mapchip::GetChipNum(spawnX, spawnY, map[mapNumber]) == None)
 	{
 		enemy[enemyNumber]->SetPosition({ spawnX * LAND_SCALE,  -spawnY * LAND_SCALE, 0 });//位置をセット
 		e_pos[enemyNumber] = { spawnX * LAND_SCALE,  -spawnY * LAND_SCALE, 0 };
 		is_alive[enemyNumber] = true;//スポーン
+		enemy[enemyNumber + 1]->SetPosition({ spawnX * LAND_SCALE,  -spawnY * LAND_SCALE, 0 });//位置をセット
+		e_pos[enemyNumber + 1] = { (spawnX + 1) * LAND_SCALE,  -spawnY * LAND_SCALE, 0 };
+		is_alive[enemyNumber + 1] = true;//スポーン
 	}
 }
 
