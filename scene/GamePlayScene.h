@@ -48,7 +48,7 @@ public:
 	/// </summary>
 	
 	//定数
-	static const int EnemySpawnMax = 10;
+	static const int EnemySpawnMax = 40;
 	//マップチップ1つの大きさ
 	const float LAND_SCALE = 5.0f;
 
