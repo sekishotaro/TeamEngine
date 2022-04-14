@@ -309,7 +309,23 @@ void GamePlayScene::Update()
 			//敵のスポーン
 			if (enemy_data[i].is_alive == false)
 			{
-				SpawnEnemy(0, i);
+				if (is_attack == false)
+				{
+					if (i % 2 == 0)
+					{
+						enemy_data[i + 1].is_alive = false;
+						enemy_data[i + 1].is_catch = false;
+					}
+					if (i % 2 == 1)
+					{
+						enemy_data[i + 1].is_alive = false;
+						enemy_data[i + 1].is_catch = false;
+					}
+				}
+				if (i % 2 == 0)
+				{
+					SpawnEnemy(0, i);
+				}
 			}
 			//敵の処理
 			else
@@ -661,11 +677,14 @@ void GamePlayScene::SpawnEnemy(int mapNumber, int enemyNumber)
 	spawnX = rand() % map_max_x;
 	const float LAND_SCALE = 5.0f;
 
-	if (Mapchip::GetChipNum(spawnX, spawnY, map[mapNumber]) == None)
+	if (Mapchip::GetChipNum(spawnX, spawnY, map[mapNumber]) == None && Mapchip::GetChipNum(spawnX, spawnY, map[mapNumber]) == None)
 	{
 		enemy[enemyNumber]->SetPosition({ spawnX * LAND_SCALE,  -spawnY * LAND_SCALE, 0 });//位置をセット
 		enemy_data[enemyNumber].e_pos = { spawnX * LAND_SCALE,  -spawnY * LAND_SCALE, 0 };
 		enemy_data[enemyNumber].is_alive = true;//スポーン
+		enemy[enemyNumber]->SetPosition({spawnX * LAND_SCALE,  -spawnY * LAND_SCALE, 0});//位置をセット
+		enemy_data[enemyNumber + 1].e_pos = { (spawnX + 1) * LAND_SCALE,  -spawnY * LAND_SCALE, 0 };
+		enemy_data[enemyNumber + 1].is_alive = true;//スポーン
 	}
 }
 
