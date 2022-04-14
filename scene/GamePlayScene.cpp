@@ -302,8 +302,6 @@ void GamePlayScene::Update()
 		miniplayer->SetPosition({ p_pos.x , -p_pos.y + 28 });
 	}
 
-
-
 	//エネミー処理
 	{
 		for (int i = 0; i < enemySpawn; i++)
