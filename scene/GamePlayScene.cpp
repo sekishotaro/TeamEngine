@@ -510,7 +510,7 @@ void GamePlayScene::Update()
 	{
 		level = 2;
 	}
-	enemySpawn = level * 3;
+	enemySpawn = level * 2;
 	spriteLevel[1]->ChangeTex((int)level % 10);
 
 	//エネミー更新
@@ -682,7 +682,7 @@ void GamePlayScene::SpawnEnemy(int mapNumber, int enemyNumber)
 		enemy[enemyNumber]->SetPosition({ spawnX * LAND_SCALE,  -spawnY * LAND_SCALE, 0 });//位置をセット
 		enemy_data[enemyNumber].e_pos = { spawnX * LAND_SCALE,  -spawnY * LAND_SCALE, 0 };
 		enemy_data[enemyNumber].is_alive = true;//スポーン
-		enemy[enemyNumber]->SetPosition({spawnX * LAND_SCALE,  -spawnY * LAND_SCALE, 0});//位置をセット
+		enemy[enemyNumber + 1]->SetPosition({spawnX * LAND_SCALE,  -spawnY * LAND_SCALE, 0});//位置をセット
 		enemy_data[enemyNumber + 1].e_pos = { (spawnX + 1) * LAND_SCALE,  -spawnY * LAND_SCALE, 0 };
 		enemy_data[enemyNumber + 1].is_alive = true;//スポーン
 	}
