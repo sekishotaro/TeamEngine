@@ -52,7 +52,7 @@ void GamePlayScene::Initialize()
 	texLevel = Sprite::Create(16, { WinApp::window_width - 100, WinApp::window_height - 64 });
 
 	//スプライト生成
-	minimap = Sprite::Create(12, { 0.0f,0.0f });
+	minimap = Sprite::Create(12, { 0.0f,50.0f });
 	miniplayer = Sprite::Create(13, { 20.0f,20.0f });
 	for (int i = 0; i < EnemySpawnMax; i++)
 	{
@@ -300,7 +300,7 @@ void GamePlayScene::Update()
 		}
 
 		//ミニマップ用座標変換
-		miniplayer->SetPosition({ p_pos.x , -p_pos.y + 28 });
+		miniplayer->SetPosition({ p_pos.x , -p_pos.y + 78 });
 	}
 
 	//エネミー処理
@@ -482,7 +482,7 @@ void GamePlayScene::Update()
 				}
 
 				//ミニマップ用座標変換
-				minienemy[i]->SetPosition({ enemy_data[i].e_pos.x , -enemy_data[i].e_pos.y + 28 });
+				minienemy[i]->SetPosition({ enemy_data[i].e_pos.x , -enemy_data[i].e_pos.y + 78 });
 			}
 		}
 	}
@@ -580,12 +580,12 @@ void GamePlayScene::Update()
 		}
 	}
 	//プレイヤーの座標（X：Y)
-	DebugText::GetInstance()->Print(50, 35 * 3, 2, "player_x:%f", p_pos.x);
+	/*DebugText::GetInstance()->Print(50, 35 * 3, 2, "player_x:%f", p_pos.x);
 	DebugText::GetInstance()->Print(50, 35 * 4, 2, "player_y:%f", p_pos.y);
 	DebugText::GetInstance()->Print(50, 35 * 5, 2, "rope_len:%f", max_rope);
 	DebugText::GetInstance()->Print(50, 35 * 6, 2, "enemySpawn:%d", enemySpawn);
 	DebugText::GetInstance()->Print(50, 35 * 7, 2, "is_catch:%d", cx);
-	DebugText::GetInstance()->Print(50, 35 * 8, 2, "not_is_catch:%d", dx);
+	DebugText::GetInstance()->Print(50, 35 * 8, 2, "not_is_catch:%d", dx);*/
 }
 
 void GamePlayScene::Draw()
