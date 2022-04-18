@@ -120,6 +120,7 @@ void GamePlayScene::Initialize()
 		enemy_data[i].e_down = 0.0f;
 		enemy_data[i].angle = 0;
 		enemy_data[i].enemy_type = NORMAL;
+		enemy_data[i].can_catch = true;
 		enemy_data[i].is_add = true;
 		enemy[i]->SetModel(model);
 		enemy[i]->SetPosition(enemy_data[i].e_pos);
@@ -130,6 +131,8 @@ void GamePlayScene::Initialize()
 		Rope[i]->SetScale({ 0.3, 5, 0.3 });
 		Rope[i]->Update();
 	}
+	enemy_data[0].enemy_type = TWICE;
+	enemy_data[0].can_catch = false;
 
 	//ロープ
 	max_rope = 15;
@@ -243,7 +246,7 @@ void GamePlayScene::Update()
 			if (enemy_data[i].is_alive == true)
 			{
 				//プレイヤーの攻撃
-				if ((input->TriggerKey(DIK_SPACE) || input->PushButton(Button_B)) && is_attack == false && enemy_data[i].is_catch)
+				if ((input->TriggerKey(DIK_SPACE) || input->PushButton(Button_B)) && is_attack == false && enemy_data[i].is_catch == true)
 				{
 					//プレイヤーの向きで投げる方向を変える
 					if (player->GetRotation().y == 0 && p_pos.x > enemy[i]->GetPosition().x)
@@ -331,13 +334,34 @@ void GamePlayScene::Update()
 			//敵の処理
 			else
 			{
+				//座標取得
 				enemy_data[i].e_pos = enemy[i]->GetPosition();
 				enemy_data[i].old_e_pos = enemy_data[i].e_pos;
 				//プレイヤーとエネミーが接触したら
-				if (CollisionObject(player, enemy[i]))
+				if (CollisionObject(player, enemy[i]) == true && enemy_data[i].can_catch == true)
 				{
-					enemy_data[i].is_catch = true;
+					if (enemy_data[i].enemy_type == NORMAL)
+					{
+						enemy_data[i].is_catch = true;
+					}
+					else if (enemy_data[i].enemy_type == TWICE && enemy_data[i].can_catch == true)
+					{
+						enemy_data[i].is_catch = true;
+					}
 				}
+				else if (CollisionObject(player, enemy[i]) == true && enemy_data[i].can_catch == false)
+				{
+					if (p_pos.x - old_p_pos.x > 0)
+					{
+						p_pos.x -= 5.0f;
+					}
+					else
+					{
+						p_pos.x += 5.0f;
+					}
+					enemy_data[i].can_catch = true;
+				}
+				//更新処理
 				if (enemy_data[i].is_catch == false && is_attack == false)
 				{
 					//通常状態
@@ -439,6 +463,11 @@ void GamePlayScene::Update()
 							if (enemy_data[i].is_add == true)
 							{
 								max_rope += 0.5f;
+
+								if (max_rope > 25.0f)
+								{
+									max_rope = 25.0f;
+								}
 							}
 							else
 							{
@@ -448,6 +477,10 @@ void GamePlayScene::Update()
 								{
 									max_rope = 15.0f;
 								}
+							}
+							if (enemy_data[i].enemy_type == TWICE)
+							{
+								enemy_data[i].can_catch = false;
 							}
 							for (int i = 0; i < enemySpawn; i++)
 							{
@@ -566,26 +599,11 @@ void GamePlayScene::Update()
 		SceneManager::GetInstance()->ChangeScene("TITLE");
 	}
 
-	int cx = 0;
-	int dx = 0;
-	for (int i = 0; i < enemySpawn; i++)
-	{
-		if (enemy_data[i].is_catch == true)
-		{
-			cx++;
-		}
-		else
-		{
-			dx++;
-		}
-	}
 	//プレイヤーの座標（X：Y)
 	DebugText::GetInstance()->Print(50, 35 * 3, 2, "player_x:%f", p_pos.x);
 	DebugText::GetInstance()->Print(50, 35 * 4, 2, "player_y:%f", p_pos.y);
 	DebugText::GetInstance()->Print(50, 35 * 5, 2, "rope_len:%f", max_rope);
 	DebugText::GetInstance()->Print(50, 35 * 6, 2, "enemySpawn:%d", enemySpawn);
-	DebugText::GetInstance()->Print(50, 35 * 7, 2, "is_catch:%d", cx);
-	DebugText::GetInstance()->Print(50, 35 * 8, 2, "not_is_catch:%d", dx);
 }
 
 void GamePlayScene::Draw()
@@ -636,7 +654,7 @@ void GamePlayScene::Draw()
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
-
+	
 	// 3Dオブジェクト描画後処理
 	Object3d::PostDraw();
 

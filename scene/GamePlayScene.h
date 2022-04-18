@@ -24,7 +24,7 @@ private: // エイリアス
 public: //サブクラス
 	enum EnemyType
 	{
-		NORMAL, 
+		NORMAL, TWICE
 	};
 
 	struct EnemyData
@@ -43,6 +43,7 @@ public: //サブクラス
 		int angle; //円運動の角度
 
 		int enemy_type; //エネミーの種類
+		bool can_catch; //捕縛可能か
 
 		bool is_add; //加算するか
 	};
