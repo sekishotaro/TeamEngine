@@ -52,7 +52,7 @@ void GamePlayScene::Initialize()
 	texLevel = Sprite::Create(16, { WinApp::window_width - 100, WinApp::window_height - 64 });
 
 	//スプライト生成
-	minimap = Sprite::Create(12, { 0.0f,0.0f });
+	minimap = Sprite::Create(12, { 0.0f,50.0f });
 	miniplayer = Sprite::Create(13, { 20.0f,20.0f });
 	for (int i = 0; i < EnemySpawnMax; i++)
 	{
@@ -303,7 +303,7 @@ void GamePlayScene::Update()
 		}
 
 		//ミニマップ用座標変換
-		miniplayer->SetPosition({ p_pos.x , -p_pos.y + 28 });
+		miniplayer->SetPosition({ p_pos.x , -p_pos.y + 78 });
 	}
 
 	//エネミー処理
@@ -515,7 +515,7 @@ void GamePlayScene::Update()
 				}
 
 				//ミニマップ用座標変換
-				minienemy[i]->SetPosition({ enemy_data[i].e_pos.x , -enemy_data[i].e_pos.y + 28 });
+				minienemy[i]->SetPosition({ enemy_data[i].e_pos.x , -enemy_data[i].e_pos.y + 78 });
 			}
 		}
 	}
