@@ -113,6 +113,8 @@ public:
 	Sprite* spriteTimer = nullptr;
 	Sprite* minimap = nullptr; //ステージ(ミニマップ)
 
+	Sprite* locus = nullptr; //敵を回転させたときの軌跡エフェクト
+
 	//UI・スコアetc
 	int score; //スコア
 	bool is_shake; //シェイクフラグ
@@ -122,6 +124,9 @@ public:
 	float lastTime; //残り時間
 	int level;
 	int enemySpawn; //敵の数
+
+	//エフェクト
+	XMFLOAT2 locusPos = { 0.0f, 0.0f};
 
 	//汎用変数
 	float gravity; //重力加速度

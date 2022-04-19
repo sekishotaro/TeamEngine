@@ -45,6 +45,7 @@ void GamePlayScene::Initialize()
 	Sprite::LoadTexture(16, L"Resources/level.png");
 	Sprite::LoadTexture(17, L"Resources/koron.png");
 	Sprite::LoadTexture(18, L"Resources/timer.png");
+	Sprite::LoadTexture(19, L"Resources/locus.png");
 
 	// 背景スプライト生成
 	spriteBG = Sprite::Create(11, { 0.0f,0.0f });
@@ -66,6 +67,9 @@ void GamePlayScene::Initialize()
 	spriteScore[1] = Sprite::Create(0, { WinApp::window_width - 32,0 });
 	spriteScore[2] = Sprite::Create(0, { WinApp::window_width - 64,0 });
 	spriteLevel[1] = Sprite::Create(0, { WinApp::window_width - 32 ,WinApp::window_height - 64 });
+
+	//エフェクト
+	locus = Sprite::Create(19, locusPos);
 
 	// オブジェクト生成
 	model = Model::LoadFromOBJ("sphere");

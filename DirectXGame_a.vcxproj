@@ -226,6 +226,7 @@
     <ClCompile Include="2d\DebugText.cpp" />
     <ClCompile Include="base\DirectXCommon.cpp" />
     <ClCompile Include="Ease.cpp" />
+    <ClCompile Include="Effect.cpp" />
     <ClCompile Include="Framework.cpp" />
     <ClCompile Include="Mapchip.cpp" />
     <ClCompile Include="scene\GamePlayScene.cpp" />
@@ -244,6 +245,7 @@
     <ClInclude Include="Angle.h" />
     <ClInclude Include="camera\Camera.h" />
     <ClInclude Include="Ease.h" />
+    <ClInclude Include="Effect.h" />
     <ClInclude Include="Input\InputList.h" />
     <ClInclude Include="Mapchip.h" />
     <ClInclude Include="safe_delete.h" />
