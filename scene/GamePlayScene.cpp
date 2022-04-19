@@ -48,7 +48,7 @@ void GamePlayScene::Initialize()
 
 	// 背景スプライト生成
 	spriteBG = Sprite::Create(11, { 0.0f,0.0f });
-	texScore = Sprite::Create(15, { WinApp::window_width - 340, 0 });
+	texScore = Sprite::Create(15, { WinApp::window_width - 372, 0 });
 	texLevel = Sprite::Create(16, { WinApp::window_width - 100, WinApp::window_height - 64 });
 
 	//スプライト生成
@@ -65,6 +65,7 @@ void GamePlayScene::Initialize()
 	spriteTime[2] = Sprite::Create(0, { 160,0 });
 	spriteScore[1] = Sprite::Create(0, { WinApp::window_width - 32,0 });
 	spriteScore[2] = Sprite::Create(0, { WinApp::window_width - 64,0 });
+	spriteScore[3] = Sprite::Create(0, { WinApp::window_width - 96,0 });
 	spriteLevel[1] = Sprite::Create(0, { WinApp::window_width - 32 ,WinApp::window_height - 64 });
 
 	// オブジェクト生成
@@ -472,8 +473,11 @@ void GamePlayScene::Update()
 							is_attack = false;
 							is_shake = true;
 							score++;
+							int hundredScore = 0;
+							hundredScore = score / 10;
 							spriteScore[1]->ChangeTex((int)score % 10);
-							spriteScore[2]->ChangeTex((int)score / 10);
+							spriteScore[2]->ChangeTex((int)hundredScore % 10);
+							spriteScore[3]->ChangeTex((int)score / 100);
 							if (enemy_data[i].is_add == true)
 							{
 								max_rope += 0.5f;
@@ -704,6 +708,7 @@ void GamePlayScene::Draw()
 	texScore->Draw();
 	spriteScore[1]->Draw();
 	spriteScore[2]->Draw();
+	spriteScore[3]->Draw();
 
 	// デバッグテキストの描画
 	DebugText::GetInstance()->DrawAll(cmdList);
