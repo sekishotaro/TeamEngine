@@ -36,3 +36,11 @@ int Mapchip::GetChipNum(int x, int y, std::vector<int> map)
 	//‚±‚±‚ÌŒx‚Í‹C‚É‚µ‚È‚¢‚ÅOK
 	return map[Y * map_max_x + X];
 }
+
+void Mapchip::SetChipNum(int x, int y, std::vector<int> map, int changeNum)
+{
+	const int X = x / map_size;
+	const int Y = y / map_size;
+
+	map[Y * map_max_x + X] = changeNum;
+}

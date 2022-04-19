@@ -15,5 +15,7 @@ public:
 	static void CsvToVector(std::vector<std::vector<int>>& mapData, std::string fName);
 
 	static int GetChipNum(int x, int y, std::vector<int> map);
+
+	static void SetChipNum(int x, int y, std::vector<int> map, int changeNum);
 };
 
