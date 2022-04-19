@@ -69,6 +69,7 @@ void GamePlayScene::Initialize()
 
 	// オブジェクト生成
 	model = Model::LoadFromOBJ("sphere");
+	enemy_model_2 = Model::LoadFromOBJ("sphere2");
 	block = Model::LoadFromOBJ("block");
 	rope = Model::LoadFromOBJ("rope");
 
@@ -122,7 +123,14 @@ void GamePlayScene::Initialize()
 		enemy_data[i].enemy_type = NORMAL;
 		enemy_data[i].can_catch = true;
 		enemy_data[i].is_add = true;
-		enemy[i]->SetModel(model);
+		if (i > 1)
+		{
+			enemy[i]->SetModel(model);
+		}
+		else
+		{
+			enemy[i]->SetModel(enemy_model_2);
+		}
 		enemy[i]->SetPosition(enemy_data[i].e_pos);
 		enemy[i]->Update();
 
@@ -133,6 +141,8 @@ void GamePlayScene::Initialize()
 	}
 	enemy_data[0].enemy_type = TWICE;
 	enemy_data[0].can_catch = false;
+	enemy_data[1].enemy_type = TWICE;
+	enemy_data[1].can_catch = false;
 
 	//ロープ
 	max_rope = 15;
@@ -330,6 +340,11 @@ void GamePlayScene::Update()
 				{
 					SpawnEnemy(0, i);
 				}
+				if (i < 2)
+				{
+					enemy_data[i].can_catch = false;
+					enemy[i]->SetModel(enemy_model_2);
+				}
 			}
 			//敵の処理
 			else
@@ -359,7 +374,6 @@ void GamePlayScene::Update()
 					{
 						p_pos.x += 5.0f;
 					}
-					enemy_data[i].can_catch = true;
 				}
 				//更新処理
 				if (enemy_data[i].is_catch == false && is_attack == false)
@@ -482,13 +496,22 @@ void GamePlayScene::Update()
 							{
 								enemy_data[i].can_catch = false;
 							}
-							for (int i = 0; i < enemySpawn; i++)
+							for (int j = 0; j < enemySpawn; j++)
 							{
-								if (enemy_data[i].is_catch == true)
+								if (enemy_data[j].is_catch == true)
 								{
 									is_attack = true;
 									break;
 								}
+							}
+						}
+						//敵との当たり判定
+						for (int j = 0; j < enemySpawn; j++)
+						{
+							if (enemy_data[j].can_catch == false && i != j && CollisionObject(enemy[i], enemy[j]) == true)
+							{
+								enemy[j]->SetModel(model);
+								enemy_data[j].can_catch = true;
 							}
 						}
 					} 
@@ -544,7 +567,7 @@ void GamePlayScene::Update()
 	{
 		level = 2;
 	}
-	enemySpawn = level * 2;
+	enemySpawn = level * 4;
 	spriteLevel[1]->ChangeTex((int)level % 10);
 
 	//エネミー更新
@@ -587,7 +610,7 @@ void GamePlayScene::Update()
 		}
 	}
 	camera->SetTarget({ p_pos.x + shake_x, p_pos.y + shake_y, p_pos.z });
-	camera->SetEye({ p_pos.x + shake_x, p_pos.y + shake_y, p_pos.z - 60.0f });  
+	camera->SetEye({ p_pos.x + shake_x, p_pos.y + shake_y, p_pos.z - 55.0f - (5 * level)});
 	camera->Update();
 
 	if (input->TriggerKey(DIK_RETURN))

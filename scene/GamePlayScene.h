@@ -90,6 +90,7 @@ public:
 
 	//ƒ‚ƒfƒ‹
 	Model* model = nullptr;
+	Model* enemy_model_2 = nullptr;
 	Model* block = nullptr;
 	Model* rope = nullptr;
 
