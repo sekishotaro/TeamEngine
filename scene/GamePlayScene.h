@@ -32,6 +32,9 @@ public: //サブクラス
 		XMFLOAT3 e_pos; //座標
 		XMFLOAT3 old_e_pos; //1フレーム前の座標
 
+		float e_x_radius; //中心点からxの最大値まで
+		float e_y_radius; //中心点からyの最大値まで
+
 		bool is_normal; //徘徊状態
 		bool is_catch; //捕縛状態
 		bool is_alive; //生死

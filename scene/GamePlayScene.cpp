@@ -114,6 +114,8 @@ void GamePlayScene::Initialize()
 	{
 		//エネミー
 		enemy_data[i].e_pos = { 0, 0, 0 };
+		enemy_data[i].e_x_radius = 1.0f * player->GetScale().x;
+		enemy_data[i].e_y_radius = 1.0f * player->GetScale().y;
 		enemy_data[i].is_normal = true;
 		enemy_data[i].is_catch = false;
 		enemy_data[i].is_alive = false;
@@ -121,16 +123,24 @@ void GamePlayScene::Initialize()
 		enemy_data[i].e_speed = 0.25f;
 		enemy_data[i].e_down = 0.0f;
 		enemy_data[i].angle = 0;
-		enemy_data[i].enemy_type = NORMAL;
-		enemy_data[i].can_catch = true;
-		enemy_data[i].is_add = true;
-		if (i > 1)
+		enemy_data[i].enemy_type = TWICE;
+		enemy_data[0].enemy_type = NORMAL;
+		if (enemy_data[i].enemy_type == TWICE)
 		{
-			enemy[i]->SetModel(model);
+			enemy_data[i].can_catch = false;
 		}
 		else
 		{
+			enemy_data[i].can_catch = true;
+		}
+		enemy_data[i].is_add = true;
+		if (enemy_data[i].enemy_type == TWICE)
+		{
 			enemy[i]->SetModel(enemy_model_2);
+		}
+		else
+		{
+			enemy[i]->SetModel(model);
 		}
 		enemy[i]->SetPosition(enemy_data[i].e_pos);
 		enemy[i]->Update();
@@ -140,10 +150,6 @@ void GamePlayScene::Initialize()
 		Rope[i]->SetScale({ 0.3, 5, 0.3 });
 		Rope[i]->Update();
 	}
-	enemy_data[0].enemy_type = TWICE;
-	enemy_data[0].can_catch = false;
-	enemy_data[1].enemy_type = TWICE;
-	enemy_data[1].can_catch = false;
 
 	//ロープ
 	max_rope = 15;
@@ -341,7 +347,7 @@ void GamePlayScene::Update()
 				{
 					SpawnEnemy(0, i);
 				}
-				if (i < 2)
+				if (enemy_data[i].enemy_type == TWICE)
 				{
 					enemy_data[i].can_catch = false;
 					enemy[i]->SetModel(enemy_model_2);
@@ -508,14 +514,18 @@ void GamePlayScene::Update()
 									break;
 								}
 							}
-						}
-						//敵との当たり判定
-						for (int j = 0; j < enemySpawn; j++)
-						{
-							if (enemy_data[j].can_catch == false && i != j && CollisionObject(enemy[i], enemy[j]) == true)
+							for (int j = 0; j < enemySpawn; j++)
 							{
-								enemy[j]->SetModel(model);
-								enemy_data[j].can_catch = true;
+								if (i != j)
+								{
+									XMFLOAT3 positivePos = { enemy_data[i].e_pos.x + enemy_data[i].e_x_radius, enemy_data[i].e_pos.y + enemy_data[i].e_y_radius, 0 };
+									XMFLOAT3 negativePos = { enemy_data[i].e_pos.x - enemy_data[i].e_x_radius, enemy_data[i].e_pos.y - enemy_data[i].e_y_radius, 0 };
+									if (camera->inFrustum(p_pos, negativePos, positivePos))
+									{
+										enemy[j]->SetModel(model);
+										enemy_data[j].can_catch = true;
+									}
+								}
 							}
 						}
 					} 

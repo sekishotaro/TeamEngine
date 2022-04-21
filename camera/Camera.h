@@ -167,8 +167,20 @@ public: // メンバ関数
 		SetTarget(position);
 	}
 
+	/// <summary>
+	/// 視錐台の中にあるか
+	/// </summary>
+	/// <param name="playerPosition">自機</param>
+	/// <param name="negativePoint">対象の負の頂点</param>
+	/// <param name="positivePoint">対象の正の頂点</param>
+	/// <returns>成否</returns>
+	bool inFrustum(XMFLOAT3 playerPosition, XMFLOAT3 negativePoint, XMFLOAT3 positivePoint);
 
 protected: // メンバ変数
+	//画面横の長さ
+	int window_width;
+	//画面縦の長さ
+	int window_height;
 	// ビュー行列
 	XMMATRIX matView = DirectX::XMMatrixIdentity();
 	// ビルボード行列
@@ -191,9 +203,14 @@ protected: // メンバ変数
 	XMFLOAT3 target = { 0, 0, 0 };
 	// 上方向ベクトル
 	XMFLOAT3 up = { 0, 1, 0 };
+	//縦方向の視野角
+	float fovAngleY = 60.0f;
 	// アスペクト比
 	float aspectRatio = 1.0f;
+	//一番近いZ値
+	float nearZ = 0.1f;
+	//一番遠いZ値
+	float farZ = 1000;
 	//カメラ内の移動範囲(-40 ~ 40)
 	float act_rangeX = 40.0f;
 };
-
