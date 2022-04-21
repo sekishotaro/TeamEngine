@@ -4,6 +4,9 @@ using namespace DirectX;
 
 Camera::Camera(int window_width, int window_height)
 {
+	this->window_width = window_width;
+	this->window_height = window_height;
+
 	aspectRatio = (float)window_width / window_height;
 
 	//ビュー行列の計算
@@ -123,10 +126,9 @@ void Camera::UpdateProjectionMatrix()
 {
 	// 透視投影による射影行列の生成
 	matProjection = XMMatrixPerspectiveFovLH(
-		XMConvertToRadians(60.0f),
+		XMConvertToRadians(fovAngleY),
 		aspectRatio,
-		0.1f, 1000.0f
-	);
+		nearZ, farZ);
 }
 
 void Camera::MoveEyeVector(const XMFLOAT3 &move)
@@ -207,8 +209,47 @@ void Camera::MoveCameraClamp(XMFLOAT3 position, float mapwidth, float mapheight)
 		SetTarget(post);
 	}
 
-
 	//ここで確定する
 	XMFLOAT3 noweye(eye.x, eye.y, -distance);
 	SetEye(noweye);
+}
+
+bool Camera::inFrustum(XMFLOAT3 playerPosition, XMFLOAT3 negativePoint, XMFLOAT3 positivePoint)
+{
+	//長さの単位
+	float IdentityLen = window_height / 2 * sqrtf(3);
+
+	//ターゲットの横と縦の長さ
+	float eyeLen = target.z - eye.z;
+	float targetWidth = window_width * eyeLen / IdentityLen;
+	float targetHeight = window_height * eyeLen / IdentityLen;
+
+	//横
+	if (positivePoint.x <= targetWidth / 2 + playerPosition.x || negativePoint.x <= targetWidth / 2 + playerPosition.x)
+	{
+		//縦
+		if (positivePoint.y <= targetHeight / 2 + playerPosition.y || negativePoint.y <= targetHeight / 2 + playerPosition.y)
+		{
+			return true;
+		}
+		else if (positivePoint.y >= -targetHeight / 2 + playerPosition.y || negativePoint.y >= -targetHeight / 2 + playerPosition.y)
+		{
+			return true;
+		}
+	}
+	//横
+	else if (positivePoint.x >= -targetWidth / 2 + playerPosition.x || negativePoint.x >= -targetWidth / 2 + playerPosition.x)
+	{
+		//縦
+		if (positivePoint.y <= targetHeight / 2 + playerPosition.y || negativePoint.y <= targetHeight / 2 + playerPosition.y)
+		{
+			return true;
+		}
+		else if (positivePoint.y >= -targetHeight / 2 + playerPosition.y || negativePoint.y >= -targetHeight / 2 + playerPosition.y)
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
