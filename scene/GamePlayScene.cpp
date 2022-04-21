@@ -45,7 +45,6 @@ void GamePlayScene::Initialize()
 	Sprite::LoadTexture(16, L"Resources/level.png");
 	Sprite::LoadTexture(17, L"Resources/koron.png");
 	Sprite::LoadTexture(18, L"Resources/timer.png");
-	Sprite::LoadTexture(19, L"Resources/locus.png");
 
 	// 背景スプライト生成
 	spriteBG = Sprite::Create(11, { 0.0f,0.0f });
@@ -69,12 +68,12 @@ void GamePlayScene::Initialize()
 	spriteLevel[1] = Sprite::Create(0, { WinApp::window_width - 32 ,WinApp::window_height - 64 });
 
 	//エフェクト
-	locus = Sprite::Create(19, locusPos);
 
 	// オブジェクト生成
 	model = Model::LoadFromOBJ("sphere");
 	block = Model::LoadFromOBJ("block");
 	rope = Model::LoadFromOBJ("rope");
+	locusModel = Model::LoadFromOBJ("locus");
 
 	for (int i = 0; i < EnemySpawnMax; i++)
 	{
@@ -82,6 +81,10 @@ void GamePlayScene::Initialize()
 		Rope[i] = Object3d::Create();
 	}
 	player = Object3d::Create();
+
+	
+
+	
 
 	//マップチップ用のCSV読み込み
 	//(map, "Resource/scv/なんたら.csv")で追加可能
@@ -155,6 +158,21 @@ void GamePlayScene::Initialize()
 	player->SetPosition(p_pos);
 	player->Update();
 
+
+	//エフェクト
+	maxLocus += 20;
+	for (int i = 0; i < maxLocus; i++)
+	{
+		locus.emplace_back(Object3d::Create());
+	}
+	for (int i = 0; i < sizeof(locus); i++)
+	{
+		locus[i]->SetModel(locusModel);
+		locus[i]->SetPosition({ 110.0f, -35.0f + (float) i, 0.0f});
+		locus[i]->SetRotation({ 0.0f, 90.0f, 0.0f });
+		locus[i]->SetScale({ 0.5f, 0.5f, 0.5f });
+	}
+	
 	//乱数
 	srand(time(NULL));
 }
@@ -185,6 +203,8 @@ void GamePlayScene::Finalize()
 
 void GamePlayScene::Update()
 {
+
+
 
 	// ゲームシーンの毎フレーム処理
 	Input* input = Input::GetInstance();
@@ -448,11 +468,13 @@ void GamePlayScene::Update()
 						if (player->GetRotation().y == 0)
 						{
 							CircularMotion(enemy_data[i].e_pos, p_pos, GetLengthObject(p_pos, enemy_data[i].e_pos), enemy_data[i].angle, -15);
+							CreateLocus(enemy_data[i].e_pos);
 						}
 						//左向きなら
 						else if (player->GetRotation().y == 180)
 						{
 							CircularMotion(enemy_data[i].e_pos, p_pos, GetLengthObject(p_pos, enemy_data[i].e_pos), enemy_data[i].angle, 15);
+							CreateLocus(enemy_data[i].e_pos);
 						}
 						//マップの当たり判定
 						if (MapCollide(enemy_data[i].e_pos, p_x_radius, p_y_radius, 0, enemy_data[i].old_e_pos))
@@ -603,6 +625,12 @@ void GamePlayScene::Update()
 		SceneManager::GetInstance()->ChangeScene("TITLE");
 	}
 
+	//エフェクト
+	for (int i = 0; i < locus.size(); i++)
+	{
+		locus[i]->Update();
+	}
+
 	//プレイヤーの座標（X：Y)
 	DebugText::GetInstance()->Print(50, 35 * 3, 2, "player_x:%f", p_pos.x);
 	DebugText::GetInstance()->Print(50, 35 * 4, 2, "player_y:%f", p_pos.y);
@@ -633,6 +661,10 @@ void GamePlayScene::Draw()
 	// 3Dオブジェクト描画前処理
 	Object3d::PreDraw(cmdList);
 
+	/// <summary>
+	/// ここに3Dオブジェクトの描画処理を追加できる
+	/// </summary>
+
 	// 3Dオブクジェクトの描画
 	for (int i = 0; i < enemySpawn; i++)
 	{
@@ -655,10 +687,12 @@ void GamePlayScene::Draw()
 			objBlock[y][x]->Draw();
 		}
 	}
-	/// <summary>
-	/// ここに3Dオブジェクトの描画処理を追加できる
-	/// </summary>
-	
+
+	//エフェクト
+	for (int i = 0; i < locus.size(); i++)
+	{
+		locus[i]->Draw();
+	}
 	// 3Dオブジェクト描画後処理
 	Object3d::PostDraw();
 
@@ -875,4 +909,13 @@ float GamePlayScene::GetLengthObject(XMFLOAT3 pos_a, XMFLOAT3 pos_b)
 	XMFLOAT3 len = { pos_a.x - pos_b.x, pos_a.y - pos_b.y, pos_a.z - pos_b.z };
 
 	return sqrtf(len.x * len.x + len.y * len.y + len.z * len.z);
+}
+
+void GamePlayScene::CreateLocus(XMFLOAT3& pos)
+{
+	locus.emplace_back(Object3d::Create());
+	locus.back()->SetModel(locusModel);
+	locus.back()->SetPosition(pos);
+	locus.back()->SetRotation({ 0.0f, 90.0f, 0.0f });
+	locus.back()->SetScale({ 0.5f, 0.5f, 0.5f });
 }

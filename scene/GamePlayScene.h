@@ -100,6 +100,16 @@ public:
 	std::unique_ptr<Object3d> enemy[EnemySpawnMax]; //エネミー
 	std::unique_ptr<Object3d> Rope[EnemySpawnMax]; //ロープ
 
+
+
+	//エフェクト
+	int maxLocus = 20;
+	std::vector<std::unique_ptr<Object3d>>locus;
+	//locus = new std::unique_ptr<Object3d>[MaxLocus];
+	//std::unique_ptr<Object3d> locus[MaxLocus]; //軌跡用板ポリ
+	Model* locusModel = nullptr; //軌跡
+	
+
 	//スプライト
 	Sprite* spriteBG = nullptr; //背景
 	Sprite* miniplayer = nullptr; //プレイヤー(ミニマップ)
@@ -113,8 +123,6 @@ public:
 	Sprite* spriteTimer = nullptr;
 	Sprite* minimap = nullptr; //ステージ(ミニマップ)
 
-	Sprite* locus = nullptr; //敵を回転させたときの軌跡エフェクト
-
 	//UI・スコアetc
 	int score; //スコア
 	bool is_shake; //シェイクフラグ
@@ -125,8 +133,6 @@ public:
 	int level;
 	int enemySpawn; //敵の数
 
-	//エフェクト
-	XMFLOAT2 locusPos = { 0.0f, 0.0f};
 
 	//汎用変数
 	float gravity; //重力加速度
@@ -182,4 +188,7 @@ public:
 
 	//長さを求める
 	float GetLengthObject(XMFLOAT3 pos_a, XMFLOAT3 pos_b);
+
+	//軌跡生成
+	void CreateLocus(XMFLOAT3 &pos);
 };
