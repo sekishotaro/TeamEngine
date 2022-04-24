@@ -225,27 +225,27 @@ bool Camera::inFrustum(XMFLOAT3 playerPosition, XMFLOAT3 negativePoint, XMFLOAT3
 	float targetHeight = window_height * eyeLen / IdentityLen;
 
 	//‰¡
-	if (positivePoint.x <= targetWidth / 2 + playerPosition.x || negativePoint.x <= targetWidth / 2 + playerPosition.x)
+	if (positivePoint.x <= targetWidth / 2 + playerPosition.x && -targetWidth / 2 + playerPosition.x <= positivePoint.x)
 	{
 		//c
-		if (positivePoint.y <= targetHeight / 2 + playerPosition.y || negativePoint.y <= targetHeight / 2 + playerPosition.y)
+		if (positivePoint.y <= targetHeight / 2 + playerPosition.y && -targetHeight / 2 + playerPosition.y <= positivePoint.y)
 		{
 			return true;
 		}
-		else if (positivePoint.y >= -targetHeight / 2 + playerPosition.y || negativePoint.y >= -targetHeight / 2 + playerPosition.y)
+		else if (negativePoint.y <= targetHeight / 2 + playerPosition.y && -targetHeight / 2 + playerPosition.y <= negativePoint.y)
 		{
 			return true;
 		}
 	}
 	//‰¡
-	else if (positivePoint.x >= -targetWidth / 2 + playerPosition.x || negativePoint.x >= -targetWidth / 2 + playerPosition.x)
+	else if (negativePoint.x <= targetWidth / 2 + playerPosition.x && -targetWidth / 2 + playerPosition.x <= negativePoint.x)
 	{
 		//c
-		if (positivePoint.y <= targetHeight / 2 + playerPosition.y || negativePoint.y <= targetHeight / 2 + playerPosition.y)
+		if (positivePoint.y <= targetHeight / 2 + playerPosition.y && -targetHeight / 2 + playerPosition.y <= positivePoint.y)
 		{
 			return true;
-		}
-		else if (positivePoint.y >= -targetHeight / 2 + playerPosition.y || negativePoint.y >= -targetHeight / 2 + playerPosition.y)
+		} 
+		else if (negativePoint.y <= targetHeight / 2 + playerPosition.y && -targetHeight / 2 + playerPosition.y <= negativePoint.y)
 		{
 			return true;
 		}

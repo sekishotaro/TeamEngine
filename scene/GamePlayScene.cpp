@@ -286,7 +286,7 @@ void GamePlayScene::Update()
 			is_jump = true;
 
 			//ã¸—¦‚Ì‰Šú‰»
-			p_add = 2.5f;
+			p_add = 2.75f;
 		}
 
 		//ƒWƒƒƒ“ƒvˆ—
@@ -518,8 +518,8 @@ void GamePlayScene::Update()
 							{
 								if (i != j)
 								{
-									XMFLOAT3 positivePos = { enemy_data[i].e_pos.x + enemy_data[i].e_x_radius, enemy_data[i].e_pos.y + enemy_data[i].e_y_radius, 0 };
-									XMFLOAT3 negativePos = { enemy_data[i].e_pos.x - enemy_data[i].e_x_radius, enemy_data[i].e_pos.y - enemy_data[i].e_y_radius, 0 };
+									XMFLOAT3 positivePos = { enemy_data[j].e_pos.x + enemy_data[j].e_x_radius, enemy_data[j].e_pos.y + enemy_data[j].e_y_radius, 0 };
+									XMFLOAT3 negativePos = { enemy_data[j].e_pos.x - enemy_data[j].e_x_radius, enemy_data[j].e_pos.y - enemy_data[j].e_y_radius, 0 };
 									if (camera->inFrustum(p_pos, negativePos, positivePos))
 									{
 										enemy[j]->SetModel(model);
@@ -641,6 +641,8 @@ void GamePlayScene::Update()
 	DebugText::GetInstance()->Print(50, 35 * 4, 2, "player_y:%f", p_pos.y);
 	DebugText::GetInstance()->Print(50, 35 * 5, 2, "rope_len:%f", max_rope);
 	DebugText::GetInstance()->Print(50, 35 * 6, 2, "enemySpawn:%d", enemySpawn);
+	DebugText::GetInstance()->Print(50, 35 * 7, 2, "min:%f~max:%f", p_pos.x - 123 / 2, p_pos.x + 123 / 2);
+	DebugText::GetInstance()->Print(50, 35 * 8, 2, "min:%f~max:%f", p_pos.y - 70 / 2, p_pos.y + 70 / 2);
 }
 
 void GamePlayScene::Draw()
