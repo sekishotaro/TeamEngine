@@ -32,6 +32,9 @@ public: //サブクラス
 		XMFLOAT3 e_pos; //座標
 		XMFLOAT3 old_e_pos; //1フレーム前の座標
 
+		float e_x_radius; //中心点からxの最大値まで
+		float e_y_radius; //中心点からyの最大値まで
+
 		bool is_normal; //徘徊状態
 		bool is_catch; //捕縛状態
 		bool is_alive; //生死
@@ -90,6 +93,7 @@ public:
 
 	//モデル
 	Model* model = nullptr;
+	Model* enemy_model_2 = nullptr;
 	Model* block = nullptr;
 	Model* rope = nullptr;
 
@@ -189,4 +193,15 @@ public:
 	//長さを求める
 	float GetLengthObject(XMFLOAT3 pos_a, XMFLOAT3 pos_b);
 
+<<<<<<< HEAD
+=======
+	/// <summary>
+	/// 視錐台の中にあるか
+	/// </summary>
+	/// <param name="playerPosition">自機</param>
+	/// <param name="negativePoint">対象の負の頂点</param>
+	/// <param name="positivePoint">対象の正の頂点</param>
+	/// <returns>成否</returns>
+	bool inFrustum(XMFLOAT3 playerPosition, XMFLOAT3 negativePoint, XMFLOAT3 positivePoint);
+>>>>>>> master
 };

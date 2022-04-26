@@ -49,7 +49,7 @@ void GamePlayScene::Initialize()
 
 	// 背景スプライト生成
 	spriteBG = Sprite::Create(11, { 0.0f,0.0f });
-	texScore = Sprite::Create(15, { WinApp::window_width - 340, 0 });
+	texScore = Sprite::Create(15, { WinApp::window_width - 372, 0 });
 	texLevel = Sprite::Create(16, { WinApp::window_width - 100, WinApp::window_height - 64 });
 
 	//スプライト生成
@@ -66,12 +66,14 @@ void GamePlayScene::Initialize()
 	spriteTime[2] = Sprite::Create(0, { 160,0 });
 	spriteScore[1] = Sprite::Create(0, { WinApp::window_width - 32,0 });
 	spriteScore[2] = Sprite::Create(0, { WinApp::window_width - 64,0 });
+	spriteScore[3] = Sprite::Create(0, { WinApp::window_width - 96,0 });
 	spriteLevel[1] = Sprite::Create(0, { WinApp::window_width - 32 ,WinApp::window_height - 64 });
 
 	//エフェクト
 
 	// オブジェクト生成
 	model = Model::LoadFromOBJ("sphere");
+	enemy_model_2 = Model::LoadFromOBJ("sphere2");
 	block = Model::LoadFromOBJ("block");
 	rope = Model::LoadFromOBJ("rope");
 	locusModel = Model::LoadFromOBJ("locus");
@@ -120,6 +122,8 @@ void GamePlayScene::Initialize()
 	{
 		//エネミー
 		enemy_data[i].e_pos = { 0, 0, 0 };
+		enemy_data[i].e_x_radius = 1.0f * player->GetScale().x;
+		enemy_data[i].e_y_radius = 1.0f * player->GetScale().y;
 		enemy_data[i].is_normal = true;
 		enemy_data[i].is_catch = false;
 		enemy_data[i].is_alive = false;
@@ -127,10 +131,25 @@ void GamePlayScene::Initialize()
 		enemy_data[i].e_speed = 0.25f;
 		enemy_data[i].e_down = 0.0f;
 		enemy_data[i].angle = 0;
-		enemy_data[i].enemy_type = NORMAL;
-		enemy_data[i].can_catch = true;
+		enemy_data[i].enemy_type = TWICE;
+		enemy_data[0].enemy_type = NORMAL;
+		if (enemy_data[i].enemy_type == TWICE)
+		{
+			enemy_data[i].can_catch = false;
+		}
+		else
+		{
+			enemy_data[i].can_catch = true;
+		}
 		enemy_data[i].is_add = true;
-		enemy[i]->SetModel(model);
+		if (enemy_data[i].enemy_type == TWICE)
+		{
+			enemy[i]->SetModel(enemy_model_2);
+		}
+		else
+		{
+			enemy[i]->SetModel(model);
+		}
 		enemy[i]->SetPosition(enemy_data[i].e_pos);
 		enemy[i]->Update();
 
@@ -139,8 +158,6 @@ void GamePlayScene::Initialize()
 		Rope[i]->SetScale({ 0.3, 5, 0.3 });
 		Rope[i]->Update();
 	}
-	enemy_data[0].enemy_type = TWICE;
-	enemy_data[0].can_catch = false;
 
 	//ロープ
 	max_rope = 15;
@@ -240,32 +257,30 @@ void GamePlayScene::Update()
 		old_p_pos = p_pos;
 
 		//移動
-		if (is_attack == false)
+		if (input->LeftStickAngle().x)
 		{
-			if (input->LeftStickAngle().x)
-			{
-				p_pos.x += input->LeftStickAngle().x / 2;
+			p_pos.x += input->LeftStickAngle().x / 2;
 
-				//進行方向に向きを変える
-				if (input->LeftStickAngle().x >= 0)
-				{
-					player->SetRotation(XMFLOAT3(0, 0, 0));
-				} else
-				{
-					player->SetRotation(XMFLOAT3(0, 180, 0));
-				}
-			}
-			//キーボード用
-			if (input->PushKey(DIK_D))
+			//進行方向に向きを変える
+			if (input->LeftStickAngle().x >= 0)
 			{
-				p_pos.x += 0.5f;
 				player->SetRotation(XMFLOAT3(0, 0, 0));
-			}
-			if (input->PushKey(DIK_A))
+			} 
+			else
 			{
-				p_pos.x -= 0.5f;
 				player->SetRotation(XMFLOAT3(0, 180, 0));
 			}
+		}
+		//キーボード用
+		if (input->PushKey(DIK_D))
+		{
+			p_pos.x += 0.5f;
+			player->SetRotation(XMFLOAT3(0, 0, 0));
+		}
+		if (input->PushKey(DIK_A))
+		{
+			p_pos.x -= 0.5f;
+			player->SetRotation(XMFLOAT3(0, 180, 0));
 		}
 
 		//攻撃
@@ -292,7 +307,7 @@ void GamePlayScene::Update()
 		}
 
 		//ジャンプ
-		if ((input->TriggerKey(DIK_W) || input->TriggerButton(Button_A)) && is_air == false && is_jump == false && is_attack == false)
+		if ((input->TriggerKey(DIK_W) || input->TriggerButton(Button_A)) && is_air == false && is_jump == false)
 		{
 			is_jump = true;
 
@@ -358,6 +373,11 @@ void GamePlayScene::Update()
 				{
 					SpawnEnemy(0, i);
 				}
+				if (enemy_data[i].enemy_type == TWICE)
+				{
+					enemy_data[i].can_catch = false;
+					enemy[i]->SetModel(enemy_model_2);
+				}
 			}
 			//敵の処理
 			else
@@ -387,10 +407,9 @@ void GamePlayScene::Update()
 					{
 						p_pos.x += 5.0f;
 					}
-					enemy_data[i].can_catch = true;
 				}
 				//更新処理
-				if (enemy_data[i].is_catch == false && is_attack == false)
+				if (enemy_data[i].is_catch == false)
 				{
 					//通常状態
 					if (enemy_data[i].is_normal == true)
@@ -488,8 +507,11 @@ void GamePlayScene::Update()
 							is_attack = false;
 							is_shake = true;
 							score++;
+							int hundredScore = 0;
+							hundredScore = score / 10;
 							spriteScore[1]->ChangeTex((int)score % 10);
-							spriteScore[2]->ChangeTex((int)score / 10);
+							spriteScore[2]->ChangeTex((int)hundredScore % 10);
+							spriteScore[3]->ChangeTex((int)score / 100);
 							if (enemy_data[i].is_add == true)
 							{
 								max_rope += 0.5f;
@@ -512,12 +534,25 @@ void GamePlayScene::Update()
 							{
 								enemy_data[i].can_catch = false;
 							}
-							for (int i = 0; i < enemySpawn; i++)
+							for (int j = 0; j < enemySpawn; j++)
 							{
-								if (enemy_data[i].is_catch == true)
+								if (enemy_data[j].is_catch == true)
 								{
 									is_attack = true;
 									break;
+								}
+							}
+							for (int j = 0; j < enemySpawn; j++)
+							{
+								if (i != j)
+								{
+									XMFLOAT3 positivePos = { enemy_data[j].e_pos.x + enemy_data[j].e_x_radius, enemy_data[j].e_pos.y + enemy_data[j].e_y_radius, 0 };
+									XMFLOAT3 negativePos = { enemy_data[j].e_pos.x - enemy_data[j].e_x_radius, enemy_data[j].e_pos.y - enemy_data[j].e_y_radius, 0 };
+									if (inFrustum(p_pos, negativePos, positivePos) == true)
+									{
+										enemy[j]->SetModel(model);
+										enemy_data[j].can_catch = true;
+									}
 								}
 							}
 						}
@@ -574,7 +609,7 @@ void GamePlayScene::Update()
 	{
 		level = 2;
 	}
-	enemySpawn = level * 2;
+	enemySpawn = level * 4;
 	spriteLevel[1]->ChangeTex((int)level % 10);
 
 	//エネミー更新
@@ -617,7 +652,7 @@ void GamePlayScene::Update()
 		}
 	}
 	camera->SetTarget({ p_pos.x + shake_x, p_pos.y + shake_y, p_pos.z });
-	camera->SetEye({ p_pos.x + shake_x, p_pos.y + shake_y, p_pos.z - 60.0f });  
+	camera->SetEye({ p_pos.x + shake_x, p_pos.y + shake_y, p_pos.z - 55.0f - (5 * level)});
 	camera->Update();
 
 	if (input->TriggerKey(DIK_RETURN))
@@ -640,6 +675,8 @@ void GamePlayScene::Update()
 	DebugText::GetInstance()->Print(50, 35 * 4, 2, "player_y:%f", p_pos.y);
 	DebugText::GetInstance()->Print(50, 35 * 5, 2, "rope_len:%f", max_rope);
 	DebugText::GetInstance()->Print(50, 35 * 6, 2, "enemySpawn:%d", enemySpawn);
+	DebugText::GetInstance()->Print(50, 35 * 7, 2, "min:%f~max:%f", p_pos.x - 123 / 2, p_pos.x + 123 / 2);
+	DebugText::GetInstance()->Print(50, 35 * 8, 2, "min:%f~max:%f", p_pos.y - 70 / 2, p_pos.y + 70 / 2);
 }
 
 void GamePlayScene::Draw()
@@ -723,6 +760,7 @@ void GamePlayScene::Draw()
 	texScore->Draw();
 	spriteScore[1]->Draw();
 	spriteScore[2]->Draw();
+	spriteScore[3]->Draw();
 
 	// デバッグテキストの描画
 	DebugText::GetInstance()->DrawAll(cmdList);
@@ -915,3 +953,43 @@ float GamePlayScene::GetLengthObject(XMFLOAT3 pos_a, XMFLOAT3 pos_b)
 	return sqrtf(len.x * len.x + len.y * len.y + len.z * len.z);
 }
 
+<<<<<<< HEAD
+=======
+bool GamePlayScene::inFrustum(XMFLOAT3 playerPosition, XMFLOAT3 negativePoint, XMFLOAT3 positivePoint)
+{
+	//長さの単位
+	float IdentityLen = 720 / 2 * sqrtf(3);
+
+	//ターゲットの横と縦の長さ
+	float eyeLen = camera->GetTarget().z - camera->GetEye().z;
+	float targetWidth = 1280 * eyeLen / IdentityLen;
+	float targetHeight = 720 * eyeLen / IdentityLen;
+
+	//横
+	if (positivePoint.x <= targetWidth / 2 + playerPosition.x && -targetWidth / 2 + playerPosition.x <= positivePoint.x)
+	{
+		//縦
+		if (positivePoint.y <= targetHeight / 2 + playerPosition.y && -targetHeight / 2 + playerPosition.y <= positivePoint.y)
+		{
+			return true;
+		} else if (negativePoint.y <= targetHeight / 2 + playerPosition.y && -targetHeight / 2 + playerPosition.y <= negativePoint.y)
+		{
+			return true;
+		}
+	}
+	//横
+	else if (negativePoint.x <= targetWidth / 2 + playerPosition.x && -targetWidth / 2 + playerPosition.x <= negativePoint.x)
+	{
+		//縦
+		if (positivePoint.y <= targetHeight / 2 + playerPosition.y && -targetHeight / 2 + playerPosition.y <= positivePoint.y)
+		{
+			return true;
+		} else if (negativePoint.y <= targetHeight / 2 + playerPosition.y && -targetHeight / 2 + playerPosition.y <= negativePoint.y)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+>>>>>>> master
