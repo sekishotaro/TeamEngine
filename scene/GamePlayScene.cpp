@@ -5,6 +5,7 @@
 #include "DebugText.h"
 #include "DirectXCommon.h"
 #include "Mapchip.h"
+#include "Effect.h"
 #include <safe_delete.h>
 #include <stdlib.h>
 #include <time.h>
@@ -160,8 +161,7 @@ void GamePlayScene::Initialize()
 
 
 	//エフェクト
-	maxLocus += 20;
-	for (int i = 0; i < maxLocus; i++)
+	/*for (int i = 0; i < maxLocus; i++)
 	{
 		locus.emplace_back(Object3d::Create());
 	}
@@ -171,7 +171,7 @@ void GamePlayScene::Initialize()
 		locus[i]->SetPosition({ 110.0f, -35.0f + (float) i, 0.0f});
 		locus[i]->SetRotation({ 0.0f, 90.0f, 0.0f });
 		locus[i]->SetScale({ 0.5f, 0.5f, 0.5f });
-	}
+	}*/
 	
 	//乱数
 	srand(time(NULL));
@@ -205,7 +205,6 @@ void GamePlayScene::Update()
 {
 
 
-
 	// ゲームシーンの毎フレーム処理
 	Input* input = Input::GetInstance();
 
@@ -227,6 +226,11 @@ void GamePlayScene::Update()
 				objBlock[y][x]->Update();
 			}
 		}
+	}
+
+	if (input->TriggerKey(DIK_P))
+	{
+		Effect::DeletLocus(locus);
 	}
 
 	//プレイヤー処理
@@ -468,13 +472,13 @@ void GamePlayScene::Update()
 						if (player->GetRotation().y == 0)
 						{
 							CircularMotion(enemy_data[i].e_pos, p_pos, GetLengthObject(p_pos, enemy_data[i].e_pos), enemy_data[i].angle, -15);
-							CreateLocus(enemy_data[i].e_pos);
+							Effect::CreateLocus( locus, *locusModel, enemy_data[i].e_pos);
 						}
 						//左向きなら
 						else if (player->GetRotation().y == 180)
 						{
 							CircularMotion(enemy_data[i].e_pos, p_pos, GetLengthObject(p_pos, enemy_data[i].e_pos), enemy_data[i].angle, 15);
-							CreateLocus(enemy_data[i].e_pos);
+							Effect::CreateLocus(locus, *locusModel, enemy_data[i].e_pos);
 						}
 						//マップの当たり判定
 						if (MapCollide(enemy_data[i].e_pos, p_x_radius, p_y_radius, 0, enemy_data[i].old_e_pos))
@@ -911,11 +915,3 @@ float GamePlayScene::GetLengthObject(XMFLOAT3 pos_a, XMFLOAT3 pos_b)
 	return sqrtf(len.x * len.x + len.y * len.y + len.z * len.z);
 }
 
-void GamePlayScene::CreateLocus(XMFLOAT3& pos)
-{
-	locus.emplace_back(Object3d::Create());
-	locus.back()->SetModel(locusModel);
-	locus.back()->SetPosition(pos);
-	locus.back()->SetRotation({ 0.0f, 90.0f, 0.0f });
-	locus.back()->SetScale({ 0.5f, 0.5f, 0.5f });
-}

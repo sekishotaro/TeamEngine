@@ -103,7 +103,7 @@ public:
 
 
 	//エフェクト
-	int maxLocus = 20;
+	int maxLocus = 0;
 	std::vector<std::unique_ptr<Object3d>>locus;
 	//locus = new std::unique_ptr<Object3d>[MaxLocus];
 	//std::unique_ptr<Object3d> locus[MaxLocus]; //軌跡用板ポリ
@@ -189,6 +189,4 @@ public:
 	//長さを求める
 	float GetLengthObject(XMFLOAT3 pos_a, XMFLOAT3 pos_b);
 
-	//軌跡生成
-	void CreateLocus(XMFLOAT3 &pos);
 };
