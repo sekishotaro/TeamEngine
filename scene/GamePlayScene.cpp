@@ -953,8 +953,6 @@ float GamePlayScene::GetLengthObject(XMFLOAT3 pos_a, XMFLOAT3 pos_b)
 	return sqrtf(len.x * len.x + len.y * len.y + len.z * len.z);
 }
 
-<<<<<<< HEAD
-=======
 bool GamePlayScene::inFrustum(XMFLOAT3 playerPosition, XMFLOAT3 negativePoint, XMFLOAT3 positivePoint)
 {
 	//’·‚³‚Ì’PˆÊ
@@ -992,4 +990,3 @@ bool GamePlayScene::inFrustum(XMFLOAT3 playerPosition, XMFLOAT3 negativePoint, X
 
 	return false;
 }
->>>>>>> master

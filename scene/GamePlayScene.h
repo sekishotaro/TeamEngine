@@ -193,8 +193,6 @@ public:
 	//’·‚³‚ğ‹‚ß‚é
 	float GetLengthObject(XMFLOAT3 pos_a, XMFLOAT3 pos_b);
 
-<<<<<<< HEAD
-=======
 	/// <summary>
 	/// ‹‘ä‚Ì’†‚É‚ ‚é‚©
 	/// </summary>
@@ -203,5 +201,4 @@ public:
 	/// <param name="positivePoint">‘ÎÛ‚Ì³‚Ì’¸“_</param>
 	/// <returns>¬”Û</returns>
 	bool inFrustum(XMFLOAT3 playerPosition, XMFLOAT3 negativePoint, XMFLOAT3 positivePoint);
->>>>>>> master
 };
