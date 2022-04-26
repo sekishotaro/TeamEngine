@@ -11,6 +11,8 @@
 #include <time.h>
 #include <iostream>
 #include <string>
+#include "FbxLoader.h"
+#include "FbxObject3d.h"
 
 using namespace DirectX;
 
@@ -20,12 +22,18 @@ void GamePlayScene::Initialize()
 	Audio::GetInstance()->LoadWave("zaza.wav");
 
 	//Audio::GetInstance()->PlayWave("zaza.wav", true);
-
+	
+	//デバイスのセット
+	FbxObject3d::SetDevice(DirectXCommon::GetInstance()->GetDev());
 	// カメラ生成
 	camera = new Camera(WinApp::window_width, WinApp::window_height);
 
 	// カメラセット
 	Object3d::SetCamera(camera);
+
+	FbxObject3d::SetCamera(camera);
+	//グラフィックスパイプライン生成
+	FbxObject3d::CreateGraphicsPipeline();
 
 	// テクスチャ読み込み
 	Sprite::LoadTexture(0, L"Resources/Number0.png");
@@ -177,6 +185,13 @@ void GamePlayScene::Initialize()
 	player->Update();
 
 
+	//モデル名を指定してファイル読み込み
+	fbxModel1 = FbxLoader::GetInstance()->LoadModelFromFile("prin");
+	//3Dオブジェクト生成とモデルのセット
+	fbxObject1 = new FbxObject3d;
+	fbxObject1->Initialize();
+	fbxObject1->SetModel(fbxModel1);
+
 	//エフェクト
 	/*for (int i = 0; i < maxLocus; i++)
 	{
@@ -203,6 +218,7 @@ void GamePlayScene::Finalize()
 	safe_delete(rope);
 	safe_delete(spriteBG);
 	safe_delete(miniplayer);
+	delete fbxObject1;
 	for (int i = 0; i < EnemySpawnMax; i++)
 	{
 		safe_delete(minienemy[i]);
@@ -677,6 +693,11 @@ void GamePlayScene::Update()
 	DebugText::GetInstance()->Print(50, 35 * 6, 2, "enemySpawn:%d", enemySpawn);
 	DebugText::GetInstance()->Print(50, 35 * 7, 2, "min:%f~max:%f", p_pos.x - 123 / 2, p_pos.x + 123 / 2);
 	DebugText::GetInstance()->Print(50, 35 * 8, 2, "min:%f~max:%f", p_pos.y - 70 / 2, p_pos.y + 70 / 2);
+
+	fbxObject1->AnimationFlag = true;
+	fbxObject1->AnimationNum = 1;
+	//アップデート
+	fbxObject1->Update();
 }
 
 void GamePlayScene::Draw()
@@ -734,6 +755,9 @@ void GamePlayScene::Draw()
 	{
 		locus[i]->Draw();
 	}
+
+	//FBX3Dオブジェクトの描画
+	fbxObject1->Draw(cmdList);
 	// 3Dオブジェクト描画後処理
 	Object3d::PostDraw();
 

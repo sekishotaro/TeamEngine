@@ -1,6 +1,7 @@
 #include "Framework.h"
 
 #include "SafeDelete.h"
+#include "FbxLoader.h"
 
 void Framework::Initialize()
 {
@@ -37,6 +38,8 @@ void Framework::Initialize()
 	{
 		assert(0);
 	}
+
+	FbxLoader::GetInstance()->Initialize(DirectXCommon::GetInstance()->GetDev());
 }
 
 void Framework::Finalize()

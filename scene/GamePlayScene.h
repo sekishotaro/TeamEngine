@@ -8,6 +8,7 @@
 #include "Camera.h"
 #include "Angle.h"
 #include <vector>
+#include "FbxObject3d.h"
 
 class GamePlayScene : public BaseScene
 {
@@ -104,7 +105,9 @@ public:
 	std::unique_ptr<Object3d> enemy[EnemySpawnMax]; //エネミー
 	std::unique_ptr<Object3d> Rope[EnemySpawnMax]; //ロープ
 
-
+	//FBX実装
+	FbxModel* fbxModel1 = nullptr;
+	FbxObject3d* fbxObject1 = nullptr;
 
 	//エフェクト
 	int maxLocus = 0;
