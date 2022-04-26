@@ -167,15 +167,6 @@ public: // メンバ関数
 		SetTarget(position);
 	}
 
-	/// <summary>
-	/// 視錐台の中にあるか
-	/// </summary>
-	/// <param name="playerPosition">自機</param>
-	/// <param name="negativePoint">対象の負の頂点</param>
-	/// <param name="positivePoint">対象の正の頂点</param>
-	/// <returns>成否</returns>
-	bool inFrustum(XMFLOAT3 playerPosition, XMFLOAT3 negativePoint, XMFLOAT3 positivePoint);
-
 protected: // メンバ変数
 	//画面横の長さ
 	int window_width;

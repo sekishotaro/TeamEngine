@@ -286,7 +286,7 @@ void GamePlayScene::Update()
 			is_jump = true;
 
 			//ã¸—¦‚Ì‰Šú‰»
-			p_add = 2.75f;
+			p_add = 2.5f;
 		}
 
 		//ƒWƒƒƒ“ƒvˆ—
@@ -520,7 +520,7 @@ void GamePlayScene::Update()
 								{
 									XMFLOAT3 positivePos = { enemy_data[j].e_pos.x + enemy_data[j].e_x_radius, enemy_data[j].e_pos.y + enemy_data[j].e_y_radius, 0 };
 									XMFLOAT3 negativePos = { enemy_data[j].e_pos.x - enemy_data[j].e_x_radius, enemy_data[j].e_pos.y - enemy_data[j].e_y_radius, 0 };
-									if (camera->inFrustum(p_pos, negativePos, positivePos))
+									if (inFrustum(p_pos, negativePos, positivePos) == true)
 									{
 										enemy[j]->SetModel(model);
 										enemy_data[j].can_catch = true;
@@ -911,4 +911,42 @@ float GamePlayScene::GetLengthObject(XMFLOAT3 pos_a, XMFLOAT3 pos_b)
 	XMFLOAT3 len = { pos_a.x - pos_b.x, pos_a.y - pos_b.y, pos_a.z - pos_b.z };
 
 	return sqrtf(len.x * len.x + len.y * len.y + len.z * len.z);
+}
+
+bool GamePlayScene::inFrustum(XMFLOAT3 playerPosition, XMFLOAT3 negativePoint, XMFLOAT3 positivePoint)
+{
+	//’·‚³‚Ì’PˆÊ
+	float IdentityLen = 720 / 2 * sqrtf(3);
+
+	//ƒ^[ƒQƒbƒg‚Ì‰¡‚Æc‚Ì’·‚³
+	float eyeLen = camera->GetTarget().z - camera->GetEye().z;
+	float targetWidth = 1280 * eyeLen / IdentityLen;
+	float targetHeight = 720 * eyeLen / IdentityLen;
+
+	//‰¡
+	if (positivePoint.x <= targetWidth / 2 + playerPosition.x && -targetWidth / 2 + playerPosition.x <= positivePoint.x)
+	{
+		//c
+		if (positivePoint.y <= targetHeight / 2 + playerPosition.y && -targetHeight / 2 + playerPosition.y <= positivePoint.y)
+		{
+			return true;
+		} else if (negativePoint.y <= targetHeight / 2 + playerPosition.y && -targetHeight / 2 + playerPosition.y <= negativePoint.y)
+		{
+			return true;
+		}
+	}
+	//‰¡
+	else if (negativePoint.x <= targetWidth / 2 + playerPosition.x && -targetWidth / 2 + playerPosition.x <= negativePoint.x)
+	{
+		//c
+		if (positivePoint.y <= targetHeight / 2 + playerPosition.y && -targetHeight / 2 + playerPosition.y <= positivePoint.y)
+		{
+			return true;
+		} else if (negativePoint.y <= targetHeight / 2 + playerPosition.y && -targetHeight / 2 + playerPosition.y <= negativePoint.y)
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
