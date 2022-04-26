@@ -229,32 +229,30 @@ void GamePlayScene::Update()
 		old_p_pos = p_pos;
 
 		//移動
-		if (is_attack == false)
+		if (input->LeftStickAngle().x)
 		{
-			if (input->LeftStickAngle().x)
-			{
-				p_pos.x += input->LeftStickAngle().x / 2;
+			p_pos.x += input->LeftStickAngle().x / 2;
 
-				//進行方向に向きを変える
-				if (input->LeftStickAngle().x >= 0)
-				{
-					player->SetRotation(XMFLOAT3(0, 0, 0));
-				} else
-				{
-					player->SetRotation(XMFLOAT3(0, 180, 0));
-				}
-			}
-			//キーボード用
-			if (input->PushKey(DIK_D))
+			//進行方向に向きを変える
+			if (input->LeftStickAngle().x >= 0)
 			{
-				p_pos.x += 0.5f;
 				player->SetRotation(XMFLOAT3(0, 0, 0));
-			}
-			if (input->PushKey(DIK_A))
+			} 
+			else
 			{
-				p_pos.x -= 0.5f;
 				player->SetRotation(XMFLOAT3(0, 180, 0));
 			}
+		}
+		//キーボード用
+		if (input->PushKey(DIK_D))
+		{
+			p_pos.x += 0.5f;
+			player->SetRotation(XMFLOAT3(0, 0, 0));
+		}
+		if (input->PushKey(DIK_A))
+		{
+			p_pos.x -= 0.5f;
+			player->SetRotation(XMFLOAT3(0, 180, 0));
 		}
 
 		//攻撃
@@ -281,7 +279,7 @@ void GamePlayScene::Update()
 		}
 
 		//ジャンプ
-		if ((input->TriggerKey(DIK_W) || input->TriggerButton(Button_A)) && is_air == false && is_jump == false && is_attack == false)
+		if ((input->TriggerKey(DIK_W) || input->TriggerButton(Button_A)) && is_air == false && is_jump == false)
 		{
 			is_jump = true;
 
@@ -383,7 +381,7 @@ void GamePlayScene::Update()
 					}
 				}
 				//更新処理
-				if (enemy_data[i].is_catch == false && is_attack == false)
+				if (enemy_data[i].is_catch == false)
 				{
 					//通常状態
 					if (enemy_data[i].is_normal == true)
