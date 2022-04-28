@@ -172,8 +172,8 @@ void GamePlayScene::Initialize()
 	max_rope = 15;
 
 	//プレイヤー
-	player->SetModel(modelPlayer);
-	p_pos = { 110, 10, 0 };
+	player->SetModel(model);
+	p_pos = { 0, 10, 0 };
 	old_p_pos = { 0, 0, 0 };
 	p_x_radius = 1.0f * player->GetScale().x;
 	p_y_radius = 1.0f * player->GetScale().y;
@@ -403,14 +403,7 @@ void GamePlayScene::Update()
 				//プレイヤーとエネミーが接触したら
 				if (CollisionObject(player, enemy[i]) == true && enemy_data[i].can_catch == true)
 				{
-					if (enemy_data[i].enemy_type == NORMAL)
-					{
-						enemy_data[i].is_catch = true;
-					}
-					else if (enemy_data[i].enemy_type == TWICE && enemy_data[i].can_catch == true)
-					{
-						enemy_data[i].is_catch = true;
-					}
+					enemy_data[i].is_catch = true;
 				}
 				else if (CollisionObject(player, enemy[i]) == true && enemy_data[i].can_catch == false)
 				{
