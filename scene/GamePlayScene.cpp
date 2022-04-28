@@ -664,10 +664,10 @@ void GamePlayScene::Update()
 	//ƒJƒƒ‰XV
 	if (is_shake == true)
 	{
-		shake_x = rand() % 11 / 10.0f;
-		shake_y = rand() % 11 / 10.0f;
+		shake_x = static_cast<float>(rand() % 16) / 10;
+		shake_y = static_cast<float>(rand() % 16) / 10;
 		shake_time++;
-		if (shake_time > 10)
+		if (shake_time > 20)
 		{
 			shake_x = 0.0f;
 			shake_y = 0.0f;
