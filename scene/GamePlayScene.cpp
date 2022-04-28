@@ -172,7 +172,7 @@ void GamePlayScene::Initialize()
 	max_rope = 15;
 
 	//ƒvƒŒƒCƒ„[
-	player->SetModel(model);
+	player->SetModel(modelPlayer);
 	p_pos = { 0, 10, 0 };
 	old_p_pos = { 0, 0, 0 };
 	p_x_radius = 1.0f * player->GetScale().x;
