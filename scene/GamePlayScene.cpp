@@ -236,8 +236,6 @@ void GamePlayScene::Finalize()
 
 void GamePlayScene::Update()
 {
-
-
 	// ゲームシーンの毎フレーム処理
 	Input* input = Input::GetInstance();
 
@@ -393,6 +391,13 @@ void GamePlayScene::Update()
 				{
 					enemy_data[i].can_catch = false;
 					enemy[i]->SetModel(enemy_model_2);
+					enemy[i]->SetRotation({ 0, 0, 0 });
+				}
+				else
+				{
+					enemy_data[i].can_catch = true;
+					enemy[i]->SetModel(model);
+					enemy[i]->SetRotation({ 0, 0, 0 });
 				}
 			}
 			//敵の処理
@@ -567,6 +572,9 @@ void GamePlayScene::Update()
 									if (inFrustum(p_pos, negativePos, positivePos) == true)
 									{
 										enemy[j]->SetModel(model);
+										XMFLOAT3 rot = enemy[j]->GetRotation();
+										rot.z += 180;
+										enemy[j]->SetRotation(rot);
 										enemy_data[j].can_catch = true;
 									}
 								}
