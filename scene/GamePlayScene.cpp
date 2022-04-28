@@ -248,22 +248,15 @@ void GamePlayScene::Update()
 	spriteTime[1]->ChangeTex((int)lastTime / 10);
 
 	//Mキーでマップチップ設置
-	if (input->TriggerKey(DIK_M) || true)
+	MapCreate(0);
+	for (int y = 0; y < map_max_y; y++)
 	{
-		MapCreate(0);
-		for (int y = 0; y < map_max_y; y++)
+		for (int x = 0; x < map_max_x; x++)
 		{
-			for (int x = 0; x < map_max_x; x++)
-			{
-				objBlock[y][x]->Update();
-			}
+			objBlock[y][x]->Update();
 		}
 	}
 
-	if (input->TriggerKey(DIK_P))
-	{
-		
-	}
 	Effect::DeletLocus(locus, camera, p_pos);
 	//プレイヤー処理
 	{
@@ -680,7 +673,7 @@ void GamePlayScene::Update()
 	camera->SetEye({ p_pos.x + shake_x, p_pos.y + shake_y, p_pos.z - 55.0f - (5 * level)});
 	camera->Update();
 
-	if (input->TriggerKey(DIK_RETURN))
+	if (input->TriggerKey(DIK_RETURN) || input->TriggerButton(Start))
 	{
 		//BGM止める
 		//Audio::GetInstance()->SoundStop("zaza.wav");

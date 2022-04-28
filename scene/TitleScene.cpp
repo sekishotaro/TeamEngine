@@ -23,7 +23,7 @@ void TitleScene::Update()
 
 	Input *input = Input::GetInstance();
 
-	if (input->TriggerKey(DIK_RETURN))
+	if (input->TriggerKey(DIK_RETURN) || input->TriggerButton(Start))
 	{
 		//ƒV[ƒ“Ø‚è‘Ö‚¦
 		SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
