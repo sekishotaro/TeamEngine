@@ -172,7 +172,7 @@ void GamePlayScene::Initialize()
 
 	//ƒvƒŒƒCƒ„[
 	player->SetModel(model);
-	p_pos = { 110, 10, 0 };
+	p_pos = { 0, 10, 0 };
 	old_p_pos = { 0, 0, 0 };
 	p_x_radius = 1.0f * player->GetScale().x;
 	p_y_radius = 1.0f * player->GetScale().y;
