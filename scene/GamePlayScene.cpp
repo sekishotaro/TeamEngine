@@ -409,14 +409,7 @@ void GamePlayScene::Update()
 				//プレイヤーとエネミーが接触したら
 				if (CollisionObject(player, enemy[i]) == true && enemy_data[i].can_catch == true)
 				{
-					if (enemy_data[i].enemy_type == NORMAL)
-					{
-						enemy_data[i].is_catch = true;
-					}
-					else if (enemy_data[i].enemy_type == TWICE && enemy_data[i].can_catch == true)
-					{
-						enemy_data[i].is_catch = true;
-					}
+					enemy_data[i].is_catch = true;
 				}
 				else if (CollisionObject(player, enemy[i]) == true && enemy_data[i].can_catch == false)
 				{
