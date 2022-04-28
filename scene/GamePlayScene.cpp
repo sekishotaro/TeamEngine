@@ -765,7 +765,7 @@ void GamePlayScene::Draw()
 	}
 
 	//FBX3Dオブジェクトの描画
-	//fbxObject1->Draw(cmdList);
+	fbxObject1->Draw(cmdList);
 	// 3Dオブジェクト描画後処理
 	Object3d::PostDraw();
 
