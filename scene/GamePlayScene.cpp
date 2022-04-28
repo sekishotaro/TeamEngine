@@ -80,8 +80,9 @@ void GamePlayScene::Initialize()
 	//エフェクト
 
 	// オブジェクト生成
-	model = Model::LoadFromOBJ("sphere");
-	enemy_model_2 = Model::LoadFromOBJ("sphere2");
+	model = Model::LoadFromOBJ("weakEnemy");
+	modelPlayer = Model::LoadFromOBJ("cowgirl");
+	enemy_model_2 = Model::LoadFromOBJ("oneHitEnemy");
 	block = Model::LoadFromOBJ("block");
 	rope = Model::LoadFromOBJ("rope");
 	locusModel = Model::LoadFromOBJ("locus");
@@ -171,7 +172,7 @@ void GamePlayScene::Initialize()
 	max_rope = 15;
 
 	//プレイヤー
-	player->SetModel(model);
+	player->SetModel(modelPlayer);
 	p_pos = { 110, 10, 0 };
 	old_p_pos = { 0, 0, 0 };
 	p_x_radius = 1.0f * player->GetScale().x;
