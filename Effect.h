@@ -3,6 +3,7 @@
 #include "Object3d.h"
 #include <DirectXMath.h>
 #include <vector>
+#include "Camera.h"
 
 class Effect
 {
@@ -22,6 +23,6 @@ public:
 	static void CreateLocus(std::vector<std::unique_ptr<Object3d>> &object, Model &model, XMFLOAT3& pos);
 
 	//ãOê’çÌèú
-	static void DeletLocus(std::vector<std::unique_ptr<Object3d>>& object);
+	static void DeletLocus(std::vector<std::unique_ptr<Object3d>>& object, Camera *camera, XMFLOAT3& player);
 };
 

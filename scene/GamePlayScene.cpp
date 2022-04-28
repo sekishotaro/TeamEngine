@@ -263,9 +263,9 @@ void GamePlayScene::Update()
 
 	if (input->TriggerKey(DIK_P))
 	{
-		Effect::DeletLocus(locus);
+		
 	}
-
+	Effect::DeletLocus(locus, camera, p_pos);
 	//プレイヤー処理
 	{
 		//座標更新
@@ -757,7 +757,7 @@ void GamePlayScene::Draw()
 	}
 
 	//FBX3Dオブジェクトの描画
-	fbxObject1->Draw(cmdList);
+	//fbxObject1->Draw(cmdList);
 	// 3Dオブジェクト描画後処理
 	Object3d::PostDraw();
 
