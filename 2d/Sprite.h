@@ -130,6 +130,8 @@ public: //メンバ関数
 	/// <param name="position">座標</param>
 	void SetPosition(XMFLOAT2 position);
 
+
+	const XMFLOAT2& GetSize() { return size; }
 	/// <summary>
 	/// サイズの設定
 	/// </summary>

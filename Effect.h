@@ -4,6 +4,7 @@
 #include <DirectXMath.h>
 #include <vector>
 #include "Camera.h"
+#include "Sprite.h"
 
 class Effect
 {
@@ -24,5 +25,8 @@ public:
 
 	//‹OÕíœ
 	static void DeletLocus(std::vector<std::unique_ptr<Object3d>>& object, Camera *camera, XMFLOAT3& player);
+
+	//”g“®
+	static void DhockWave(Sprite* sprite, XMFLOAT3& generationPoint, Camera* camera);
 };
 

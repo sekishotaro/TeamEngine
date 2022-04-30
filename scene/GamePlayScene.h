@@ -115,7 +115,7 @@ public:
 	//locus = new std::unique_ptr<Object3d>[MaxLocus];
 	//std::unique_ptr<Object3d> locus[MaxLocus]; //軌跡用板ポリ
 	Model* locusModel = nullptr; //軌跡
-	
+	Sprite* shockWave = nullptr; //波動
 
 	//スプライト
 	Sprite* spriteBG = nullptr; //背景
