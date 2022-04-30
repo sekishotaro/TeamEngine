@@ -20,13 +20,28 @@ private: // エイリアス
 
 public:
 
-	//軌跡生成
+	/// <summary>
+	/// 軌跡生成
+	/// </summary>
+	/// <param name="object">軌跡</param>
+	/// <param name="model">軌跡モデル</param>
+	/// <param name="pos">軌跡発生地点</param>
 	static void CreateLocus(std::vector<std::unique_ptr<Object3d>> &object, Model &model, XMFLOAT3& pos);
 
-	//軌跡削除
+	/// <summary>
+	/// 軌跡削除
+	/// </summary>
+	/// <param name="object">軌跡</param>
+	/// <param name="camera">カメラ</param>
+	/// <param name="player">自機(画面中心部)</param>
 	static void DeletLocus(std::vector<std::unique_ptr<Object3d>>& object, Camera *camera, XMFLOAT3& player);
 
-	//波動
-	static void DhockWave(Sprite* sprite, XMFLOAT3& generationPoint, Camera* camera);
+	/// <summary>
+	/// 波動
+	/// </summary>
+	/// <param name="object">波動</param>
+	/// <param name="generationPoint">発生地点</param>
+	/// <param name="flag">フラグ</param>
+	static void ShockWaveUpdate(std::unique_ptr<Object3d>& object, XMFLOAT3& generationPoint, bool *flag);
 };
 

@@ -113,10 +113,12 @@ public:
 	//エフェクト
 	int maxLocus = 0;
 	std::vector<std::unique_ptr<Object3d>>locus;
+	std::unique_ptr<Object3d> shock = nullptr;
 	//locus = new std::unique_ptr<Object3d>[MaxLocus];
 	//std::unique_ptr<Object3d> locus[MaxLocus]; //軌跡用板ポリ
 	Model* locusModel = nullptr; //軌跡
-	Sprite* shockWave = nullptr; //波動
+	Model* shockWaveModel = nullptr; //波動
+	bool shockFlag = false; //波動が開始される
 
 	//スプライト
 	Sprite* spriteBG = nullptr; //背景

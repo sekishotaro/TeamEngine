@@ -46,18 +46,21 @@ void Effect::DeletLocus(std::vector<std::unique_ptr<Object3d>> &object, Camera *
 	
 }
  
-void Effect::DhockWave(Sprite* sprite, XMFLOAT3& generationPoint, Camera* camera)
+void Effect::ShockWaveUpdate(std::unique_ptr<Object3d>& object, XMFLOAT3& generationPoint, bool *flag)
 {
-	//長さの単位
-	float IdentityLen = 720 / 2 * sqrtf(3);
 
-	//ターゲットの横と縦の長さ
-	float eyeLen = camera->GetTarget().z - camera->GetEye().z;
-	float targetWidth = 1280 * eyeLen / IdentityLen;
-	float targetHeight = 720 * eyeLen / IdentityLen;
+	XMFLOAT3 size = object->GetScale();
+	if ( *flag == true)
+	{
+		object->SetScale({ size.x + 2.0f, size.y, size.z + 2.0f });
+	}
+	else if ( *flag == false)
+	{
+		object->SetScale({ 1.0f, 1.0f, 1.0f });
+	}
 
-	XMFLOAT3 pos = { generationPoint.x + targetWidth / 2 - 5.0f, generationPoint.y + targetHeight / 2 - 5.0f, 0 };
-
-	XMFLOAT2 size = sprite->GetSize();
-	sprite->SetSize({ size.x + 20.0f, size.y + 20.0f });
+	if (size.x >= 150.0f)
+	{
+		*flag = false;
+	}
 }
