@@ -160,6 +160,14 @@ public:
 	bool is_attack; //攻撃フラグ
 	bool is_air;//空中フラグ
 
+	bool is_damage; //攻撃を受けたか
+	int damage_time; //ダメージリアクションの時間
+	float damage_move; //ダメージの移動
+
+	//無敵時間
+	bool is_invincible; //無敵状態
+	int invincible_time; //無敵時間
+
 	//エネミー
 	EnemyData enemy_data[EnemySpawnMax]; //エネミーのデータ
 

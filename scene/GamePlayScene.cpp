@@ -182,6 +182,11 @@ void GamePlayScene::Initialize()
 	p_down = 0;
 	is_attack = false;
 	is_air = false;
+	is_damage = false;
+	damage_time = 0;
+	damage_move = 0;
+	invincible_time = 0;
+	is_invincible = false;
 	player->SetPosition(p_pos);
 	player->Update();
 
@@ -265,39 +270,42 @@ void GamePlayScene::Update()
 		old_p_pos = p_pos;
 
 		//移動
-		if (input->LeftStickAngle().x)
+		if (is_damage == false)
 		{
-			p_pos.x += input->LeftStickAngle().x / 2;
+			if (input->LeftStickAngle().x)
+			{
+				p_pos.x += input->LeftStickAngle().x / 2;
 
-			//進行方向に向きを変える
-			if (input->LeftStickAngle().x >= 0)
+				//進行方向に向きを変える
+				if (input->LeftStickAngle().x >= 0)
+				{
+					player->SetRotation(XMFLOAT3(0, 0, 0));
+				} 
+				else
+				{
+					player->SetRotation(XMFLOAT3(0, 180, 0));
+				}
+			}
+			//キーボード用
+			if (input->PushKey(DIK_D))
 			{
+				p_pos.x += 0.5f;
 				player->SetRotation(XMFLOAT3(0, 0, 0));
-			} 
-			else
+			}
+			if (input->PushKey(DIK_A))
 			{
+				p_pos.x -= 0.5f;
 				player->SetRotation(XMFLOAT3(0, 180, 0));
 			}
 		}
-		//キーボード用
-		if (input->PushKey(DIK_D))
-		{
-			p_pos.x += 0.5f;
-			player->SetRotation(XMFLOAT3(0, 0, 0));
-		}
-		if (input->PushKey(DIK_A))
-		{
-			p_pos.x -= 0.5f;
-			player->SetRotation(XMFLOAT3(0, 180, 0));
-		}
 
 		//攻撃
-		for (int i = 0; i < enemySpawn; i++)
+		if ((input->TriggerKey(DIK_SPACE) || input->PushButton(Button_B)) && is_attack == false && is_damage == false)
 		{
-			if (enemy_data[i].is_alive == true)
+			for (int i = 0; i < enemySpawn; i++)
 			{
 				//プレイヤーの攻撃
-				if ((input->TriggerKey(DIK_SPACE) || input->PushButton(Button_B)) && is_attack == false && enemy_data[i].is_catch == true)
+				if (enemy_data[i].is_catch == true)
 				{
 					//プレイヤーの向きで投げる方向を変える
 					if (player->GetRotation().y == 0 && p_pos.x > enemy[i]->GetPosition().x)
@@ -314,13 +322,40 @@ void GamePlayScene::Update()
 			}
 		}
 
+		//ダメージリアクション
+		if (is_damage == true)
+		{
+			p_pos.x += damage_move;
+			damage_time++;
+
+			if (damage_time > 20)
+			{
+				is_damage = false;
+				damage_move = 0;
+				damage_time = 0;
+				is_invincible = true;
+			}
+		}
+
+		//無敵時間
+		if (is_invincible == true)
+		{
+			invincible_time++;
+
+			if (invincible_time > 60)
+			{
+				invincible_time = 0;
+				is_invincible = false;
+			}
+		}
+
 		//ジャンプ
-		if ((input->TriggerKey(DIK_W) || input->TriggerButton(Button_A)) && is_air == false && is_jump == false)
+		if ((input->TriggerKey(DIK_W) || input->TriggerButton(Button_A)) && is_air == false && is_jump == false && is_damage == false)
 		{
 			is_jump = true;
 
 			//上昇率の初期化
-			p_add = 2.5f;
+			p_add = 2.75f;
 		}
 
 		//ジャンプ処理
@@ -401,19 +436,25 @@ void GamePlayScene::Update()
 				enemy_data[i].e_pos = enemy[i]->GetPosition();
 				enemy_data[i].old_e_pos = enemy_data[i].e_pos;
 				//プレイヤーとエネミーが接触したら
-				if (CollisionObject(player, enemy[i]) == true && enemy_data[i].can_catch == true)
+				if (is_damage == false && is_invincible == false)
 				{
-					enemy_data[i].is_catch = true;
-				}
-				else if (CollisionObject(player, enemy[i]) == true && enemy_data[i].can_catch == false)
-				{
-					if (p_pos.x - old_p_pos.x > 0)
+					if (CollisionObject(player, enemy[i]) == true && enemy_data[i].can_catch == true)
 					{
-						p_pos.x -= 5.0f;
-					}
-					else
+						enemy_data[i].is_catch = true;
+					} 
+					else if (CollisionObject(player, enemy[i]) == true && enemy_data[i].can_catch == false)
 					{
-						p_pos.x += 5.0f;
+						is_damage = true;
+						//左
+						if (p_pos.x < enemy_data[i].e_pos.x)
+						{
+							damage_move = -0.4f;
+						}
+						//右
+						else
+						{
+							damage_move = 0.4f;
+						}
 					}
 				}
 				//更新処理
@@ -682,12 +723,12 @@ void GamePlayScene::Update()
 	}
 
 	//プレイヤーの座標（X：Y)
-	DebugText::GetInstance()->Print(50, 35 * 3, 2, "player_x:%f", p_pos.x);
+	/*DebugText::GetInstance()->Print(50, 35 * 3, 2, "player_x:%f", p_pos.x);
 	DebugText::GetInstance()->Print(50, 35 * 4, 2, "player_y:%f", p_pos.y);
 	DebugText::GetInstance()->Print(50, 35 * 5, 2, "rope_len:%f", max_rope);
 	DebugText::GetInstance()->Print(50, 35 * 6, 2, "enemySpawn:%d", enemySpawn);
 	DebugText::GetInstance()->Print(50, 35 * 7, 2, "min:%f~max:%f", p_pos.x - 123 / 2, p_pos.x + 123 / 2);
-	DebugText::GetInstance()->Print(50, 35 * 8, 2, "min:%f~max:%f", p_pos.y - 70 / 2, p_pos.y + 70 / 2);
+	DebugText::GetInstance()->Print(50, 35 * 8, 2, "min:%f~max:%f", p_pos.y - 70 / 2, p_pos.y + 70 / 2);*/
 
 	fbxObject1->AnimationFlag = true;
 	fbxObject1->AnimationNum = 1;
