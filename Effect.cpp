@@ -19,7 +19,7 @@ void Effect::DeletLocus(std::vector<std::unique_ptr<Object3d>> &object, Camera *
 	float targetWidth = 1280 * eyeLen / IdentityLen;
 	float targetHeight = 720 * eyeLen / IdentityLen;
 
-	XMFLOAT3 pos = { player.x + targetWidth / 2 - 5.0f, player.y + targetHeight/ 2 - 5.0f, 0};
+	XMFLOAT3 pos = { player.x + targetWidth / 2 - 5.0f, player.y + targetHeight / 2 - 5.0f, 0 };
 
 	for (int i = 0; i < object.size(); i++)
 	{
@@ -46,3 +46,18 @@ void Effect::DeletLocus(std::vector<std::unique_ptr<Object3d>> &object, Camera *
 	
 }
  
+void Effect::DhockWave(Sprite* sprite, XMFLOAT3& generationPoint, Camera* camera)
+{
+	//長さの単位
+	float IdentityLen = 720 / 2 * sqrtf(3);
+
+	//ターゲットの横と縦の長さ
+	float eyeLen = camera->GetTarget().z - camera->GetEye().z;
+	float targetWidth = 1280 * eyeLen / IdentityLen;
+	float targetHeight = 720 * eyeLen / IdentityLen;
+
+	XMFLOAT3 pos = { generationPoint.x + targetWidth / 2 - 5.0f, generationPoint.y + targetHeight / 2 - 5.0f, 0 };
+
+	XMFLOAT2 size = sprite->GetSize();
+	sprite->SetSize({ size.x + 20.0f, size.y + 20.0f });
+}

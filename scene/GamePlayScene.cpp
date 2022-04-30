@@ -54,6 +54,7 @@ void GamePlayScene::Initialize()
 	Sprite::LoadTexture(16, L"Resources/level.png");
 	Sprite::LoadTexture(17, L"Resources/koron.png");
 	Sprite::LoadTexture(18, L"Resources/timer.png");
+	Sprite::LoadTexture(20, L"Resources/shock.png");
 
 	// 背景スプライト生成
 	spriteBG = Sprite::Create(11, { 0.0f,0.0f });
@@ -78,7 +79,8 @@ void GamePlayScene::Initialize()
 	spriteLevel[1] = Sprite::Create(0, { WinApp::window_width - 32 ,WinApp::window_height - 64 });
 
 	//エフェクト
-
+	shockWave = Sprite::Create(20, { 700, 200 });
+	shockWave->SetAnchorPoint({ 0.5f, 0.5f });
 	// オブジェクト生成
 	model = Model::LoadFromOBJ("weakEnemy");
 	modelPlayer = Model::LoadFromOBJ("cowgirl");
@@ -239,6 +241,15 @@ void GamePlayScene::Update()
 {
 	// ゲームシーンの毎フレーム処理
 	Input* input = Input::GetInstance();
+
+	//実験用置き場
+	if (input->PushKey(DIK_M))
+	{
+		XMFLOAT2 size = shockWave->GetSize();
+		shockWave->SetSize({ size.x + 20.0f, size.y + 20.0f });
+	}
+	Effect::DeletLocus(locus, camera, p_pos);
+	
 
 	if (lastTime > 0)
 	{
@@ -780,6 +791,8 @@ void GamePlayScene::Draw()
 	spriteScore[1]->Draw();
 	spriteScore[2]->Draw();
 	spriteScore[3]->Draw();
+
+	shockWave->Draw();
 
 	// デバッグテキストの描画
 	DebugText::GetInstance()->DrawAll(cmdList);
