@@ -25,7 +25,7 @@ private: // エイリアス
 public: //サブクラス
 	enum EnemyType
 	{
-		NORMAL, TWICE
+		NORMAL, TWICE, JUMP
 	};
 
 	struct EnemyData
@@ -37,6 +37,7 @@ public: //サブクラス
 		float e_y_radius; //中心点からyの最大値まで
 
 		bool is_normal; //徘徊状態
+		bool is_bounce; //跳ねる状態
 		bool is_catch; //捕縛状態
 		bool is_alive; //生死
 		bool is_grand; //地面についているか
@@ -44,6 +45,8 @@ public: //サブクラス
 
 		float e_speed; //移動量
 		float e_down; //下降度
+
+		float e_acc; //加速度
 
 		int angle; //円運動の角度
 

@@ -122,7 +122,7 @@ void GamePlayScene::Initialize()
 	lastTime = 60.0f;
 	level = 1;
 	enemySpawn = 1;
-	gravity = 0.15f;
+	gravity = 0.125f;
 
 	//オブジェクトにモデルをひも付ける
 	for (int i = 0; i < EnemySpawnMax; i++)
@@ -132,6 +132,7 @@ void GamePlayScene::Initialize()
 		enemy_data[i].e_x_radius = 1.0f * player->GetScale().x;
 		enemy_data[i].e_y_radius = 1.0f * player->GetScale().y;
 		enemy_data[i].is_normal = true;
+		enemy_data[i].is_bounce = false;
 		enemy_data[i].is_catch = false;
 		enemy_data[i].is_alive = false;
 		enemy_data[i].is_grand = false;
@@ -142,6 +143,8 @@ void GamePlayScene::Initialize()
 		enemy_data[i].turn_move = 1;
 		enemy_data[i].enemy_type = TWICE;
 		enemy_data[0].enemy_type = NORMAL;
+		enemy_data[1].enemy_type = JUMP;
+		enemy_data[i].e_acc = 0;
 		if (enemy_data[i].enemy_type == TWICE)
 		{
 			enemy_data[i].can_catch = false;
@@ -364,7 +367,7 @@ void GamePlayScene::Update()
 			is_jump = true;
 
 			//上昇率の初期化
-			p_add = 2.75f;
+			p_add = 2.25f;
 		}
 
 		//ジャンプ処理
@@ -439,6 +442,7 @@ void GamePlayScene::Update()
 					if (CollisionObject(player, enemy[i]) == true && enemy_data[i].can_catch == true)
 					{
 						enemy_data[i].is_catch = true;
+						enemy_data[i].is_bounce = false;
 					} 
 					else if (CollisionObject(player, enemy[i]) == true && enemy_data[i].can_catch == false)
 					{
@@ -625,15 +629,40 @@ void GamePlayScene::Update()
 				if (is_attack == false)
 				{
 					//下降度をマイナス
-					enemy_data[i].e_down -= gravity;
-					enemy_data[i].e_pos.y += enemy_data[i].e_down;
+					if (enemy_data[i].is_bounce == false)
+					{
+						enemy_data[i].e_down -= gravity;
+						enemy_data[i].e_pos.y += enemy_data[i].e_down;
+					}
+					else
+					{
+						enemy_data[i].e_acc -= gravity;
+						enemy_data[i].e_pos.y += enemy_data[i].e_acc;
+					}
 					enemy_data[i].is_grand = false;
 
 					//マップの当たり判定
-					if (MapCollide(enemy_data[i].e_pos, p_x_radius, p_y_radius, 0, enemy_data[i].old_e_pos))
+					if (enemy_data[i].is_bounce == false)
 					{
-						enemy_data[i].e_down = 0;
-						enemy_data[i].is_grand = true;
+						if (MapCollide(enemy_data[i].e_pos, p_x_radius, p_y_radius, 0, enemy_data[i].old_e_pos))
+						{
+							enemy_data[i].e_down = 0;
+							enemy_data[i].is_grand = true;
+							if (enemy_data[i].enemy_type == JUMP && enemy_data[i].is_catch == false)
+							{
+								enemy_data[i].is_bounce = true;
+								enemy_data[i].e_acc = 2.25f;
+							}
+						}
+					}
+					else if (enemy_data[i].enemy_type == JUMP && enemy_data[i].is_bounce == true)
+					{
+						if (MapCollide(enemy_data[i].e_pos, p_x_radius, p_y_radius, 0, enemy_data[i].old_e_pos, true))
+						{
+							enemy_data[i].e_down = 0;
+							enemy_data[i].is_grand = true;
+							enemy_data[i].e_acc = 2.25f;
+						}
 					}
 				}
 				//ロープの更新
@@ -684,6 +713,8 @@ void GamePlayScene::Update()
 		{
 			enemy[i]->SetPosition({ 20, 10, 0 });
 			enemy_data[i].e_down = 0;
+			enemy_data[i].e_acc = 0;
+			enemy_data[i].is_bounce = false;
 		}
 		//オブジェクト情報の更新
 		enemy[i]->Update();
