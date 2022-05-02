@@ -94,11 +94,7 @@ void GamePlayScene::Initialize()
 		enemy[i] = Object3d::Create();
 		Rope[i] = Object3d::Create();
 	}
-	player = Object3d::Create();
-
-	
-
-	
+	player = Object3d::Create();	
 
 	//マップチップ用のCSV読み込み
 	//(map, "Resource/scv/なんたら.csv")で追加可能
@@ -139,9 +135,11 @@ void GamePlayScene::Initialize()
 		enemy_data[i].is_catch = false;
 		enemy_data[i].is_alive = false;
 		enemy_data[i].is_grand = false;
+		enemy_data[i].is_turn = false;
 		enemy_data[i].e_speed = 0.25f;
 		enemy_data[i].e_down = 0.0f;
 		enemy_data[i].angle = 0;
+		enemy_data[i].turn_move = 1;
 		enemy_data[i].enemy_type = TWICE;
 		enemy_data[0].enemy_type = NORMAL;
 		if (enemy_data[i].enemy_type == TWICE)
@@ -427,18 +425,6 @@ void GamePlayScene::Update()
 				{
 					SpawnEnemy(0, i);
 				}
-				if (enemy_data[i].enemy_type == TWICE)
-				{
-					enemy_data[i].can_catch = false;
-					enemy[i]->SetModel(enemy_model_2);
-					enemy[i]->SetRotation({ 0, 0, 0 });
-				}
-				else
-				{
-					enemy_data[i].can_catch = true;
-					enemy[i]->SetModel(model);
-					enemy[i]->SetRotation({ 0, 0, 0 });
-				}
 			}
 			//敵の処理
 			else
@@ -446,6 +432,7 @@ void GamePlayScene::Update()
 				//座標取得
 				enemy_data[i].e_pos = enemy[i]->GetPosition();
 				enemy_data[i].old_e_pos = enemy_data[i].e_pos;
+
 				//プレイヤーとエネミーが接触したら
 				if (is_damage == false && is_invincible == false)
 				{
@@ -472,12 +459,31 @@ void GamePlayScene::Update()
 				if (enemy_data[i].is_catch == false)
 				{
 					//通常状態
-					if (enemy_data[i].is_normal == true)
+					if (enemy_data[i].is_turn == true && enemy_data[i].enemy_type == TWICE)
+					{
+						enemy_data[i].e_pos.y += enemy_data[i].turn_move;
+						XMFLOAT3 e_rot = enemy[i]->GetRotation();
+						e_rot.z += 10.0f;
+						enemy[i]->SetRotation(e_rot);
+
+						if (e_rot.z >= 90 && enemy_data[i].turn_move > 0.0f)
+						{
+							enemy_data[i].turn_move = -enemy_data[i].turn_move;
+						}
+						if (e_rot.z >= 180 && enemy_data[i].turn_move < 0.0f)
+						{
+							e_rot.z = 180.0f;
+							enemy[i]->SetRotation(e_rot);
+							enemy_data[i].turn_move = -enemy_data[i].turn_move;
+							enemy_data[i].is_turn = false;
+						}
+					}
+					else if (enemy_data[i].is_normal == true && enemy[i]->GetRotation().z != 180)
 					{
 						//移動
 						enemy_data[i].e_pos.x += enemy_data[i].e_speed;
 
-						if (enemy_data[i].is_grand == true)
+						 if (enemy_data[i].is_grand == true)
 						{
 							//端まで行ったら
 							if (MapCollide(enemy_data[i].e_pos, p_x_radius, p_y_radius, 0, enemy_data[i].old_e_pos))
@@ -590,10 +596,6 @@ void GamePlayScene::Update()
 									max_rope = 15.0f;
 								}
 							}
-							if (enemy_data[i].enemy_type == TWICE)
-							{
-								enemy_data[i].can_catch = false;
-							}
 							for (int j = 0; j < enemySpawn; j++)
 							{
 								if (enemy_data[j].is_catch == true)
@@ -611,10 +613,8 @@ void GamePlayScene::Update()
 									if (inFrustum(p_pos, negativePos, positivePos) == true)
 									{
 										enemy[j]->SetModel(model);
-										XMFLOAT3 rot = enemy[j]->GetRotation();
-										rot.z += 180;
-										enemy[j]->SetRotation(rot);
 										enemy_data[j].can_catch = true;
+										enemy_data[j].is_turn = true;
 									}
 								}
 							}
@@ -868,11 +868,29 @@ void GamePlayScene::SpawnEnemy(int mapNumber, int enemyNumber)
 	if (Mapchip::GetChipNum(spawnX, spawnY, map[mapNumber]) == None && Mapchip::GetChipNum(spawnX + 1, spawnY, map[mapNumber]) == None)
 	{
 		enemy[enemyNumber]->SetPosition({ spawnX * LAND_SCALE,  -spawnY * LAND_SCALE, 0 });//位置をセット
+		enemy[enemyNumber]->SetRotation({ 0, 0, 0 });
 		enemy_data[enemyNumber].e_pos = { spawnX * LAND_SCALE,  -spawnY * LAND_SCALE, 0 };
 		enemy_data[enemyNumber].is_alive = true;//スポーン
 		enemy[enemyNumber + 1]->SetPosition({ (spawnX + 1) * LAND_SCALE,  -spawnY * LAND_SCALE, 0 });//位置をセット
+		enemy[enemyNumber + 1]->SetRotation({ 0, 0, 0 });
 		enemy_data[enemyNumber + 1].e_pos = { (spawnX + 1) * LAND_SCALE,  -spawnY * LAND_SCALE, 0 };
 		enemy_data[enemyNumber + 1].is_alive = true;//スポーン
+		for (int i = 0; i < 2; i++)
+		{
+			if (enemy_data[enemyNumber + i].enemy_type == TWICE)
+			{
+				enemy_data[enemyNumber + i].can_catch = false;
+				enemy[enemyNumber + i]->SetModel(enemy_model_2);
+				enemy[enemyNumber + i]->SetRotation({ 0, 0, 0 });
+			} 
+			else
+			{
+				enemy_data[enemyNumber + i].can_catch = true;
+				enemy[enemyNumber + i]->SetModel(model);
+				enemy[enemyNumber + i]->SetRotation({ 0, 0, 0 });
+			}
+			enemy_data[enemyNumber + i].is_turn = false;
+		}
 	}
 }
 

@@ -40,6 +40,7 @@ public: //サブクラス
 		bool is_catch; //捕縛状態
 		bool is_alive; //生死
 		bool is_grand; //地面についているか
+		bool is_turn; //攻撃を受けたか
 
 		float e_speed; //移動量
 		float e_down; //下降度
@@ -50,6 +51,8 @@ public: //サブクラス
 		bool can_catch; //捕縛可能か
 
 		bool is_add; //加算するか
+
+		float turn_move; //裏返るときの動き
 	};
 
 public: 
