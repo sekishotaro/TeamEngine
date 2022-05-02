@@ -18,8 +18,13 @@ private: // エイリアス
 	using XMMATRIX = DirectX::XMMATRIX;
 	using XMVECTOR = DirectX::XMVECTOR;
 
-public:
 
+	static const float maxTime; //最大値
+	static std::vector<float> nowTime; //今
+	static std::vector<float> timeRate; //軌跡の何%時間が進んだか(率)
+	static std::vector<XMFLOAT3> generationPos; //初期生成場所
+
+public:
 	/// <summary>
 	/// 軌跡生成
 	/// </summary>

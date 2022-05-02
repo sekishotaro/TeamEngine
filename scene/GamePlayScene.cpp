@@ -235,6 +235,7 @@ void GamePlayScene::Update()
 	{
 		shockFlag = true;
 	}
+	
 	Effect::DeletLocus(locus, camera, p_pos);
 	shock->SetPosition(p_pos);
 	Effect::ShockWaveUpdate(shock, p_pos, &shockFlag);
