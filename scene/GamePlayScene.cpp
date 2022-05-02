@@ -247,6 +247,8 @@ void GamePlayScene::Update()
 	// ゲームシーンの毎フレーム処理
 	Input* input = Input::GetInstance();
 
+	
+
 	//実験用置き場
 	if (input->PushKey(DIK_M))
 	{
@@ -724,7 +726,7 @@ void GamePlayScene::Update()
 		//Audio::GetInstance()->SoundStop("zaza.wav");
 
 		//シーン切り替え
-		SceneManager::GetInstance()->ChangeScene("TITLE");
+		SceneManager::GetInstance()->ChangeScene("END");
 	}
 
 	//エフェクト
