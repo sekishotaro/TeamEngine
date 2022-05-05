@@ -286,7 +286,7 @@ void GamePlayScene::Update()
 		{
 			if (input->LeftStickAngle().x)
 			{
-				p_pos.x += input->LeftStickAngle().x / 2;
+				p_pos.x += input->LeftStickAngle().x / 2 + 0.08 * (level - 1);
 
 				//進行方向に向きを変える
 				if (input->LeftStickAngle().x >= 0)
@@ -301,12 +301,12 @@ void GamePlayScene::Update()
 			//キーボード用
 			if (input->PushKey(DIK_D))
 			{
-				p_pos.x += 0.5f;
+				p_pos.x += 0.5f + 0.08 * (level - 1);
 				player->SetRotation(XMFLOAT3(0, 0, 0));
 			}
 			if (input->PushKey(DIK_A))
 			{
-				p_pos.x -= 0.5f;
+				p_pos.x -= 0.5f + 0.08 * (level - 1);
 				player->SetRotation(XMFLOAT3(0, 180, 0));
 			}
 		}
@@ -367,7 +367,7 @@ void GamePlayScene::Update()
 			is_jump = true;
 
 			//上昇率の初期化
-			p_add = 2.25f;
+			p_add = 2.25f + (level - 1) * 0.125f;
 		}
 
 		//ジャンプ処理
