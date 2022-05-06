@@ -9,6 +9,7 @@
 #include "Angle.h"
 #include <vector>
 #include "FbxObject3d.h"
+#include "Mapchip.h"
 
 class GamePlayScene : public BaseScene
 {
@@ -107,7 +108,7 @@ public:
 
 	//オブジェクト
 	std::vector<std::vector<int>> map; //マップチップ
-	std::unique_ptr<Object3d> objBlock[12][52]; //ステージブロック
+	std::unique_ptr<Object3d> objBlock[map_max_y][map_max_x]; //ステージブロック
 	std::unique_ptr<Object3d> player = nullptr; //プレイヤー
 	std::unique_ptr<Object3d> enemy[EnemySpawnMax]; //エネミー
 	std::unique_ptr<Object3d> Rope[EnemySpawnMax]; //ロープ
