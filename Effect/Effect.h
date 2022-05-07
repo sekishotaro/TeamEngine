@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Object3d.h"
 #include <DirectXMath.h>
 #include <vector>
@@ -18,7 +17,7 @@ private: // エイリアス
 	using XMMATRIX = DirectX::XMMATRIX;
 	using XMVECTOR = DirectX::XMVECTOR;
 
-
+public:
 	static const float maxTime; //最大値
 	static std::vector<float> nowTime; //今
 	static std::vector<float> timeRate; //軌跡の何%時間が進んだか(率)
