@@ -56,8 +56,8 @@ void GamePlayScene::Initialize()
 	Sprite::LoadTexture(17, L"Resources/koron.png");
 	Sprite::LoadTexture(18, L"Resources/timer.png");
 	Sprite::LoadTexture(20, L"Resources/shock.png");
-	//Sprite::LoadTexture(21, L"Resources/switch_In.png");
-	//Sprite::LoadTexture(22, L"Resources/switch_Out.png");
+	Sprite::LoadTexture(21, L"Resources/switch_In.png");
+	Sprite::LoadTexture(22, L"Resources/switch_Out.png");
 
 	// 背景スプライト生成
 	spriteBG = Sprite::Create(11, { 0.0f,0.0f });
@@ -103,8 +103,8 @@ void GamePlayScene::Initialize()
 	//シーン切り替え
 	//ConvertScene::Initialize();
 	//切り替え用画像
-	//switchIn = Sprite::Create(21, { 0.0f, 0.0f });
-	//switchOut = Sprite::Create(22, { 0.0f, 0.0f });
+	switchIn = Sprite::Create(21, { 0.0f, 0.0f });
+	switchOut = Sprite::Create(22, { 0.0f, 0.0f });
 
 	//マップチップ用のCSV読み込み
 	//(map, "Resource/scv/なんたら.csv")で追加可能
@@ -266,10 +266,10 @@ void GamePlayScene::Update()
 
 	if (input->PushKey(DIK_0))
 	{
-		//XMFLOAT2 pos = switchIn->GetPosition();
-		//switchIn->SetPosition({ pos.x + 10.0f, pos.y });
-		//pos = switchOut->GetPosition();
-		//switchOut->SetPosition({ pos.x - 10.0f, pos.y });
+		XMFLOAT2 pos = switchIn->GetPosition();
+		switchIn->SetPosition({ pos.x + 10.0f, pos.y });
+		pos = switchOut->GetPosition();
+		switchOut->SetPosition({ pos.x - 10.0f, pos.y });
 	}
 
 
@@ -853,8 +853,8 @@ void GamePlayScene::Draw()
 
 	shockWave->Draw();
 
-	//switchIn->Draw();
-	//switchOut->Draw();
+	switchIn->Draw();
+	switchOut->Draw();
 
 	// デバッグテキストの描画
 	DebugText::GetInstance()->DrawAll(cmdList);
