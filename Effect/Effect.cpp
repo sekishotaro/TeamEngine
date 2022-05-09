@@ -1,7 +1,10 @@
 #include "Effect.h"
 #include "Vector3.h"
 
-static const float maxTime = 100.0f;
+const float Effect::maxTime = 100.0f;
+std::vector<float> Effect::nowTime;
+std::vector<float> Effect::timeRate;
+std::vector<XMFLOAT3> Effect::generationPos;
 
 void Effect::CreateLocus(std::vector<std::unique_ptr<Object3d>> &object, Model &model, XMFLOAT3 &pos)
 {
