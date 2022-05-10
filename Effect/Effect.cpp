@@ -39,7 +39,7 @@ void Effect::DeletLocus(std::vector<std::unique_ptr<Object3d>> &object, Camera *
 
 	for (int i = 0; i < object.size(); i++)
 	{
-		nowTime[i] += 0.01f;
+		nowTime[i] += 2.0f;
 
 		timeRate[i] = min(nowTime[i] / maxTime, 1.0f);
 	}
@@ -49,7 +49,7 @@ void Effect::DeletLocus(std::vector<std::unique_ptr<Object3d>> &object, Camera *
 
 	for (int i = 0; i < object.size(); i++)
 	{
-		XMFLOAT3 position = lerp(generationPos[i], endPos,1);
+		XMFLOAT3 position = lerp(generationPos[i], endPos, timeRate[i]);
 
 		object[i]->SetPosition(position);
 
@@ -71,7 +71,7 @@ void Effect::ShockWaveUpdate(std::unique_ptr<Object3d>& object, XMFLOAT3& genera
 	XMFLOAT3 size = object->GetScale();
 	if ( *flag == true)
 	{
-		object->SetScale({ size.x + 2.0f, size.y, size.z + 2.0f });
+		object->SetScale({ size.x + 5.0f, size.y, size.z + 5.0f });
 	}
 	else if ( *flag == false)
 	{

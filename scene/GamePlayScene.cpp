@@ -234,10 +234,12 @@ void GamePlayScene::Update()
 	if (input->PushKey(DIK_M))  //衝撃波開始
 	{
 		shockFlag = true;
+		Effect::DeletLocus(locus, camera, p_pos);
 	}
 	
+	
 	Effect::DeletLocus(locus, camera, p_pos);
-	shock->SetPosition(p_pos);
+	
 	Effect::ShockWaveUpdate(shock, p_pos, &shockFlag);
 
 	if (lastTime > 0)
@@ -509,6 +511,11 @@ void GamePlayScene::Update()
 						//マップの当たり判定
 						if (MapCollide(enemy_data[i].e_pos, p_x_radius, p_y_radius, 0, enemy_data[i].old_e_pos))
 						{
+							//エフェクト
+							shockFlag = true;
+							shock->SetPosition(enemy_data[i].e_pos);
+
+
 							enemy_data[i].is_alive = false;
 							enemy_data[i].is_catch = false;
 							is_attack = false;
