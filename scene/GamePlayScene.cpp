@@ -58,6 +58,7 @@ void GamePlayScene::Initialize()
 	Sprite::LoadTexture(20, L"Resources/shock.png");
 	Sprite::LoadTexture(21, L"Resources/switch_In.png");
 	Sprite::LoadTexture(22, L"Resources/switch_Out.png");
+	Sprite::LoadTexture(23, L"Resources/Finish.png");
 
 	// 背景スプライト生成
 	spriteBG = Sprite::Create(11, { 0.0f,0.0f });
@@ -80,6 +81,7 @@ void GamePlayScene::Initialize()
 	spriteScore[2] = Sprite::Create(0, { WinApp::window_width - 64,0 });
 	spriteScore[3] = Sprite::Create(0, { WinApp::window_width - 96,0 });
 	spriteLevel[1] = Sprite::Create(0, { WinApp::window_width - 32 ,WinApp::window_height - 64 });
+	finish = Sprite::Create(23, { 0.0f ,0.0f });
 
 	//エフェクト
 	shockWave = Sprite::Create(20, { 700, 200 });
