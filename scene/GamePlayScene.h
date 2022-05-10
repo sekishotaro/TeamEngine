@@ -118,6 +118,9 @@ public:
 	Model* locusModel = nullptr; //軌跡
 	Sprite* shockWave = nullptr; //波動
 
+	bool ConvertFlag = false;
+
+
 	//スプライト
 	Sprite* spriteBG = nullptr; //背景
 	Sprite* miniplayer = nullptr; //プレイヤー(ミニマップ)

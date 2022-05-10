@@ -261,10 +261,7 @@ void GamePlayScene::Update()
 	Effect::DeletLocus(locus, camera, p_pos);
 	
 
-	if (input->PushKey(DIK_0))
-	{
-		ConvertScene::besideOut();
-	}
+	ConvertScene::besideOut(ConvertFlag);
 
 
 
@@ -847,8 +844,6 @@ void GamePlayScene::Draw()
 
 	shockWave->Draw();
 
-	//switchIn->Draw();
-	//switchOut->Draw();
 	ConvertScene::Draw();
 
 	// デバッグテキストの描画

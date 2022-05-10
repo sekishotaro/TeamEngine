@@ -30,7 +30,7 @@ void ConvertScene::Finalize()
 	safe_delete(switchOut);
 }
 
-void ConvertScene::besideOut()
+void ConvertScene::besideOut(bool &flag)
 {
 	XMFLOAT2 pos = switchIn->GetPosition();
 	if (pos.x <= 1280)
@@ -42,9 +42,13 @@ void ConvertScene::besideOut()
 	{
 		switchOut->SetPosition({ pos.x - 10.0f, pos.y });
 	}
+	else
+	{
+		flag = true;
+	}
 }
 
-void ConvertScene::besideIn()
+void ConvertScene::besideIn(bool &flag)
 {
 	XMFLOAT2 pos = switchIn->GetPosition();
 	if (pos.x < 0)
@@ -56,6 +60,11 @@ void ConvertScene::besideIn()
 	{
 		switchOut->SetPosition({ pos.x - 10.0f, pos.y });
 	}
+	else
+	{
+		flag = true;
+	}
+	
 }
 
 void ConvertScene::Draw()

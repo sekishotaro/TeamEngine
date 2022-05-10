@@ -46,4 +46,6 @@ public:
 	/// ゲームシーン用
 	/// </summary>
 	Sprite *spriteBG = nullptr;
+	bool startFlag = false;
+	bool Convertflag = false;
 };

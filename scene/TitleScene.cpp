@@ -4,6 +4,7 @@
 #include "Input.h"
 #include "DebugText.h"
 #include "DirectXCommon.h"
+#include "ConvertScene.h"
 
 void TitleScene::Initialize()
 {
@@ -11,10 +12,13 @@ void TitleScene::Initialize()
 	Sprite::LoadTexture(1, L"Resources/Titlebackground.png");
 	// 背景スプライト生成
 	spriteBG = Sprite::Create(1, { 0.0f,0.0f });
+
+	ConvertScene::InitializeIn();
 }
 
 void TitleScene::Finalize()
 {
+	ConvertScene::Finalize();
 }
 
 void TitleScene::Update()
@@ -25,8 +29,20 @@ void TitleScene::Update()
 
 	if (input->TriggerKey(DIK_RETURN) || input->TriggerButton(Start))
 	{
-		//シーン切り替え
-		SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
+		
+		
+		startFlag = true;
+	}
+
+	if (startFlag == true)
+	{
+		ConvertScene::besideIn(Convertflag);
+
+		if (Convertflag == true)
+		{
+			//シーン切り替え
+			SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
+		}
 	}
 
 	DebugText::GetInstance()->Print(50, 20, 3, "fafa");
@@ -68,6 +84,8 @@ void TitleScene::Draw()
 
 	// デバッグテキストの描画
 	DebugText::GetInstance()->DrawAll(cmdList);
+
+	ConvertScene::Draw();
 
 	// スプライト描画後処理
 	Sprite::PostDraw();

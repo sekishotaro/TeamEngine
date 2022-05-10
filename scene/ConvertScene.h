@@ -29,23 +29,23 @@ public:
 	/// <summary>
 	/// 解放
 	/// </summary>
-	void Finalize();
+	static void Finalize();
 
 	/// <summary>
 	/// 横開く
 	/// </summary>
-	static void besideOut();
+	static void besideOut(bool &flag);
 
 	/// <summary>
 	/// 横に閉じる
 	/// </summary>
-	static void besideIn();
+	static void besideIn(bool &flag);
 
 	/// <summary>
 	/// 描画
 	/// </summary>
 	static void Draw();
-
+private:
 	static Sprite* switchIn; //シーン切り替え用1
 	static Sprite* switchOut; //シーン切り替え用2
 
