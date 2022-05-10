@@ -102,9 +102,6 @@ void GamePlayScene::Initialize()
 	
 	//シーン切り替え
 	ConvertScene::InitializeOut();
-	//切り替え用画像
-	//switchIn = Sprite::Create(21, { 0.0f, 0.0f });
-	//switchOut = Sprite::Create(22, { 0.0f, 0.0f });
 
 	//マップチップ用のCSV読み込み
 	//(map, "Resource/scv/なんたら.csv")で追加可能
@@ -266,10 +263,6 @@ void GamePlayScene::Update()
 
 	if (input->PushKey(DIK_0))
 	{
-		//XMFLOAT2 pos = switchIn->GetPosition();
-		//switchIn->SetPosition({ pos.x + 10.0f, pos.y });
-		//pos = switchOut->GetPosition();
-		//switchOut->SetPosition({ pos.x - 10.0f, pos.y });
 		ConvertScene::besideOut();
 	}
 

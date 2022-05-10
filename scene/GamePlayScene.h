@@ -131,9 +131,6 @@ public:
 	Sprite* spriteTimer = nullptr;
 	Sprite* minimap = nullptr; //ステージ(ミニマップ)
 
-	//Sprite* switchIn = nullptr; //シーン切り替え用1
-	//Sprite* switchOut = nullptr; //シーン切り替え用2
-
 	//UI・スコアetc
 	int score; //スコア
 	bool is_shake; //シェイクフラグ
