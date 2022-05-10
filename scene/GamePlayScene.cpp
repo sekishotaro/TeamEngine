@@ -247,6 +247,12 @@ void GamePlayScene::Update()
 	}
 	spriteTime[0]->ChangeTex((int)lastTime / 60);
 
+	if (lastTime <= 0)
+	{
+		//ƒV[ƒ“Ø‚è‘Ö‚¦
+		SceneManager::GetInstance()->ChangeScene("TITLE");
+	}
+
 	int second;
 	second = (int)lastTime % 60;
 	spriteTime[2]->ChangeTex(second % 10);
