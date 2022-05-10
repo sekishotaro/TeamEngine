@@ -557,5 +557,3 @@ FbxModel *FbxLoader::LoadModelFromFile(const string &modelName)
 
     return fbxModel;
 }
-
-
