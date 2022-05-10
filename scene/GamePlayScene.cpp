@@ -68,9 +68,9 @@ void GamePlayScene::Initialize()
 	{
 		minienemy[i] = Sprite::Create(14, { 40.0f,20.0f });
 	}
+	spriteTimer = Sprite::Create(18, { 0,0 });
 	spriteTime[0] = Sprite::Create(0, { 64,0 });
 	spriteCoron = Sprite::Create(17, { 96,0 });
-	spriteTimer = Sprite::Create(18, { 0,0 });
 	spriteTime[1] = Sprite::Create(0, { 128,0 });
 	spriteTime[2] = Sprite::Create(0, { 160,0 });
 	spriteScore[1] = Sprite::Create(0, { WinApp::window_width - 32,0 });
@@ -243,8 +243,12 @@ void GamePlayScene::Update()
 	{
 		lastTime -= 0.02;
 	}
-	spriteTime[2]->ChangeTex((int)lastTime % 10);
-	spriteTime[1]->ChangeTex((int)lastTime / 10);
+	spriteTime[0]->ChangeTex((int)lastTime / 60);
+
+	int second;
+	second = (int)lastTime % 60;
+	spriteTime[2]->ChangeTex(second % 10);
+	spriteTime[1]->ChangeTex(second / 10);
 
 	//Mキーでマップチップ設置
 	MapCreate(0);
