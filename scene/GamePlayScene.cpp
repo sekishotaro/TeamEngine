@@ -54,7 +54,6 @@ void GamePlayScene::Initialize()
 	Sprite::LoadTexture(16, L"Resources/level.png");
 	Sprite::LoadTexture(17, L"Resources/koron.png");
 	Sprite::LoadTexture(18, L"Resources/timer.png");
-	Sprite::LoadTexture(20, L"Resources/shock.png");
 
 	// 背景スプライト生成
 	spriteBG = Sprite::Create(11, { 0.0f,0.0f });
@@ -78,9 +77,8 @@ void GamePlayScene::Initialize()
 	spriteScore[3] = Sprite::Create(0, { WinApp::window_width - 96,0 });
 	spriteLevel[1] = Sprite::Create(0, { WinApp::window_width - 32 ,WinApp::window_height - 64 });
 
-	//エフェクト
-	shockWave = Sprite::Create(20, { 700, 200 });
-	shockWave->SetAnchorPoint({ 0.5f, 0.5f });
+
+
 	// オブジェクト生成
 	model = Model::LoadFromOBJ("weakEnemy");
 	modelPlayer = Model::LoadFromOBJ("cowgirl");
@@ -95,6 +93,13 @@ void GamePlayScene::Initialize()
 		Rope[i] = Object3d::Create();
 	}
 	player = Object3d::Create();	
+
+	
+	//エフェクト
+	shock = Object3d::Create();
+	shockWaveModel = Model::LoadFromOBJ("shock");
+	shock->SetModel(shockWaveModel);
+	shock->SetRotation({ 270.0f, 0.0f, 0.0f });
 
 	//マップチップ用のCSV読み込み
 	//(map, "Resource/scv/なんたら.csv")で追加可能
@@ -200,19 +205,6 @@ void GamePlayScene::Initialize()
 	fbxObject1 = new FbxObject3d;
 	fbxObject1->Initialize();
 	fbxObject1->SetModel(fbxModel1);
-
-	//エフェクト
-	/*for (int i = 0; i < maxLocus; i++)
-	{
-		locus.emplace_back(Object3d::Create());
-	}
-	for (int i = 0; i < sizeof(locus); i++)
-	{
-		locus[i]->SetModel(locusModel);
-		locus[i]->SetPosition({ 110.0f, -35.0f + (float) i, 0.0f});
-		locus[i]->SetRotation({ 0.0f, 90.0f, 0.0f });
-		locus[i]->SetScale({ 0.5f, 0.5f, 0.5f });
-	}*/
 	
 	//乱数
 	srand(time(NULL));
@@ -248,14 +240,17 @@ void GamePlayScene::Update()
 	// ゲームシーンの毎フレーム処理
 	Input* input = Input::GetInstance();
 
-	//実験用置き場
-	if (input->PushKey(DIK_M))
+	//実験用エフェクト置き場
+	if (input->PushKey(DIK_M))  //衝撃波開始
 	{
-		XMFLOAT2 size = shockWave->GetSize();
-		shockWave->SetSize({ size.x + 20.0f, size.y + 20.0f });
+		shockFlag = true;
+		Effect::DeletLocus(locus, camera, p_pos);
 	}
+	
+	
 	Effect::DeletLocus(locus, camera, p_pos);
 	
+	Effect::ShockWaveUpdate(shock, p_pos, &shockFlag);
 
 	if (lastTime > 0)
 	{
@@ -274,7 +269,6 @@ void GamePlayScene::Update()
 		}
 	}
 
-	Effect::DeletLocus(locus, camera, p_pos);
 	//プレイヤー処理
 	{
 		//座標更新
@@ -572,6 +566,11 @@ void GamePlayScene::Update()
 						//マップの当たり判定
 						if (MapCollide(enemy_data[i].e_pos, p_x_radius, p_y_radius, 0, enemy_data[i].old_e_pos))
 						{
+							//エフェクト
+							shockFlag = true;
+							shock->SetPosition(enemy_data[i].e_pos);
+
+
 							enemy_data[i].is_alive = false;
 							enemy_data[i].is_catch = false;
 							is_attack = false;
@@ -763,6 +762,8 @@ void GamePlayScene::Update()
 	{
 		locus[i]->Update();
 	}
+	shock->Update();
+
 
 	//プレイヤーの座標（X：Y)
 	/*DebugText::GetInstance()->Print(50, 35 * 3, 2, "player_x:%f", p_pos.x);
@@ -834,6 +835,12 @@ void GamePlayScene::Draw()
 		locus[i]->Draw();
 	}
 
+	if (shockFlag == true)
+	{
+		shock->Draw();
+	}
+	
+
 	//FBX3Dオブジェクトの描画
 	//fbxObject1->Draw(cmdList);
 	// 3Dオブジェクト描画後処理
@@ -863,8 +870,6 @@ void GamePlayScene::Draw()
 	spriteScore[1]->Draw();
 	spriteScore[2]->Draw();
 	spriteScore[3]->Draw();
-
-	shockWave->Draw();
 
 	// デバッグテキストの描画
 	DebugText::GetInstance()->DrawAll(cmdList);

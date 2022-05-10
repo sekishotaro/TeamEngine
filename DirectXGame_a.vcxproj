@@ -122,7 +122,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
-      <AdditionalIncludeDirectories>$(projectDir)camera;$(projectDir)scene;$(projectDir)collision;$(projectDir)Input;$(projectDir)base;$(projectDir)Audio;$(ProjectDir)3d;$(SolutionDir)DirectXTex;$(projectDir)2d;$(projectDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(projectDir)Effect;$(projectDir)camera;$(projectDir)scene;$(projectDir)collision;$(projectDir)Input;$(projectDir)base;$(projectDir)Audio;$(ProjectDir)3d;$(SolutionDir)DirectXTex;$(projectDir)2d;$(projectDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -138,7 +138,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
-      <AdditionalIncludeDirectories>$(projectDir)camera;$(projectDir)scene;$(projectDir)collision;$(projectDir)Input;$(projectDir)base;$(projectDir)Audio;$(ProjectDir)3d;$(SolutionDir)DirectXTex;$(projectDir)2d;$(projectDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(projectDir)Effect;$(projectDir)camera;$(projectDir)scene;$(projectDir)collision;$(projectDir)Input;$(projectDir)base;$(projectDir)Audio;$(ProjectDir)3d;$(SolutionDir)DirectXTex;$(projectDir)2d;$(projectDir)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -246,7 +246,10 @@
     <ClCompile Include="2d\DebugText.cpp" />
     <ClCompile Include="base\DirectXCommon.cpp" />
     <ClCompile Include="Ease.cpp" />
-    <ClCompile Include="Effect.cpp" />
+    <ClCompile Include="Effect\Effect.cpp">
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(projectDir)Effect;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(projectDir)Effect;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
     <ClCompile Include="Framework.cpp" />
     <ClCompile Include="Mapchip.cpp" />
     <ClCompile Include="scene\GamePlayScene.cpp" />
@@ -269,7 +272,7 @@
     <ClInclude Include="Angle.h" />
     <ClInclude Include="camera\Camera.h" />
     <ClInclude Include="Ease.h" />
-    <ClInclude Include="Effect.h" />
+    <ClInclude Include="Effect\Effect.h" />
     <ClInclude Include="Input\InputList.h" />
     <ClInclude Include="Mapchip.h" />
     <ClInclude Include="safe_delete.h" />
