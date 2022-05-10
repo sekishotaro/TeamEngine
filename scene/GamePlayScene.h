@@ -26,7 +26,7 @@ private: // エイリアス
 public: //サブクラス
 	enum EnemyType
 	{
-		NORMAL, TWICE, JUMP
+		NORMAL, TWICE, JUMP, FIN
 	};
 
 	struct EnemyData
@@ -212,7 +212,7 @@ public:
 	bool CollisionObject(const std::unique_ptr<Object3d>& object_a, const std::unique_ptr<Object3d>& object_b);
 
 	//長さを求める
-	float GetLengthObject(XMFLOAT3 pos_a, XMFLOAT3 pos_b);
+	float GetObjectLength(XMFLOAT3 pos_a, XMFLOAT3 pos_b);
 
 	/// <summary>
 	/// 視錐台の中にあるか

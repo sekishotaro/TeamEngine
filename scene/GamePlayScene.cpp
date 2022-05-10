@@ -125,7 +125,7 @@ void GamePlayScene::Initialize()
 	shake_time = 0;
 	shake_x = 0;
 	shake_y = 0;
-	lastTime = 60.0f;
+	lastTime = 60.0f * 3;
 	level = 1;
 	enemySpawn = 1;
 	gravity = 0.125f;
@@ -135,8 +135,8 @@ void GamePlayScene::Initialize()
 	{
 		//エネミー
 		enemy_data[i].e_pos = { 0, 0, 0 };
-		enemy_data[i].e_x_radius = 1.0f * player->GetScale().x;
-		enemy_data[i].e_y_radius = 1.0f * player->GetScale().y;
+		enemy_data[i].e_x_radius = 0.6f * player->GetScale().x;
+		enemy_data[i].e_y_radius = 0.85f * player->GetScale().y;
 		enemy_data[i].is_normal = true;
 		enemy_data[i].is_bounce = false;
 		enemy_data[i].is_catch = false;
@@ -151,23 +151,9 @@ void GamePlayScene::Initialize()
 		enemy_data[0].enemy_type = NORMAL;
 		enemy_data[1].enemy_type = JUMP;
 		enemy_data[i].e_acc = 0;
-		if (enemy_data[i].enemy_type == TWICE)
-		{
-			enemy_data[i].can_catch = false;
-		}
-		else
-		{
-			enemy_data[i].can_catch = true;
-		}
+		enemy_data[i].can_catch = false;
 		enemy_data[i].is_add = true;
-		if (enemy_data[i].enemy_type == TWICE)
-		{
-			enemy[i]->SetModel(enemy_model_2);
-		}
-		else
-		{
-			enemy[i]->SetModel(model);
-		}
+		enemy[i]->SetModel(model);
 		enemy[i]->SetPosition(enemy_data[i].e_pos);
 		enemy[i]->Update();
 
@@ -555,13 +541,13 @@ void GamePlayScene::Update()
 						//右向きなら
 						if (player->GetRotation().y == 0)
 						{
-							CircularMotion(enemy_data[i].e_pos, p_pos, GetLengthObject(p_pos, enemy_data[i].e_pos), enemy_data[i].angle, -15);
+							CircularMotion(enemy_data[i].e_pos, p_pos, GetObjectLength(p_pos, enemy_data[i].e_pos), enemy_data[i].angle, -15);
 							Effect::CreateLocus( locus, *locusModel, enemy_data[i].e_pos);
 						}
 						//左向きなら
 						else if (player->GetRotation().y == 180)
 						{
-							CircularMotion(enemy_data[i].e_pos, p_pos, GetLengthObject(p_pos, enemy_data[i].e_pos), enemy_data[i].angle, 15);
+							CircularMotion(enemy_data[i].e_pos, p_pos, GetObjectLength(p_pos, enemy_data[i].e_pos), enemy_data[i].angle, 15);
 							Effect::CreateLocus(locus, *locusModel, enemy_data[i].e_pos);
 						}
 						//マップの当たり判定
@@ -908,10 +894,32 @@ void GamePlayScene::SpawnEnemy(int mapNumber, int enemyNumber)
 		enemy[enemyNumber]->SetRotation({ 0, 0, 0 });
 		enemy_data[enemyNumber].e_pos = { spawnX * LAND_SCALE,  -spawnY * LAND_SCALE, 0 };
 		enemy_data[enemyNumber].is_alive = true;//スポーン
+		enemy_data[enemyNumber].enemy_type = NORMAL;
 		enemy[enemyNumber + 1]->SetPosition({ (spawnX + 1) * LAND_SCALE,  -spawnY * LAND_SCALE, 0 });//位置をセット
 		enemy[enemyNumber + 1]->SetRotation({ 0, 0, 0 });
 		enemy_data[enemyNumber + 1].e_pos = { (spawnX + 1) * LAND_SCALE,  -spawnY * LAND_SCALE, 0 };
 		enemy_data[enemyNumber + 1].is_alive = true;//スポーン
+		enemy_data[enemyNumber + 1].enemy_type = NORMAL;
+		int num = rand() % 101;
+		if (level * 10 > num)
+		{
+			enemy_data[enemyNumber].enemy_type = rand() % JUMP + 1;
+			enemy_data[enemyNumber + 1].enemy_type = rand() % JUMP + 1;
+		}
+		int j_num = 0;
+		for (int j = 0; j < enemySpawn; j++)
+		{
+			if (enemy_data[j].is_alive == true && enemy_data[j].enemy_type == NORMAL)
+			{
+				j_num++;
+				break;
+			}
+		}
+		if (j_num == 0)
+		{
+			enemy_data[enemyNumber].enemy_type = NORMAL;
+			enemy_data[enemyNumber + 1].enemy_type = NORMAL;
+		}
 		for (int i = 0; i < 2; i++)
 		{
 			if (enemy_data[enemyNumber + i].enemy_type == TWICE)
@@ -1033,7 +1041,7 @@ void GamePlayScene::RopeMove(XMFLOAT3& pos, const int num)
 
 	//プレイヤーとエネミーの距離
 	XMFLOAT2 length = { p_pos.x - enemy_data[num].e_pos.x, p_pos.y - enemy_data[num].e_pos.y };
-	float len = GetLengthObject(p_pos, enemy_data[num].e_pos);
+	float len = GetObjectLength(p_pos, enemy_data[num].e_pos);
 	//最大値より大きいなら
 	if (len > max_rope)
 	{
@@ -1074,7 +1082,7 @@ bool GamePlayScene::CollisionObject(const std::unique_ptr<Object3d>& object_a, c
 	return false;
 }
 
-float GamePlayScene::GetLengthObject(XMFLOAT3 pos_a, XMFLOAT3 pos_b)
+float GamePlayScene::GetObjectLength(XMFLOAT3 pos_a, XMFLOAT3 pos_b)
 {
 	XMFLOAT3 len = { pos_a.x - pos_b.x, pos_a.y - pos_b.y, pos_a.z - pos_b.z };
 
