@@ -138,7 +138,7 @@ void GamePlayScene::Initialize()
 		enemy[i]->SetScale({ 3, 3, 3 });
 		enemy[i]->Update();
 		enemy_data[i].e_x_radius = 0.6f * player->GetScale().x;
-		enemy_data[i].e_y_radius = 0.6f * player->GetScale().y;
+		enemy_data[i].e_y_radius = 0.8f * player->GetScale().y;
 		enemy_data[i].is_normal = true;
 		enemy_data[i].is_bounce = false;
 		enemy_data[i].is_catch = false;
