@@ -135,8 +135,10 @@ void GamePlayScene::Initialize()
 	{
 		//エネミー
 		enemy_data[i].e_pos = { 0, 0, 0 };
+		enemy[i]->SetScale({ 3, 3, 3 });
+		enemy[i]->Update();
 		enemy_data[i].e_x_radius = 0.6f * player->GetScale().x;
-		enemy_data[i].e_y_radius = 0.85f * player->GetScale().y;
+		enemy_data[i].e_y_radius = 0.6f * player->GetScale().y;
 		enemy_data[i].is_normal = true;
 		enemy_data[i].is_bounce = false;
 		enemy_data[i].is_catch = false;
@@ -147,9 +149,7 @@ void GamePlayScene::Initialize()
 		enemy_data[i].e_down = 0.0f;
 		enemy_data[i].angle = 0;
 		enemy_data[i].turn_move = 1;
-		enemy_data[i].enemy_type = TWICE;
-		enemy_data[0].enemy_type = NORMAL;
-		enemy_data[1].enemy_type = JUMP;
+		enemy_data[i].enemy_type = NORMAL;
 		enemy_data[i].e_acc = 0;
 		enemy_data[i].can_catch = false;
 		enemy_data[i].is_add = true;
@@ -168,10 +168,11 @@ void GamePlayScene::Initialize()
 
 	//プレイヤー
 	player->SetModel(modelPlayer);
+	player->SetScale({ 3, 3, 3 });
 	p_pos = { 0, 10, 0 };
 	old_p_pos = { 0, 0, 0 };
-	p_x_radius = 1.0f * player->GetScale().x;
-	p_y_radius = 1.0f * player->GetScale().y;
+	p_x_radius = 0.4f * player->GetScale().x;
+	p_y_radius = 0.8f * player->GetScale().y;
 	is_jump = false;
 	p_add = 0;
 	p_down = 0;
@@ -183,6 +184,7 @@ void GamePlayScene::Initialize()
 	invincible_time = 0;
 	is_invincible = false;
 	player->SetPosition(p_pos);
+	player->SetRotation({ 0, 180, 0 });
 	player->Update();
 
 
@@ -276,23 +278,23 @@ void GamePlayScene::Update()
 				//進行方向に向きを変える
 				if (input->LeftStickAngle().x >= 0)
 				{
-					player->SetRotation(XMFLOAT3(0, 0, 0));
+					player->SetRotation(XMFLOAT3(0, 90, 0));
 				} 
 				else
 				{
-					player->SetRotation(XMFLOAT3(0, 180, 0));
+					player->SetRotation(XMFLOAT3(0, 270, 0));
 				}
 			}
 			//キーボード用
 			if (input->PushKey(DIK_D))
 			{
 				p_pos.x += 0.5f + 0.08 * (level - 1);
-				player->SetRotation(XMFLOAT3(0, 0, 0));
+				player->SetRotation(XMFLOAT3(0, 90, 0));
 			}
 			if (input->PushKey(DIK_A))
 			{
 				p_pos.x -= 0.5f + 0.08 * (level - 1);
-				player->SetRotation(XMFLOAT3(0, 180, 0));
+				player->SetRotation(XMFLOAT3(0, 270, 0));
 			}
 		}
 
@@ -305,12 +307,12 @@ void GamePlayScene::Update()
 				if (enemy_data[i].is_catch == true)
 				{
 					//プレイヤーの向きで投げる方向を変える
-					if (player->GetRotation().y == 0 && p_pos.x > enemy[i]->GetPosition().x)
+					if (player->GetRotation().y == 90 && p_pos.x > enemy[i]->GetPosition().x)
 					{
 						enemy_data[i].angle = static_cast<int>(XMConvertToDegrees(rope_angle->PosForAngle(p_pos.x, enemy[i]->GetPosition().y, enemy[i]->GetPosition().x, p_pos.y))) - 90;
 						is_attack = true;
 					} 
-					else if (player->GetRotation().y == 180 && p_pos.x < enemy[i]->GetPosition().x)
+					else if (player->GetRotation().y == 270 && p_pos.x < enemy[i]->GetPosition().x)
 					{
 						enemy_data[i].angle = static_cast<int>(XMConvertToDegrees(rope_angle->PosForAngle(p_pos.x, enemy[i]->GetPosition().y, enemy[i]->GetPosition().x, p_pos.y))) - 90;
 						is_attack = true;
@@ -475,7 +477,7 @@ void GamePlayScene::Update()
 						 if (enemy_data[i].is_grand == true)
 						{
 							//端まで行ったら
-							if (MapCollide(enemy_data[i].e_pos, p_x_radius, p_y_radius, 0, enemy_data[i].old_e_pos))
+							if (MapCollide(enemy_data[i].e_pos, enemy_data[i].e_x_radius, enemy_data[i].e_y_radius, 0, enemy_data[i].old_e_pos))
 							{
 								enemy_data[i].e_speed = -enemy_data[i].e_speed;
 
@@ -543,19 +545,19 @@ void GamePlayScene::Update()
 					if (is_attack == true)
 					{
 						//右向きなら
-						if (player->GetRotation().y == 0)
+						if (player->GetRotation().y == 90)
 						{
 							CircularMotion(enemy_data[i].e_pos, p_pos, GetObjectLength(p_pos, enemy_data[i].e_pos), enemy_data[i].angle, -15);
 							Effect::CreateLocus( locus, *locusModel, enemy_data[i].e_pos);
 						}
 						//左向きなら
-						else if (player->GetRotation().y == 180)
+						else if (player->GetRotation().y == 270)
 						{
 							CircularMotion(enemy_data[i].e_pos, p_pos, GetObjectLength(p_pos, enemy_data[i].e_pos), enemy_data[i].angle, 15);
 							Effect::CreateLocus(locus, *locusModel, enemy_data[i].e_pos);
 						}
 						//マップの当たり判定
-						if (MapCollide(enemy_data[i].e_pos, p_x_radius, p_y_radius, 0, enemy_data[i].old_e_pos))
+						if (MapCollide(enemy_data[i].e_pos, enemy_data[i].e_x_radius, enemy_data[i].e_y_radius, 0, enemy_data[i].old_e_pos))
 						{
 							//エフェクト
 							shockFlag = true;
@@ -634,7 +636,7 @@ void GamePlayScene::Update()
 					//マップの当たり判定
 					if (enemy_data[i].is_bounce == false)
 					{
-						if (MapCollide(enemy_data[i].e_pos, p_x_radius, p_y_radius, 0, enemy_data[i].old_e_pos))
+						if (MapCollide(enemy_data[i].e_pos, enemy_data[i].e_x_radius, enemy_data[i].e_y_radius, 0, enemy_data[i].old_e_pos))
 						{
 							enemy_data[i].e_down = 0;
 							enemy_data[i].is_grand = true;
@@ -647,7 +649,7 @@ void GamePlayScene::Update()
 					}
 					else if (enemy_data[i].enemy_type == JUMP && enemy_data[i].is_bounce == true)
 					{
-						if (MapCollide(enemy_data[i].e_pos, p_x_radius, p_y_radius, 0, enemy_data[i].old_e_pos, true))
+						if (MapCollide(enemy_data[i].e_pos, enemy_data[i].e_x_radius, enemy_data[i].e_y_radius, 0, enemy_data[i].old_e_pos, true))
 						{
 							enemy_data[i].e_down = 0;
 							enemy_data[i].is_grand = true;
@@ -1053,7 +1055,7 @@ void GamePlayScene::RopeMove(XMFLOAT3& pos, const int num)
 		len = max_rope;
 		enemy_data[num].e_pos = { p_pos.x - length.x / wq, p_pos.y - length.y / wq, 0 };
 		pos = enemy_data[num].e_pos;
-		MapCollide(pos, p_x_radius, p_y_radius, 0, enemy_data[num].e_pos);
+		MapCollide(pos, enemy_data[num].e_x_radius, enemy_data[num].e_y_radius, 0, enemy_data[num].e_pos);
 	}
 
 	//ロープの長さ
@@ -1070,15 +1072,17 @@ bool GamePlayScene::CollisionObject(const std::unique_ptr<Object3d>& object_a, c
 	XMFLOAT3 B = object_b->GetPosition();
 
 	//半径
-	float a_r = 1.0f * object_a->GetScale().x;
-	float b_r = 1.0f * object_a->GetScale().x;
+	float a_x = 0.4f * object_a->GetScale().x;
+	float a_y = 0.8f * object_a->GetScale().x;
+	float b_x = 0.6f * object_a->GetScale().x;
+	float b_y = 0.6f * object_a->GetScale().x;
 
 	//長さ
 	float l_x = sqrtf(powf(A.x - B.x, 2));
 	float l_y = sqrtf(powf(A.y - B.y, 2));
 
 	//半径の合計より短ければ
-	if (l_x < a_r + b_r && l_y < a_r + b_r)
+	if (l_x < a_x + b_x && l_y < a_y + b_y)
 	{
 		return true;
 	}
