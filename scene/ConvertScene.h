@@ -17,9 +17,14 @@ private: // エイリアス
 
 public:
 	/// <summary>
-	/// 初期化
+	/// 初期化開く
 	/// </summary>
-	static void Initialize();
+	static void InitializeOut();
+
+	/// <summary>
+	/// 初期化閉じる
+	/// </summary>
+	static void InitializeIn();
 
 	/// <summary>
 	/// 解放
@@ -27,14 +32,19 @@ public:
 	void Finalize();
 
 	/// <summary>
-	/// アップデート
+	/// 横開く
 	/// </summary>
-	void Update();
+	static void besideOut();
+
+	/// <summary>
+	/// 横に閉じる
+	/// </summary>
+	static void besideIn();
 
 	/// <summary>
 	/// 描画
 	/// </summary>
-	void Draw();
+	static void Draw();
 
 	static Sprite* switchIn; //シーン切り替え用1
 	static Sprite* switchOut; //シーン切り替え用2
