@@ -8,9 +8,12 @@
 void TitleScene::Initialize()
 {
 	// テクスチャ読み込み
-	Sprite::LoadTexture(1, L"Resources/Titlebackground.png");
+	Sprite::LoadTexture(1, L"Resources/haikei.png");
+	Sprite::LoadTexture(2, L"Resources/titletext.png");
 	// 背景スプライト生成
 	spriteBG = Sprite::Create(1, { 0.0f,0.0f });
+	spriteBG->SetSize({ WinApp::window_width * 1.2, WinApp::window_height * 1.2 });
+	titleText = Sprite::Create(2, { 300.0f,150.0f });
 }
 
 void TitleScene::Finalize()
@@ -43,6 +46,7 @@ void TitleScene::Draw()
 	Sprite::PreDraw(cmdList);
 	// 背景スプライト描画
 	spriteBG->Draw();
+	titleText->Draw();
 
 	/// <summary>
 	/// ここに背景スプライトの描画処理を追加できる
@@ -67,7 +71,7 @@ void TitleScene::Draw()
 	Sprite::PreDraw(cmdList);
 
 	// デバッグテキストの描画
-	DebugText::GetInstance()->DrawAll(cmdList);
+	//DebugText::GetInstance()->DrawAll(cmdList);
 
 	// スプライト描画後処理
 	Sprite::PostDraw();

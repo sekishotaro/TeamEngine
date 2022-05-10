@@ -46,7 +46,7 @@ void GamePlayScene::Initialize()
 	Sprite::LoadTexture(7, L"Resources/Number7.png");
 	Sprite::LoadTexture(8, L"Resources/Number8.png");
 	Sprite::LoadTexture(9, L"Resources/Number9.png");
-	Sprite::LoadTexture(11, L"Resources/background.png");
+	Sprite::LoadTexture(11, L"Resources/haikei.png");
 	Sprite::LoadTexture(12, L"Resources/minimap.png");
 	Sprite::LoadTexture(13, L"Resources/miniplayer.png");
 	Sprite::LoadTexture(14, L"Resources/minienemy.png");
@@ -57,6 +57,7 @@ void GamePlayScene::Initialize()
 
 	// ”wŒiƒXƒvƒ‰ƒCƒg¶¬
 	spriteBG = Sprite::Create(11, { 0.0f,0.0f });
+	spriteBG->SetSize({ WinApp::window_width * 1.2, WinApp::window_height * 1.2 });
 	texScore = Sprite::Create(15, { WinApp::window_width - 372, 0 });
 	texLevel = Sprite::Create(16, { WinApp::window_width - 100, WinApp::window_height - 64 });
 
