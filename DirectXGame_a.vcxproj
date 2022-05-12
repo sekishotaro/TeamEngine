@@ -245,7 +245,6 @@
     <ClCompile Include="collision\CollisionPrimitive.cpp" />
     <ClCompile Include="2d\DebugText.cpp" />
     <ClCompile Include="base\DirectXCommon.cpp" />
-    <ClCompile Include="Count.cpp" />
     <ClCompile Include="scene\ConvertScene.cpp" />
     <ClCompile Include="Ease.cpp" />
     <ClCompile Include="Effect.cpp" />
@@ -271,7 +270,6 @@
     <ClInclude Include="3d\FbxObject3d.h" />
     <ClInclude Include="Angle.h" />
     <ClInclude Include="camera\Camera.h" />
-    <ClInclude Include="Count.h" />
     <ClInclude Include="scene\ConvertScene.h" />
     <ClInclude Include="Ease.h" />
     <ClInclude Include="Effect.h" />
