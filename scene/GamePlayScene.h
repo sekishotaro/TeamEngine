@@ -133,7 +133,7 @@ public:
 	Sprite* texLevel = nullptr;
 	Sprite* spriteTimer = nullptr;
 	Sprite* minimap = nullptr; //ステージ(ミニマップ)
-	Sprite* Finish = nullptr; //終わり
+	Sprite* finish = nullptr; //終わり
 
 	//UI・スコアetc
 	int score; //スコア

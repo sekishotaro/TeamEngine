@@ -6,9 +6,6 @@ Sprite* ConvertScene::switchOut;
 
 void ConvertScene::InitializeOut()
 {
-	//テクスチャのロード
-	Sprite::LoadTexture(21, L"Resources/switch_In.png");
-	Sprite::LoadTexture(22, L"Resources/switch_Out.png");
 	//切り替え用画像
 	switchIn = Sprite::Create(21, { 0.0f, 0.0f });
 	switchOut = Sprite::Create(22, { 0.0f, 0.0f });
@@ -16,9 +13,6 @@ void ConvertScene::InitializeOut()
 
 void ConvertScene::InitializeIn()
 {
-	//テクスチャのロード
-	Sprite::LoadTexture(21, L"Resources/switch_In.png");
-	Sprite::LoadTexture(22, L"Resources/switch_Out.png");
 	//切り替え用画像
 	switchIn = Sprite::Create(21, { -1280.0f, 0.0f });
 	switchOut = Sprite::Create(22, { 1280.0f, 0.0f });

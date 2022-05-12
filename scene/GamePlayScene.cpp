@@ -204,19 +204,6 @@ void GamePlayScene::Initialize()
 	fbxObject1 = new FbxObject3d;
 	fbxObject1->Initialize();
 	fbxObject1->SetModel(fbxModel1);
-
-	//エフェクト
-	/*for (int i = 0; i < maxLocus; i++)
-	{
-		locus.emplace_back(Object3d::Create());
-	}
-	for (int i = 0; i < sizeof(locus); i++)
-	{
-		locus[i]->SetModel(locusModel);
-		locus[i]->SetPosition({ 110.0f, -35.0f + (float) i, 0.0f});
-		locus[i]->SetRotation({ 0.0f, 90.0f, 0.0f });
-		locus[i]->SetScale({ 0.5f, 0.5f, 0.5f });
-	}*/
 	
 	//乱数
 	srand(time(NULL));
@@ -252,8 +239,6 @@ void GamePlayScene::Update()
 	// ゲームシーンの毎フレーム処理
 	Input* input = Input::GetInstance();
 
-	
-
 	//実験用置き場
 	if (input->PushKey(DIK_M))
 	{
@@ -269,7 +254,7 @@ void GamePlayScene::Update()
 
 	if (lastTime > 0)
 	{
-		lastTime -= 0.02;
+		lastTime -= 0.0166;
 	}
 	spriteTime[2]->ChangeTex((int)lastTime % 10);
 	spriteTime[1]->ChangeTex((int)lastTime / 10);
@@ -286,6 +271,7 @@ void GamePlayScene::Update()
 
 	Effect::DeletLocus(locus, camera, p_pos);
 	//プレイヤー処理
+	if (true)
 	{
 		//座標更新
 		p_pos = player->GetPosition();
@@ -415,6 +401,7 @@ void GamePlayScene::Update()
 	}
 
 	//エネミー処理
+	if (true)
 	{
 		for (int i = 0; i < enemySpawn; i++)
 		{
