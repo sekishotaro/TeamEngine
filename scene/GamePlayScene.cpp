@@ -14,6 +14,7 @@
 #include "FbxLoader.h"
 #include "FbxObject3d.h"
 #include "ConvertScene.h"
+#include "Count.h"
 
 using namespace DirectX;
 
@@ -59,7 +60,10 @@ void GamePlayScene::Initialize()
 	Sprite::LoadTexture(21, L"Resources/switch_In.png");
 	Sprite::LoadTexture(22, L"Resources/switch_Out.png");
 	Sprite::LoadTexture(23, L"Resources/Finish.png");
-
+	Sprite::LoadTexture(24, L"Resources/Count1.png");
+	Sprite::LoadTexture(25, L"Resources/Count2.png");
+	Sprite::LoadTexture(26, L"Resources/Count3.png");
+	Sprite::LoadTexture(27, L"Resources/CountStart.png");
 	// 背景スプライト生成
 	spriteBG = Sprite::Create(11, { 0.0f,0.0f });
 	texScore = Sprite::Create(15, { WinApp::window_width - 372, 0 });
@@ -104,6 +108,7 @@ void GamePlayScene::Initialize()
 	
 	//シーン切り替え
 	ConvertScene::InitializeOut();
+	Count::Initilize();
 
 	//マップチップ用のCSV読み込み
 	//(map, "Resource/scv/なんたら.csv")で追加可能
@@ -128,7 +133,7 @@ void GamePlayScene::Initialize()
 	shake_time = 0;
 	shake_x = 0;
 	shake_y = 0;
-	lastTime = 60.0f;
+	lastTime = 10.0f;
 	level = 1;
 	enemySpawn = 1;
 	gravity = 0.15f;
@@ -232,6 +237,11 @@ void GamePlayScene::Finalize()
 		safe_delete(spriteScore[i]);
 	}
 	safe_delete(minimap);
+
+	ConvertScene::Finalize();
+	Count::Finalize();
+	bool ConvertFlag = false;
+	bool countFinishFlag = false;
 }
 
 void GamePlayScene::Update()
@@ -249,12 +259,40 @@ void GamePlayScene::Update()
 	
 
 	ConvertScene::besideOut(ConvertFlag);
-
-
-
-	if (lastTime > 0)
+	if (ConvertFlag == true)
 	{
-		lastTime -= 0.0166;
+		Count::CountDown3(countFinishFlag);
+	}
+
+
+	if (countFinishFlag == true)
+	{
+		if (lastTime > 0)
+		{
+			lastTime -= 0.0166;
+		}
+	}
+
+	if (lastTime < 0)
+	{
+		Count::Fnish(finishFinishFlag, lastTime);
+
+		if (flag == false)
+		{
+			ConvertScene::InitializeIn();
+			flag = true;
+		}
+	}
+
+	if (finishFinishFlag == true)
+	{
+		//ConvertScene::besideIn(endConvertflag);
+
+		if (endConvertflag == true)
+		{
+			//シーン切り替え
+			SceneManager::GetInstance()->ChangeScene("END");
+		}
 	}
 	spriteTime[2]->ChangeTex((int)lastTime % 10);
 	spriteTime[1]->ChangeTex((int)lastTime / 10);
@@ -271,7 +309,7 @@ void GamePlayScene::Update()
 
 	Effect::DeletLocus(locus, camera, p_pos);
 	//プレイヤー処理
-	if (true)
+	if (countFinishFlag == true)
 	{
 		//座標更新
 		p_pos = player->GetPosition();
@@ -401,7 +439,7 @@ void GamePlayScene::Update()
 	}
 
 	//エネミー処理
-	if (true)
+	if (countFinishFlag == true)
 	{
 		for (int i = 0; i < enemySpawn; i++)
 		{
@@ -720,9 +758,6 @@ void GamePlayScene::Update()
 	{
 		//BGM止める
 		//Audio::GetInstance()->SoundStop("zaza.wav");
-
-		//シーン切り替え
-		SceneManager::GetInstance()->ChangeScene("END");
 	}
 
 	//エフェクト
@@ -833,8 +868,14 @@ void GamePlayScene::Draw()
 
 	shockWave->Draw();
 
+	//シーン移行
 	ConvertScene::Draw();
-
+	//ゲーム開始カウントダウン
+	if (ConvertFlag == true)
+	{
+		Count::Draw();
+	}
+	
 	// デバッグテキストの描画
 	DebugText::GetInstance()->DrawAll(cmdList);
 

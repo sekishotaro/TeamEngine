@@ -118,8 +118,16 @@ public:
 	Model* locusModel = nullptr; //軌跡
 	Sprite* shockWave = nullptr; //波動
 
+	//シーン移行完了確認フラグ
 	bool ConvertFlag = false;
+	//ゲーム開始カウント完了確認フラグ
+	bool countFinishFlag = false;
+	//ゲーム終了後エンドシーンに移行確認用フラグ
+	bool finishFinishFlag = false;
+	//エンドシーンにコンバートする
+	bool endConvertflag = false;
 
+	bool flag = false;
 
 	//スプライト
 	Sprite* spriteBG = nullptr; //背景

@@ -10,6 +10,8 @@ void TitleScene::Initialize()
 {
 	// テクスチャ読み込み
 	Sprite::LoadTexture(1, L"Resources/Titlebackground.png");
+	Sprite::LoadTexture(21, L"Resources/switch_In.png");
+	Sprite::LoadTexture(22, L"Resources/switch_Out.png");
 	// 背景スプライト生成
 	spriteBG = Sprite::Create(1, { 0.0f,0.0f });
 
@@ -29,8 +31,6 @@ void TitleScene::Update()
 
 	if (input->TriggerKey(DIK_RETURN) || input->TriggerButton(Start))
 	{
-		
-		
 		startFlag = true;
 	}
 
