@@ -129,6 +129,8 @@ void GamePlayScene::Initialize()
 	level = 1;
 	enemySpawn = 1;
 	gravity = 0.125f;
+	catch_count = 0;
+	shake_power = 0;
 
 	//オブジェクトにモデルをひも付ける
 	for (int i = 0; i < EnemySpawnMax; i++)
@@ -153,6 +155,7 @@ void GamePlayScene::Initialize()
 		enemy_data[i].e_acc = 0;
 		enemy_data[i].can_catch = false;
 		enemy_data[i].is_add = true;
+		enemy_data[i].escape_time = 0;
 		enemy[i]->SetModel(model);
 		enemy[i]->SetPosition(enemy_data[i].e_pos);
 		enemy[i]->Update();
@@ -189,7 +192,7 @@ void GamePlayScene::Initialize()
 
 
 	//モデル名を指定してファイル読み込み
-	fbxModel1 = FbxLoader::GetInstance()->LoadModelFromFile("prin");
+	fbxModel1 = FbxLoader::GetInstance()->LoadModelFromFile("boneTest");
 	//3Dオブジェクト生成とモデルのセット
 	fbxObject1 = new FbxObject3d;
 	fbxObject1->Initialize();
@@ -236,7 +239,6 @@ void GamePlayScene::Update()
 		Effect::DeletLocus(locus, camera, p_pos);
 	}
 	
-	
 	Effect::DeletLocus(locus, camera, p_pos);
 	
 	Effect::ShockWaveUpdate(shock, p_pos, &shockFlag);
@@ -245,13 +247,13 @@ void GamePlayScene::Update()
 	{
 		lastTime -= 0.02;
 	}
-	spriteTime[0]->ChangeTex((int)lastTime / 60);
-
-	if (lastTime <= 0)
+	else
 	{
+		lastTime = 0;
 		//シーン切り替え
 		SceneManager::GetInstance()->ChangeScene("TITLE");
 	}
+	spriteTime[0]->ChangeTex((int)lastTime / 60);
 
 	int second;
 	second = (int)lastTime % 60;
@@ -279,28 +281,46 @@ void GamePlayScene::Update()
 		{
 			if (input->LeftStickAngle().x)
 			{
-				p_pos.x += input->LeftStickAngle().x / 2 + 0.08 * (level - 1);
-
-				//進行方向に向きを変える
-				if (input->LeftStickAngle().x >= 0)
+				if (input->LeftStickAngle().x > 0)
 				{
-					player->SetRotation(XMFLOAT3(0, 90, 0));
-				} 
+					p_pos.x += input->LeftStickAngle().x / 2 + 0.08 * (level - 1);
+				}
 				else
 				{
-					player->SetRotation(XMFLOAT3(0, 270, 0));
+					p_pos.x -= -input->LeftStickAngle().x / 2 + 0.08 * (level - 1);
+				}
+
+				//進行方向に向きを変える
+				if (is_attack == false)
+				{
+					if (input->LeftStickAngle().x >= 0)
+					{
+						player->SetRotation(XMFLOAT3(0, 90, 0));
+					}
+					else
+					{
+						player->SetRotation(XMFLOAT3(0, 270, 0));
+					}
 				}
 			}
 			//キーボード用
 			if (input->PushKey(DIK_D))
 			{
 				p_pos.x += 0.5f + 0.08 * (level - 1);
-				player->SetRotation(XMFLOAT3(0, 90, 0));
+				//進行方向に向きを変える
+				if (is_attack == false)
+				{
+					player->SetRotation(XMFLOAT3(0, 90, 0));
+				}
 			}
 			if (input->PushKey(DIK_A))
 			{
 				p_pos.x -= 0.5f + 0.08 * (level - 1);
-				player->SetRotation(XMFLOAT3(0, 270, 0));
+				//進行方向に向きを変える
+				if (is_attack == false)
+				{
+					player->SetRotation(XMFLOAT3(0, 270, 0));
+				}
 			}
 		}
 
@@ -370,11 +390,10 @@ void GamePlayScene::Update()
 			p_add -= gravity;
 			p_pos.y += p_add;
 
-			if (MapCollide(p_pos, p_x_radius, p_y_radius, 0, old_p_pos, is_jump))
+			if (MapCollide(p_pos, p_x_radius, p_y_radius, p_add, 0, old_p_pos, true))
 			{
 				//初期化
 				is_jump = false;
-				p_add = 0;
 			}
 		}
 		//重力
@@ -385,7 +404,7 @@ void GamePlayScene::Update()
 			p_down -= gravity;
 			p_pos.y += p_down;
 
-			if (MapCollide(p_pos, p_x_radius, p_y_radius, 0, old_p_pos, is_air))
+			if (MapCollide(p_pos, p_x_radius, p_y_radius, p_down, 0, old_p_pos, true))
 			{
 				//初期化
 				p_down = 0;
@@ -430,12 +449,13 @@ void GamePlayScene::Update()
 				enemy_data[i].old_e_pos = enemy_data[i].e_pos;
 
 				//プレイヤーとエネミーが接触したら
-				if (is_damage == false && is_invincible == false)
+				if (is_damage == false && is_invincible == false && enemy_data[i].is_catch == false)
 				{
 					if (CollisionObject(player, enemy[i]) == true && enemy_data[i].can_catch == true)
 					{
 						enemy_data[i].is_catch = true;
 						enemy_data[i].is_bounce = false;
+						catch_count++;
 					} 
 					else if (CollisionObject(player, enemy[i]) == true && enemy_data[i].can_catch == false)
 					{
@@ -483,7 +503,7 @@ void GamePlayScene::Update()
 						 if (enemy_data[i].is_grand == true)
 						{
 							//端まで行ったら
-							if (MapCollide(enemy_data[i].e_pos, enemy_data[i].e_x_radius, enemy_data[i].e_y_radius, 0, enemy_data[i].old_e_pos))
+							if (MapCollide(enemy_data[i].e_pos, enemy_data[i].e_x_radius, enemy_data[i].e_y_radius, enemy_data[i].e_down, 0, enemy_data[i].old_e_pos))
 							{
 								enemy_data[i].e_speed = -enemy_data[i].e_speed;
 
@@ -563,17 +583,20 @@ void GamePlayScene::Update()
 							Effect::CreateLocus(locus, *locusModel, enemy_data[i].e_pos);
 						}
 						//マップの当たり判定
-						if (MapCollide(enemy_data[i].e_pos, enemy_data[i].e_x_radius, enemy_data[i].e_y_radius, 0, enemy_data[i].old_e_pos))
+						if (MapCollide(enemy_data[i].e_pos, enemy_data[i].e_x_radius, enemy_data[i].e_y_radius, enemy_data[i].e_down, 0, enemy_data[i].old_e_pos))
 						{
 							//エフェクト
 							shockFlag = true;
 							shock->SetPosition(enemy_data[i].e_pos);
-
-
 							enemy_data[i].is_alive = false;
 							enemy_data[i].is_catch = false;
 							is_attack = false;
 							is_shake = true;
+							if (shake_power == 0)
+							{
+								shake_power = catch_count;
+							}
+							catch_count = 0;
 							score++;
 							int hundredScore = 0;
 							hundredScore = score / 10;
@@ -622,9 +645,18 @@ void GamePlayScene::Update()
 							}
 						}
 					} 
+					else
+					{
+						enemy_data[i].escape_time++;
+						if (static_cast<float>(enemy_data[i].escape_time / 60) > 10)
+						{
+							enemy_data[i].escape_time = 0;
+							enemy_data[i].is_catch = false;
+						}
+					}
 				}
 				//重力
-				if (is_attack == false)
+				if (is_attack == false || enemy_data[i].is_bounce == true)
 				{
 					//下降度をマイナス
 					if (enemy_data[i].is_bounce == false)
@@ -642,7 +674,7 @@ void GamePlayScene::Update()
 					//マップの当たり判定
 					if (enemy_data[i].is_bounce == false)
 					{
-						if (MapCollide(enemy_data[i].e_pos, enemy_data[i].e_x_radius, enemy_data[i].e_y_radius, 0, enemy_data[i].old_e_pos))
+						if (MapCollide(enemy_data[i].e_pos, enemy_data[i].e_x_radius, enemy_data[i].e_y_radius, enemy_data[i].e_down , 0, enemy_data[i].old_e_pos, true))
 						{
 							enemy_data[i].e_down = 0;
 							enemy_data[i].is_grand = true;
@@ -655,9 +687,8 @@ void GamePlayScene::Update()
 					}
 					else if (enemy_data[i].enemy_type == JUMP && enemy_data[i].is_bounce == true)
 					{
-						if (MapCollide(enemy_data[i].e_pos, enemy_data[i].e_x_radius, enemy_data[i].e_y_radius, 0, enemy_data[i].old_e_pos, true))
+						if (MapCollide(enemy_data[i].e_pos, enemy_data[i].e_x_radius, enemy_data[i].e_y_radius, enemy_data[i].e_acc, 0, enemy_data[i].old_e_pos, true))
 						{
-							enemy_data[i].e_down = 0;
 							enemy_data[i].is_grand = true;
 							enemy_data[i].e_acc = 2.25f;
 						}
@@ -667,6 +698,10 @@ void GamePlayScene::Update()
 				if (enemy_data[i].is_catch == true)
 				{
 					RopeMove(enemy_data[i].e_pos, i);
+					if (enemy_data[i].e_pos.x == enemy_data[i].old_e_pos.x && enemy_data[i].e_pos.y == enemy_data[i].old_e_pos.y)
+					{
+						enemy_data[i].e_down = 0;
+					}
 				}
 
 				//ミニマップ用座標変換
@@ -699,7 +734,7 @@ void GamePlayScene::Update()
 	{
 		level = 2;
 	}
-	enemySpawn = level * 4;
+	enemySpawn = level * 6;
 	spriteLevel[1]->ChangeTex((int)level % 10);
 
 	//エネミー更新
@@ -707,12 +742,12 @@ void GamePlayScene::Update()
 	{
 		enemy[i]->SetPosition(enemy_data[i].e_pos);
 		//落下の最大値を超えたら
-		if (enemy_data[i].e_pos.y < -500.0f)
+		if (enemy_data[i].e_pos.y < -300.0f)
 		{
-			enemy[i]->SetPosition({ 20, 10, 0 });
+			enemy_data[i].e_pos.y = 10;
+			enemy[i]->SetPosition(enemy_data[i].e_pos);
 			enemy_data[i].e_down = 0;
 			enemy_data[i].e_acc = 0;
-			enemy_data[i].is_bounce = false;
 		}
 		//オブジェクト情報の更新
 		enemy[i]->Update();
@@ -721,9 +756,10 @@ void GamePlayScene::Update()
 	
 	//プレイヤー更新
 	player->SetPosition(p_pos);
-	if (p_pos.y < -500.0f)
+	if (p_pos.y < -300.0f)
 	{
-		player->SetPosition({ 0, 10, 0 });
+		p_pos.y = 10;
+		player->SetPosition(p_pos);
 		p_down = 0;
 		p_add = 0;
 	}
@@ -732,14 +768,16 @@ void GamePlayScene::Update()
 	//カメラ更新
 	if (is_shake == true)
 	{
-		shake_x = static_cast<float>(rand() % 16) / 10;
-		shake_y = static_cast<float>(rand() % 16) / 10;
+		int power = shake_power * 10 + 1;
+		shake_x = static_cast<float>(rand() % power) / 10;
+		shake_y = static_cast<float>(rand() % power) / 10;
 		shake_time++;
 		if (shake_time > 20)
 		{
 			shake_x = 0.0f;
 			shake_y = 0.0f;
 			shake_time = 0;
+			shake_power = 0;
 			is_shake = false;
 		}
 	}
@@ -773,7 +811,7 @@ void GamePlayScene::Update()
 	DebugText::GetInstance()->Print(50, 35 * 8, 2, "min:%f~max:%f", p_pos.y - 70 / 2, p_pos.y + 70 / 2);*/
 
 	fbxObject1->AnimationFlag = true;
-	fbxObject1->AnimationNum = 1;
+	fbxObject1->AnimationNum = 0;
 	//アップデート
 	fbxObject1->Update();
 }
@@ -841,7 +879,7 @@ void GamePlayScene::Draw()
 	
 
 	//FBX3Dオブジェクトの描画
-	//fbxObject1->Draw(cmdList);
+	fbxObject1->Draw(cmdList);
 	// 3Dオブジェクト描画後処理
 	Object3d::PostDraw();
 
@@ -959,7 +997,7 @@ void GamePlayScene::CircularMotion(XMFLOAT3& pos, const XMFLOAT3 center_pos, con
 	pos.y = (sinf(3.14 / 180.0f * angle) * r) + center_pos.y;//円運動の処理
 }
 
-bool GamePlayScene::MapCollide(XMFLOAT3& pos, float radiusX, float radiusY, int mapNumber, const XMFLOAT3 old_pos, bool is_jump)
+bool GamePlayScene::MapCollide(XMFLOAT3& pos, float radiusX, float radiusY, float& add, int mapNumber, const XMFLOAT3 old_pos, bool is_jump)
 {
 	//マップチップ
 	//X, Y
@@ -1010,10 +1048,10 @@ bool GamePlayScene::MapCollide(XMFLOAT3& pos, float radiusX, float radiusY, int 
 						if (is_jump == false)
 						{
 							is_hit = true;
-						} 
+						}
 						else
 						{
-							p_add = 0;
+							add = 0;
 						}
 					}
 				}
@@ -1061,7 +1099,7 @@ void GamePlayScene::RopeMove(XMFLOAT3& pos, const int num)
 		len = max_rope;
 		enemy_data[num].e_pos = { p_pos.x - length.x / wq, p_pos.y - length.y / wq, 0 };
 		pos = enemy_data[num].e_pos;
-		MapCollide(pos, enemy_data[num].e_x_radius, enemy_data[num].e_y_radius, 0, enemy_data[num].e_pos);
+		MapCollide(pos, enemy_data[num].e_x_radius, enemy_data[num].e_y_radius, p_add, 0, enemy_data[num].e_pos);
 	}
 
 	//ロープの長さ

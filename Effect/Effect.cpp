@@ -34,7 +34,7 @@ void Effect::DeletLocus(std::vector<std::unique_ptr<Object3d>> &object, Camera *
 
 	if (object.size() != nowTime.size())
 	{
-		assert(0);
+		//assert(0);
 	}
 
 	for (int i = 0; i < object.size(); i++)
