@@ -13,6 +13,8 @@
 #include <string>
 #include "FbxLoader.h"
 #include "FbxObject3d.h"
+#include "ConvertScene.h"
+#include "Count.h"
 
 using namespace DirectX;
 
@@ -54,7 +56,15 @@ void GamePlayScene::Initialize()
 	Sprite::LoadTexture(16, L"Resources/level.png");
 	Sprite::LoadTexture(17, L"Resources/koron.png");
 	Sprite::LoadTexture(18, L"Resources/timer.png");
-
+	Sprite::LoadTexture(19, L"Resources/timeLimit.png");
+	//Sprite::LoadTexture(20, L"Resources/timer.png");
+	Sprite::LoadTexture(21, L"Resources/switch_In.png");
+	Sprite::LoadTexture(22, L"Resources/switch_Out.png");
+	Sprite::LoadTexture(23, L"Resources/Finish.png");
+	Sprite::LoadTexture(24, L"Resources/Count1.png");
+	Sprite::LoadTexture(25, L"Resources/Count2.png");
+	Sprite::LoadTexture(26, L"Resources/Count3.png");
+	Sprite::LoadTexture(27, L"Resources/CountStart.png");
 	// 背景スプライト生成
 	spriteBG = Sprite::Create(11, { 0.0f,0.0f });
 	spriteBG->SetSize({ WinApp::window_width * 1.2, WinApp::window_height * 1.2 });
@@ -77,6 +87,7 @@ void GamePlayScene::Initialize()
 	spriteScore[2] = Sprite::Create(0, { WinApp::window_width - 64,0 });
 	spriteScore[3] = Sprite::Create(0, { WinApp::window_width - 96,0 });
 	spriteLevel[1] = Sprite::Create(0, { WinApp::window_width - 32 ,WinApp::window_height - 64 });
+	finish = Sprite::Create(23, { 0.0f ,0.0f });
 
 
 
@@ -96,11 +107,12 @@ void GamePlayScene::Initialize()
 	player = Object3d::Create();	
 
 	
+	//シーン切り替え
+	ConvertScene::InitializeOut();
+	Count::Initilize();
 	//エフェクト
-	shock = Object3d::Create();
-	shockWaveModel = Model::LoadFromOBJ("shock");
-	shock->SetModel(shockWaveModel);
-	shock->SetRotation({ 270.0f, 0.0f, 0.0f });
+	Effect::Initialize();
+
 
 	//マップチップ用のCSV読み込み
 	//(map, "Resource/scv/なんたら.csv")で追加可能
@@ -125,7 +137,7 @@ void GamePlayScene::Initialize()
 	shake_time = 0;
 	shake_x = 0;
 	shake_y = 0;
-	lastTime = 60.0f * 3;
+	lastTime = 10.0f;
 	level = 1;
 	enemySpawn = 1;
 	gravity = 0.125f;
@@ -232,6 +244,14 @@ void GamePlayScene::Finalize()
 		safe_delete(spriteScore[i]);
 	}
 	safe_delete(minimap);
+
+	ConvertScene::Finalize();
+	Count::Finalize();
+	ConvertFlag = false;
+	countFinishFlag = false;
+	finishFinishFlag = false;
+	endConvertflag = false;
+	PlayPossibleflag = false;
 }
 
 void GamePlayScene::Update()
@@ -248,18 +268,49 @@ void GamePlayScene::Update()
 	
 	Effect::DeletLocus(locus, camera, p_pos);
 	
-	Effect::ShockWaveUpdate(shock, p_pos, &shockFlag);
+	//シーン切り替え
+	if (ConvertFlag == false)
+	{
+		ConvertScene::besideOut(ConvertFlag);
+	}
+	//開始カウントダウン
+	if (ConvertFlag == true)
+	{
+		Count::CountDown3(countFinishFlag);
+		if (countFinishFlag == true)
+		{
+			PlayPossibleflag = true;
+		}
+	}
 
-	if (lastTime > 0)
+	//プレイタイムカウントダウン
+	if (countFinishFlag == true)
 	{
-		lastTime -= 0.02;
+		if (lastTime > 0)
+		{
+			lastTime -= 0.0166;
+		}
 	}
-	else
+
+	//終了処理
+	if (lastTime < 0)
 	{
-		lastTime = 0;
-		//シーン切り替え
-		SceneManager::GetInstance()->ChangeScene("TITLE");
+		PlayPossibleflag = false;
+		Count::Fnish(finishFinishFlag, lastTime);
 	}
+	//エンド画面移行処理
+	if (finishFinishFlag == true)
+	{
+		ConvertScene::besideIn(endConvertflag);
+
+		if (endConvertflag == true)
+		{
+			//シーン切り替え
+			SceneManager::GetInstance()->ChangeScene("END");
+		}
+	}
+	spriteTime[2]->ChangeTex((int)lastTime % 10);
+	spriteTime[1]->ChangeTex((int)lastTime / 10);
 	spriteTime[0]->ChangeTex((int)lastTime / 60);
 
 	int second;
@@ -278,6 +329,7 @@ void GamePlayScene::Update()
 	}
 
 	//プレイヤー処理
+	if (PlayPossibleflag == true)
 	{
 		//座標更新
 		p_pos = player->GetPosition();
@@ -425,6 +477,7 @@ void GamePlayScene::Update()
 	}
 
 	//エネミー処理
+	if (PlayPossibleflag == true)
 	{
 		for (int i = 0; i < enemySpawn; i++)
 		{
@@ -595,7 +648,8 @@ void GamePlayScene::Update()
 						{
 							//エフェクト
 							shockFlag = true;
-							shock->SetPosition(enemy_data[i].e_pos);
+
+
 							enemy_data[i].is_alive = false;
 							enemy_data[i].is_catch = false;
 							is_attack = false;
@@ -866,9 +920,6 @@ else if (score > 2)
 	{
 		//BGM止める
 		//Audio::GetInstance()->SoundStop("zaza.wav");
-
-		//シーン切り替え
-		SceneManager::GetInstance()->ChangeScene("TITLE");
 	}
 
 	//エフェクト
@@ -876,8 +927,6 @@ else if (score > 2)
 	{
 		locus[i]->Update();
 	}
-	shock->Update();
-
 
 	//プレイヤーの座標（X：Y)
 	DebugText::GetInstance()->Print(50, 35 * 3, 2, "player_x:%f", p_pos.x);
@@ -949,12 +998,6 @@ void GamePlayScene::Draw()
 		locus[i]->Draw();
 	}
 
-	if (shockFlag == true)
-	{
-		shock->Draw();
-	}
-	
-
 	//FBX3Dオブジェクトの描画
 	//fbxObject1->Draw(cmdList);
 	// 3Dオブジェクト描画後処理
@@ -963,6 +1006,8 @@ void GamePlayScene::Draw()
 	// 前景スプライト描画前処理
 	Sprite::PreDraw(cmdList);
 
+	Effect::TimeLimitEffectDraw(lastTime);
+	
 	//ミニマップの描画
 	minimap->Draw();
 	for (int i = 0; i < enemySpawn; i++)
@@ -985,6 +1030,14 @@ void GamePlayScene::Draw()
 	spriteScore[2]->Draw();
 	spriteScore[3]->Draw();
 
+	//シーン移行
+	ConvertScene::Draw();
+	//ゲーム開始カウントダウン
+	if (ConvertFlag == true)
+	{
+		Count::Draw();
+	}
+	
 	// デバッグテキストの描画
 	DebugText::GetInstance()->DrawAll(cmdList);
 
