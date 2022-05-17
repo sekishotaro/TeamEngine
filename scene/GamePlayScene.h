@@ -57,6 +57,8 @@ public: //サブクラス
 		bool is_add; //加算するか
 
 		float turn_move; //裏返るときの動き
+
+		int escape_time; //逃げるまでの時間
 	};
 
 public: 
@@ -155,12 +157,14 @@ public:
 	//UI・スコアetc
 	int score; //スコア
 	bool is_shake; //シェイクフラグ
+	int shake_power; //シェイクの強さ
 	int shake_time; //シェイク時間
 	float shake_x; //x軸の幅
 	float shake_y; //y軸の幅
 	float lastTime; //残り時間
 	int level;
 	int enemySpawn; //敵の数
+	int catch_count; //何個持ってるか
 
 
 	//汎用変数
@@ -195,6 +199,9 @@ public:
 	//ロープ
 	float max_rope; //ロープの最大
 
+	XMFLOAT3 c_pos; //カメラの主点座標
+	bool camera_chase; //カメラが動き出すまでの時間
+
 	/// <summary>
 	/// エネミー生成
 	/// </summary>
@@ -213,7 +220,7 @@ public:
 	/// <summary>
 	/// マップチップ当たり判定
 	/// </summary>
-	bool MapCollide(XMFLOAT3& pos, float radiusX, float radiusY, int mapNumber,const XMFLOAT3 old_pos, bool is_jump = false);
+	bool MapCollide(XMFLOAT3& pos, float radiusX, float radiusY, float &add, int mapNumber,const XMFLOAT3 old_pos, bool is_jump = false);
 
 	/// <summary>
 	/// ロープの角度変更
