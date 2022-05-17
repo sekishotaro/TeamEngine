@@ -125,6 +125,12 @@ public: //メンバ関数
 	void SetRotation(float rotation);
 
 	/// <summary>
+	/// 座標の取得
+	/// </summary>
+	/// <returns>座標</returns>
+	const XMFLOAT2& GetPosition() { return position; }
+
+	/// <summary>
 	/// 座標の設定
 	/// </summary>
 	/// <param name="position">座標</param>

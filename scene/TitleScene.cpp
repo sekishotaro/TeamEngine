@@ -4,6 +4,7 @@
 #include "Input.h"
 #include "DebugText.h"
 #include "DirectXCommon.h"
+#include "ConvertScene.h"
 
 using namespace DirectX;
 
@@ -121,14 +122,18 @@ void TitleScene::Initialize()
 	player->Update();
 
 
+	Sprite::LoadTexture(1, L"Resources/Titlebackground.png");
+	Sprite::LoadTexture(21, L"Resources/switch_In.png");
+	Sprite::LoadTexture(22, L"Resources/switch_Out.png");
 	// 背景スプライト生成
 	spriteBG = Sprite::Create(1, { 0.0f,0.0f });
-	spriteBG->SetSize({ WinApp::window_width * 1.2, WinApp::window_height * 1.2 });
-	titleText = Sprite::Create(2, { 300.0f,150.0f });
+
+	ConvertScene::InitializeIn();
 }
 
 void TitleScene::Finalize()
 {
+	ConvertScene::Finalize();
 }
 
 void TitleScene::Update()
@@ -557,8 +562,18 @@ void TitleScene::Update()
 
 	if (input->TriggerKey(DIK_RETURN) || input->TriggerButton(Start))
 	{
-		//シーン切り替え
-		SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
+		startFlag = true;
+	}
+
+	if (startFlag == true)
+	{
+		ConvertScene::besideIn(Convertflag);
+
+		if (Convertflag == true)
+		{
+			//シーン切り替え
+			SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
+		}
 	}
 
 	DebugText::GetInstance()->Print(50, 20, 3, "fafa");
@@ -697,6 +712,8 @@ void TitleScene::Draw()
 
 	// デバッグテキストの描画
 	//DebugText::GetInstance()->DrawAll(cmdList);
+
+	ConvertScene::Draw();
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
