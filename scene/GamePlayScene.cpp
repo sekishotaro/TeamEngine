@@ -928,14 +928,6 @@ else if (score > 2)
 		locus[i]->Update();
 	}
 
-	//プレイヤーの座標（X：Y)
-	DebugText::GetInstance()->Print(50, 35 * 3, 2, "player_x:%f", p_pos.x);
-	DebugText::GetInstance()->Print(50, 35 * 4, 2, "player_y:%f", p_pos.y);
-	/*DebugText::GetInstance()->Print(50, 35 * 5, 2, "rope_len:%f", max_rope);
-	DebugText::GetInstance()->Print(50, 35 * 6, 2, "enemySpawn:%d", enemySpawn);
-	DebugText::GetInstance()->Print(50, 35 * 7, 2, "min:%f~max:%f", p_pos.x - 123 / 2, p_pos.x + 123 / 2);
-	DebugText::GetInstance()->Print(50, 35 * 8, 2, "min:%f~max:%f", p_pos.y - 70 / 2, p_pos.y + 70 / 2);*/
-
 	//fbxObject1->AnimationFlag = true;
 	//fbxObject1->AnimationNum = 0;
 	//アップデート
