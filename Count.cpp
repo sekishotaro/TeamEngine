@@ -28,6 +28,10 @@ void Count::Initilize()
 
 void Count::Finalize()
 {
+	count3Time = 4.0f;
+	count3finishFlag = false;
+	countFinishTime = 2.0f;
+	fnishFinishFlag = false;
 	safe_delete(count1);
 	safe_delete(count2);
 	safe_delete(count3);

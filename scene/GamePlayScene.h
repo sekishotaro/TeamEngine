@@ -126,8 +126,8 @@ public:
 	bool finishFinishFlag = false;
 	//エンドシーンにコンバートする
 	bool endConvertflag = false;
-
-	bool flag = false;
+	//ゲームプレイ可能フラグ
+	bool PlayPossibleflag = false;
 
 	//スプライト
 	Sprite* spriteBG = nullptr; //背景

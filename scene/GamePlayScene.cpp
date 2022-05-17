@@ -240,8 +240,11 @@ void GamePlayScene::Finalize()
 
 	ConvertScene::Finalize();
 	Count::Finalize();
-	bool ConvertFlag = false;
-	bool countFinishFlag = false;
+	ConvertFlag = false;
+	countFinishFlag = false;
+	finishFinishFlag = false;
+	endConvertflag = false;
+	PlayPossibleflag = false;
 }
 
 void GamePlayScene::Update()
@@ -257,17 +260,23 @@ void GamePlayScene::Update()
 	}
 	Effect::DeletLocus(locus, camera, p_pos);
 	
+	//シーン切り替え
 	if (ConvertFlag == false)
 	{
 		ConvertScene::besideOut(ConvertFlag);
 	}
-	
+	//開始カウントダウン
 	if (ConvertFlag == true)
 	{
 		Count::CountDown3(countFinishFlag);
+		if (countFinishFlag == true)
+		{
+			PlayPossibleflag = true;
+		}
+
 	}
 
-
+	//プレイタイムカウントダウン
 	if (countFinishFlag == true)
 	{
 		if (lastTime > 0)
@@ -276,17 +285,13 @@ void GamePlayScene::Update()
 		}
 	}
 
+	//終了処理
 	if (lastTime < 0)
 	{
+		PlayPossibleflag = false;
 		Count::Fnish(finishFinishFlag, lastTime);
-
-		if (flag == false)
-		{
-			//ConvertScene::InitializeIn();
-			flag = true;
-		}
 	}
-
+	//エンド画面移行処理
 	if (finishFinishFlag == true)
 	{
 		ConvertScene::besideIn(endConvertflag);
@@ -312,7 +317,7 @@ void GamePlayScene::Update()
 
 	Effect::DeletLocus(locus, camera, p_pos);
 	//プレイヤー処理
-	if (countFinishFlag == true)
+	if (PlayPossibleflag == true)
 	{
 		//座標更新
 		p_pos = player->GetPosition();
@@ -442,7 +447,7 @@ void GamePlayScene::Update()
 	}
 
 	//エネミー処理
-	if (countFinishFlag == true)
+	if (PlayPossibleflag == true)
 	{
 		for (int i = 0; i < enemySpawn; i++)
 		{
