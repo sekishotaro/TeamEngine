@@ -190,13 +190,20 @@ void GamePlayScene::Initialize()
 	player->SetRotation({ 0, 180, 0 });
 	player->Update();
 
+	c_pos = p_pos;
+
+	camera->SetTarget(c_pos);
+	camera->SetEye({ c_pos.x, c_pos.y, c_pos.z - 55.0f - (2.5f * level) });
+	camera->Update();
+
+	camera_chase = false;
 
 	//モデル名を指定してファイル読み込み
-	fbxModel1 = FbxLoader::GetInstance()->LoadModelFromFile("boneTest");
+	//fbxModel1 = FbxLoader::GetInstance()->LoadModelFromFile("boneTest");
 	//3Dオブジェクト生成とモデルのセット
-	fbxObject1 = new FbxObject3d;
-	fbxObject1->Initialize();
-	fbxObject1->SetModel(fbxModel1);
+	//fbxObject1 = new FbxObject3d;
+	//fbxObject1->Initialize();
+	//fbxObject1->SetModel(fbxModel1);
 	
 	//乱数
 	srand(time(NULL));
@@ -409,6 +416,7 @@ void GamePlayScene::Update()
 				//初期化
 				p_down = 0;
 				is_air = false;
+				camera_chase = true;
 			}
 		}
 
@@ -647,11 +655,15 @@ void GamePlayScene::Update()
 					} 
 					else
 					{
-						enemy_data[i].escape_time++;
 						if (static_cast<float>(enemy_data[i].escape_time / 60) > 10)
 						{
 							enemy_data[i].escape_time = 0;
 							enemy_data[i].is_catch = false;
+							enemy_data[i].is_alive = false;
+						}
+						else
+						{
+							enemy_data[i].escape_time++;
 						}
 					}
 				}
@@ -685,7 +697,7 @@ void GamePlayScene::Update()
 							}
 						}
 					}
-					else if (enemy_data[i].enemy_type == JUMP && enemy_data[i].is_bounce == true)
+					else
 					{
 						if (MapCollide(enemy_data[i].e_pos, enemy_data[i].e_x_radius, enemy_data[i].e_y_radius, enemy_data[i].e_acc, 0, enemy_data[i].old_e_pos, true))
 						{
@@ -710,64 +722,69 @@ void GamePlayScene::Update()
 		}
 	}
 
-	if (score > 50)
-	{
-		level = 7;
-	}
-	else if (score > 30)
-	{
-		level = 6;
-	}
-	else if (score > 20)
-	{
-		level = 5;
-	}
-	else if (score > 10)
-	{
-		level = 4;
-	}
-	else if (score > 5)
-	{
-		level = 3;
-	}
-	else if (score > 2)
-	{
-		level = 2;
-	}
-	enemySpawn = level * 6;
-	spriteLevel[1]->ChangeTex((int)level % 10);
-
 	//エネミー更新
 	for (int i = 0; i < enemySpawn; i++)
 	{
-		enemy[i]->SetPosition(enemy_data[i].e_pos);
+		if (i == 40)
+		{
+			int dh = 0;
+		}
 		//落下の最大値を超えたら
 		if (enemy_data[i].e_pos.y < -300.0f)
 		{
 			enemy_data[i].e_pos.y = 10;
-			enemy[i]->SetPosition(enemy_data[i].e_pos);
 			enemy_data[i].e_down = 0;
 			enemy_data[i].e_acc = 0;
 		}
+		else if (enemy_data[i].is_catch == false && (enemy_data[i].e_pos.x < -3.7 || enemy_data[i].e_pos.x > map_max_x * LAND_SCALE - 2))
+		{
+			if (enemy_data[i].e_pos.x < -3.7)
+			{
+				enemy_data[i].e_pos.x = (map_max_x - 1) * LAND_SCALE;
+				enemy_data[i].e_pos.y = -10;
+			} 
+			else
+			{
+				enemy_data[i].e_pos.x = 0;
+				enemy_data[i].e_pos.y = -35;
+			}
+		}
 		//オブジェクト情報の更新
+		enemy[i]->SetPosition(enemy_data[i].e_pos);
 		enemy[i]->Update();
 		Rope[i]->Update();
 	}
 	
 	//プレイヤー更新
-	player->SetPosition(p_pos);
 	if (p_pos.y < -300.0f)
 	{
 		p_pos.y = 10;
-		player->SetPosition(p_pos);
 		p_down = 0;
 		p_add = 0;
 	}
+	else if (p_pos.x < -3.7 || p_pos.x > map_max_x * LAND_SCALE - 2)
+	{
+		if (p_pos.x < -3.7)
+		{
+			p_pos.x = (map_max_x - 1) * LAND_SCALE;
+			p_pos.y = -10;
+		}
+		else
+		{
+			p_pos.x = 0;
+			p_pos.y = -35;
+		}
+	}
+	player->SetPosition(p_pos);
 	player->Update();
 
 	//カメラ更新
 	if (is_shake == true)
 	{
+		if (shake_power > 5)
+		{
+			shake_power = 5;
+		}
 		int power = shake_power * 10 + 1;
 		shake_x = static_cast<float>(rand() % power) / 10;
 		shake_y = static_cast<float>(rand() % power) / 10;
@@ -781,9 +798,69 @@ void GamePlayScene::Update()
 			is_shake = false;
 		}
 	}
-	camera->SetTarget({ p_pos.x + shake_x, p_pos.y + shake_y, p_pos.z });
-	camera->SetEye({ p_pos.x + shake_x, p_pos.y + shake_y, p_pos.z - 55.0f - (5 * level)});
-	camera->Update();
+	if (camera_chase == false)
+	{
+		XMFLOAT3 camera_pos = p_pos;
+		camera->SetTarget(camera_pos);
+		camera_pos.z -= 55.0f + (2.5 * level);
+		camera->SetEye(camera_pos);
+		camera->Update();
+		c_pos = camera->GetTarget();
+	}
+	else
+	{
+		XMFLOAT3 camera_pos = c_pos;
+		if (powf(c_pos.x - p_pos.x, 2) > powf(10, 2))
+		{
+			camera_pos.x += p_pos.x - old_p_pos.x;
+		}
+		if (powf(c_pos.y - p_pos.y, 2) > powf(5, 2))
+		{
+			camera_pos.y += p_pos.y - old_p_pos.y;
+		}
+		camera->SetTarget(camera_pos);
+		camera_pos.z -= 55.0f + (2.5 * level);
+		camera->SetEye(camera_pos);
+		camera->Update();
+		c_pos = camera->GetTarget();
+	}
+	if (is_shake == true)
+	{
+		XMFLOAT3 camera_pos = c_pos;
+		camera_pos.x += shake_x;
+		camera_pos.y += shake_y;
+		camera->SetTarget(camera_pos);
+		camera_pos.z -= 55.0f + (2.5 * level);
+		camera->SetEye(camera_pos);
+		camera->Update();
+	}
+
+	if (score > 50)
+	{
+		level = 7;
+	} 
+	else if (score > 30)
+	{
+		level = 6;
+	} 
+	else if (score > 20)
+	{
+		level = 5;
+	} 
+	else if (score > 10)
+	{
+		level = 4;
+	}
+	else if (score > 5)
+	{
+		level = 3;
+	} 
+else if (score > 2)
+	{
+		level = 2;
+	}
+	enemySpawn = level * 6;
+	spriteLevel[1]->ChangeTex((int)level % 10);
 
 	if (input->TriggerKey(DIK_RETURN) || input->TriggerButton(Start))
 	{
@@ -803,17 +880,17 @@ void GamePlayScene::Update()
 
 
 	//プレイヤーの座標（X：Y)
-	/*DebugText::GetInstance()->Print(50, 35 * 3, 2, "player_x:%f", p_pos.x);
+	DebugText::GetInstance()->Print(50, 35 * 3, 2, "player_x:%f", p_pos.x);
 	DebugText::GetInstance()->Print(50, 35 * 4, 2, "player_y:%f", p_pos.y);
-	DebugText::GetInstance()->Print(50, 35 * 5, 2, "rope_len:%f", max_rope);
+	/*DebugText::GetInstance()->Print(50, 35 * 5, 2, "rope_len:%f", max_rope);
 	DebugText::GetInstance()->Print(50, 35 * 6, 2, "enemySpawn:%d", enemySpawn);
 	DebugText::GetInstance()->Print(50, 35 * 7, 2, "min:%f~max:%f", p_pos.x - 123 / 2, p_pos.x + 123 / 2);
 	DebugText::GetInstance()->Print(50, 35 * 8, 2, "min:%f~max:%f", p_pos.y - 70 / 2, p_pos.y + 70 / 2);*/
 
-	fbxObject1->AnimationFlag = true;
-	fbxObject1->AnimationNum = 0;
+	//fbxObject1->AnimationFlag = true;
+	//fbxObject1->AnimationNum = 0;
 	//アップデート
-	fbxObject1->Update();
+	//fbxObject1->Update();
 }
 
 void GamePlayScene::Draw()
@@ -879,7 +956,7 @@ void GamePlayScene::Draw()
 	
 
 	//FBX3Dオブジェクトの描画
-	fbxObject1->Draw(cmdList);
+	//fbxObject1->Draw(cmdList);
 	// 3Dオブジェクト描画後処理
 	Object3d::PostDraw();
 
@@ -983,6 +1060,14 @@ void GamePlayScene::SpawnEnemy(int mapNumber, int enemyNumber)
 				enemy_data[enemyNumber + i].can_catch = true;
 				enemy[enemyNumber + i]->SetModel(model);
 				enemy[enemyNumber + i]->SetRotation({ 0, 0, 0 });
+			}
+			if (enemy_data[enemyNumber + i].enemy_type == JUMP)
+			{
+				enemy_data[enemyNumber + i].is_bounce = true;
+			}
+			else
+			{
+				enemy_data[enemyNumber + i].is_bounce = false;
 			}
 			enemy_data[enemyNumber + i].is_turn = false;
 		}

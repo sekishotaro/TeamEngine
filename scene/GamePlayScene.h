@@ -187,6 +187,9 @@ public:
 	//ロープ
 	float max_rope; //ロープの最大
 
+	XMFLOAT3 c_pos; //カメラの主点座標
+	bool camera_chase; //カメラが動き出すまでの時間
+
 	/// <summary>
 	/// エネミー生成
 	/// </summary>
