@@ -5,6 +5,7 @@ const float Effect::maxTime = 100.0f;
 std::vector<float> Effect::nowTime;
 std::vector<float> Effect::timeRate;
 std::vector<XMFLOAT3> Effect::generationPos;
+Sprite* Effect::timeLimitSprite;
 
 void Effect::CreateLocus(std::vector<std::unique_ptr<Object3d>> &object, Model &model, XMFLOAT3 &pos)
 {
@@ -81,5 +82,26 @@ void Effect::ShockWaveUpdate(std::unique_ptr<Object3d>& object, XMFLOAT3& genera
 	if (size.x >= 150.0f)
 	{
 		*flag = false;
+	}
+}
+
+void Effect::Initialize()
+{
+	Sprite::LoadTexture(19, L"Resources/timeLimit.png");
+	timeLimitSprite = Sprite::Create(19, {0.0f, 0.0f});
+}
+
+void Effect::TimeLimitEffectDraw(float& time)
+{
+	if (time <= 10.0)
+	{
+		if ((int)time % 2 == 0)
+		{
+			//timeLimitSprite->Draw();
+		}
+		else
+		{
+			timeLimitSprite->Draw();
+		}
 	}
 }

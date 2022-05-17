@@ -56,6 +56,8 @@ void GamePlayScene::Initialize()
 	Sprite::LoadTexture(16, L"Resources/level.png");
 	Sprite::LoadTexture(17, L"Resources/koron.png");
 	Sprite::LoadTexture(18, L"Resources/timer.png");
+	Sprite::LoadTexture(19, L"Resources/timeLimit.png");
+	//Sprite::LoadTexture(20, L"Resources/timer.png");
 	Sprite::LoadTexture(21, L"Resources/switch_In.png");
 	Sprite::LoadTexture(22, L"Resources/switch_Out.png");
 	Sprite::LoadTexture(23, L"Resources/Finish.png");
@@ -108,6 +110,9 @@ void GamePlayScene::Initialize()
 	//シーン切り替え
 	ConvertScene::InitializeOut();
 	Count::Initilize();
+	//エフェクト
+	Effect::Initialize();
+
 
 	//マップチップ用のCSV読み込み
 	//(map, "Resource/scv/なんたら.csv")で追加可能
@@ -884,6 +889,8 @@ void GamePlayScene::Draw()
 	// 前景スプライト描画前処理
 	Sprite::PreDraw(cmdList);
 
+	Effect::TimeLimitEffectDraw(lastTime);
+	
 	//ミニマップの描画
 	minimap->Draw();
 	for (int i = 0; i < enemySpawn; i++)

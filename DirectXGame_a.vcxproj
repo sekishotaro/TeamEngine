@@ -278,7 +278,6 @@
     <ClInclude Include="Effect\Effect.h" />
     <ClInclude Include="scene\ConvertScene.h" />
     <ClInclude Include="Ease.h" />
-    <ClInclude Include="Effect.h" />
     <ClInclude Include="scene\EndScene.h" />
     <ClInclude Include="Input\InputList.h" />
     <ClInclude Include="Mapchip.h" />

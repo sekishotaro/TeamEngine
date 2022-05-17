@@ -16,13 +16,6 @@ private: // エイリアス
 	using XMFLOAT4 = DirectX::XMFLOAT4;
 	using XMMATRIX = DirectX::XMMATRIX;
 	using XMVECTOR = DirectX::XMVECTOR;
-
-public:
-	static const float maxTime; //最大値
-	static std::vector<float> nowTime; //今
-	static std::vector<float> timeRate; //軌跡の何%時間が進んだか(率)
-	static std::vector<XMFLOAT3> generationPos; //初期生成場所
-
 public:
 	/// <summary>
 	/// 軌跡生成
@@ -47,5 +40,25 @@ public:
 	/// <param name="generationPoint">発生地点</param>
 	/// <param name="flag">フラグ</param>
 	static void ShockWaveUpdate(std::unique_ptr<Object3d>& object, XMFLOAT3& generationPoint, bool *flag);
+
+	/// <summary>
+	/// 初期化
+	/// </summary>
+	static void Initialize();
+
+	/// <summary>
+	/// タイムリミット
+	/// </summary>
+	/// <param name="time">時間</param>
+	static void TimeLimitEffectDraw(float& time);
+
+
+public:
+	static const float maxTime; //最大値
+	static std::vector<float> nowTime; //今
+	static std::vector<float> timeRate; //軌跡の何%時間が進んだか(率)
+	static std::vector<XMFLOAT3> generationPos; //初期生成場所
+
+	static Sprite* timeLimitSprite;
 };
 
