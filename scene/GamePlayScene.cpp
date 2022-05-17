@@ -257,8 +257,11 @@ void GamePlayScene::Update()
 	}
 	Effect::DeletLocus(locus, camera, p_pos);
 	
-
-	ConvertScene::besideOut(ConvertFlag);
+	if (ConvertFlag == false)
+	{
+		ConvertScene::besideOut(ConvertFlag);
+	}
+	
 	if (ConvertFlag == true)
 	{
 		Count::CountDown3(countFinishFlag);
@@ -279,14 +282,14 @@ void GamePlayScene::Update()
 
 		if (flag == false)
 		{
-			ConvertScene::InitializeIn();
+			//ConvertScene::InitializeIn();
 			flag = true;
 		}
 	}
 
 	if (finishFinishFlag == true)
 	{
-		//ConvertScene::besideIn(endConvertflag);
+		ConvertScene::besideIn(endConvertflag);
 
 		if (endConvertflag == true)
 		{

@@ -27,14 +27,14 @@ void ConvertScene::Finalize()
 void ConvertScene::besideOut(bool &flag)
 {
 	XMFLOAT2 pos = switchIn->GetPosition();
-	if (pos.x <= 1280)
-	{
-		switchIn->SetPosition({ pos.x + 10.0f, pos.y });
-	}
-	pos = switchOut->GetPosition();
 	if (pos.x >= -1280)
 	{
-		switchOut->SetPosition({ pos.x - 10.0f, pos.y });
+		switchIn->SetPosition({ pos.x - 10.0f, pos.y });
+	}
+	pos = switchOut->GetPosition();
+	if (pos.x <= 1280)
+	{
+		switchOut->SetPosition({ pos.x + 10.0f, pos.y });
 	}
 	else
 	{

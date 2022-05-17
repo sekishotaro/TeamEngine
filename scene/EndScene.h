@@ -45,6 +45,9 @@ public:
 	/// ゲームシーン用
 	/// </summary>
 	Sprite* spriteBG = nullptr;
+
+	//シーン移行完了確認フラグ
+	bool ConvertFlag = false;
 };
 
 
