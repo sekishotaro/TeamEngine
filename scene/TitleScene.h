@@ -171,6 +171,9 @@ public:
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
+	Sprite *spriteBG = nullptr;
+	bool startFlag = false;
+	bool Convertflag = false;
 	Sprite* spriteBG = nullptr;
 
 	Sprite* titleText = nullptr;

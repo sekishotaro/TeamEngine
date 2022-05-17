@@ -127,6 +127,17 @@ public:
 	Model* shockWaveModel = nullptr; //波動
 	bool shockFlag = false; //波動が開始される
 
+	//シーン移行完了確認フラグ
+	bool ConvertFlag = false;
+	//ゲーム開始カウント完了確認フラグ
+	bool countFinishFlag = false;
+	//ゲーム終了後エンドシーンに移行確認用フラグ
+	bool finishFinishFlag = false;
+	//エンドシーンにコンバートする
+	bool endConvertflag = false;
+	//ゲームプレイ可能フラグ
+	bool PlayPossibleflag = false;
+
 	//スプライト
 	Sprite* spriteBG = nullptr; //背景
 	Sprite* miniplayer = nullptr; //プレイヤー(ミニマップ)
@@ -139,6 +150,7 @@ public:
 	Sprite* texLevel = nullptr;
 	Sprite* spriteTimer = nullptr;
 	Sprite* minimap = nullptr; //ステージ(ミニマップ)
+	Sprite* finish = nullptr; //終わり
 
 	//UI・スコアetc
 	int score; //スコア

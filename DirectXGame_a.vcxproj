@@ -245,11 +245,11 @@
     <ClCompile Include="collision\CollisionPrimitive.cpp" />
     <ClCompile Include="2d\DebugText.cpp" />
     <ClCompile Include="base\DirectXCommon.cpp" />
+    <ClCompile Include="Count.cpp" />
+    <ClCompile Include="scene\ConvertScene.cpp" />
     <ClCompile Include="Ease.cpp" />
-    <ClCompile Include="Effect\Effect.cpp">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(projectDir)Effect;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(projectDir)Effect;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ClCompile>
+    <ClCompile Include="Effect.cpp" />
+    <ClCompile Include="scene\EndScene.cpp" />
     <ClCompile Include="Framework.cpp" />
     <ClCompile Include="Mapchip.cpp" />
     <ClCompile Include="scene\GamePlayScene.cpp" />
@@ -271,8 +271,11 @@
     <ClInclude Include="3d\FbxObject3d.h" />
     <ClInclude Include="Angle.h" />
     <ClInclude Include="camera\Camera.h" />
+    <ClInclude Include="Count.h" />
+    <ClInclude Include="scene\ConvertScene.h" />
     <ClInclude Include="Ease.h" />
-    <ClInclude Include="Effect\Effect.h" />
+    <ClInclude Include="Effect.h" />
+    <ClInclude Include="scene\EndScene.h" />
     <ClInclude Include="Input\InputList.h" />
     <ClInclude Include="Mapchip.h" />
     <ClInclude Include="safe_delete.h" />
