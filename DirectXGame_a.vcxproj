@@ -254,6 +254,7 @@
     </ClCompile>
     <ClCompile Include="Framework.cpp" />
     <ClCompile Include="Mapchip.cpp" />
+    <ClCompile Include="scene\EndScene.cpp" />
     <ClCompile Include="scene\GamePlayScene.cpp" />
     <ClCompile Include="Input\Input.cpp" />
     <ClCompile Include="main.cpp" />
@@ -274,9 +275,9 @@
     <ClInclude Include="Angle.h" />
     <ClInclude Include="camera\Camera.h" />
     <ClInclude Include="Count.h" />
+    <ClInclude Include="Effect\Effect.h" />
     <ClInclude Include="scene\ConvertScene.h" />
     <ClInclude Include="Ease.h" />
-    <ClInclude Include="Effect.h" />
     <ClInclude Include="scene\EndScene.h" />
     <ClInclude Include="Input\InputList.h" />
     <ClInclude Include="Mapchip.h" />
