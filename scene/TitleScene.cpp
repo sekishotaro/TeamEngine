@@ -654,7 +654,7 @@ void TitleScene::Draw()
 	Sprite::PreDraw(cmdList);
 	// 背景スプライト描画
 	spriteBG->Draw();
-	titleText->Draw();
+	//titleText->Draw();
 
 	/// <summary>
 	/// ここに背景スプライトの描画処理を追加できる

@@ -56,7 +56,6 @@ void GamePlayScene::Initialize()
 	Sprite::LoadTexture(16, L"Resources/level.png");
 	Sprite::LoadTexture(17, L"Resources/koron.png");
 	Sprite::LoadTexture(18, L"Resources/timer.png");
-	Sprite::LoadTexture(20, L"Resources/shock.png");
 	Sprite::LoadTexture(21, L"Resources/switch_In.png");
 	Sprite::LoadTexture(22, L"Resources/switch_Out.png");
 	Sprite::LoadTexture(23, L"Resources/Finish.png");
@@ -109,12 +108,6 @@ void GamePlayScene::Initialize()
 	//シーン切り替え
 	ConvertScene::InitializeOut();
 	Count::Initilize();
-
-	//エフェクト
-	shock = Object3d::Create();
-	shockWaveModel = Model::LoadFromOBJ("shock");
-	shock->SetModel(shockWaveModel);
-	shock->SetRotation({ 270.0f, 0.0f, 0.0f });
 
 	//マップチップ用のCSV読み込み
 	//(map, "Resource/scv/なんたら.csv")で追加可能
@@ -317,6 +310,8 @@ void GamePlayScene::Update()
 		//シーン切り替え
 		SceneManager::GetInstance()->ChangeScene("TITLE");
 	}
+	spriteTime[2]->ChangeTex((int)lastTime % 10);
+	spriteTime[1]->ChangeTex((int)lastTime / 10);
 
 	int second;
 	second = (int)lastTime % 60;
@@ -634,7 +629,6 @@ void GamePlayScene::Update()
 						{
 							//エフェクト
 							shockFlag = true;
-							shock->SetPosition(enemy_data[i].e_pos);
 
 
 							enemy_data[i].is_alive = false;
@@ -825,8 +819,6 @@ void GamePlayScene::Update()
 	{
 		locus[i]->Update();
 	}
-	shock->Update();
-
 
 	//プレイヤーの座標（X：Y)
 	/*DebugText::GetInstance()->Print(50, 35 * 3, 2, "player_x:%f", p_pos.x);
@@ -898,12 +890,6 @@ void GamePlayScene::Draw()
 		locus[i]->Draw();
 	}
 
-	if (shockFlag == true)
-	{
-		shock->Draw();
-	}
-	
-
 	//FBX3Dオブジェクトの描画
 	//fbxObject1->Draw(cmdList);
 	// 3Dオブジェクト描画後処理
@@ -933,8 +919,6 @@ void GamePlayScene::Draw()
 	spriteScore[1]->Draw();
 	spriteScore[2]->Draw();
 	spriteScore[3]->Draw();
-
-	shockWave->Draw();
 
 	//シーン移行
 	ConvertScene::Draw();

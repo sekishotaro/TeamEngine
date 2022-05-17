@@ -217,4 +217,6 @@ public:
 	/// <param name="positivePoint">‘ÎÛ‚Ì³‚Ì’¸“_</param>
 	/// <returns>¬”Û</returns>
 	bool inFrustum(XMFLOAT3 playerPosition, XMFLOAT3 negativePoint, XMFLOAT3 positivePoint);
+	bool startFlag = false;
+	bool Convertflag = false;
 };

@@ -248,10 +248,13 @@
     <ClCompile Include="Count.cpp" />
     <ClCompile Include="scene\ConvertScene.cpp" />
     <ClCompile Include="Ease.cpp" />
-    <ClCompile Include="Effect.cpp" />
-    <ClCompile Include="scene\EndScene.cpp" />
+    <ClCompile Include="Effect\Effect.cpp">
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(projectDir)Effect;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(projectDir)Effect;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
     <ClCompile Include="Framework.cpp" />
     <ClCompile Include="Mapchip.cpp" />
+    <ClCompile Include="scene\EndScene.cpp" />
     <ClCompile Include="scene\GamePlayScene.cpp" />
     <ClCompile Include="Input\Input.cpp" />
     <ClCompile Include="main.cpp" />
@@ -272,6 +275,7 @@
     <ClInclude Include="Angle.h" />
     <ClInclude Include="camera\Camera.h" />
     <ClInclude Include="Count.h" />
+    <ClInclude Include="Effect\Effect.h" />
     <ClInclude Include="scene\ConvertScene.h" />
     <ClInclude Include="Ease.h" />
     <ClInclude Include="Effect.h" />
