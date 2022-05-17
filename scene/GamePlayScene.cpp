@@ -267,8 +267,6 @@ void GamePlayScene::Update()
 		{
 			PlayPossibleflag = true;
 		}
-	Effect::ShockWaveUpdate(shock, p_pos, &shockFlag);
-
 	}
 
 	//プレイタイムカウントダウン
@@ -299,19 +297,7 @@ void GamePlayScene::Update()
 	}
 	spriteTime[2]->ChangeTex((int)lastTime % 10);
 	spriteTime[1]->ChangeTex((int)lastTime / 10);
-	if (lastTime > 0)
-	{
-		lastTime -= 0.02;
-	}
 	spriteTime[0]->ChangeTex((int)lastTime / 60);
-
-	if (lastTime <= 0)
-	{
-		//シーン切り替え
-		SceneManager::GetInstance()->ChangeScene("TITLE");
-	}
-	spriteTime[2]->ChangeTex((int)lastTime % 10);
-	spriteTime[1]->ChangeTex((int)lastTime / 10);
 
 	int second;
 	second = (int)lastTime % 60;

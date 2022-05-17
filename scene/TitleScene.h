@@ -174,7 +174,6 @@ public:
 	Sprite *spriteBG = nullptr;
 	bool startFlag = false;
 	bool Convertflag = false;
-	Sprite* spriteBG = nullptr;
 
 	Sprite* titleText = nullptr;
 
@@ -217,6 +216,4 @@ public:
 	/// <param name="positivePoint">ëŒè€ÇÃê≥ÇÃí∏ì_</param>
 	/// <returns>ê¨î€</returns>
 	bool inFrustum(XMFLOAT3 playerPosition, XMFLOAT3 negativePoint, XMFLOAT3 positivePoint);
-	bool startFlag = false;
-	bool Convertflag = false;
 };
