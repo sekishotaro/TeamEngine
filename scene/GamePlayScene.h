@@ -87,7 +87,7 @@ public:
 	/// </summary>
 	
 	//定数
-	static const int EnemySpawnMax = 40;
+	static const int EnemySpawnMax = 42;
 	//マップチップ1つの大きさ
 	const float LAND_SCALE = 5.0f;
 
@@ -239,6 +239,8 @@ public:
 	/// <param name="playerPosition">自機</param>
 	/// <param name="negativePoint">対象の負の頂点</param>
 	/// <param name="positivePoint">対象の正の頂点</param>
+	/// <param name="width">横幅</param>
+	/// <param name="height">縦幅</param>
 	/// <returns>成否</returns>
-	bool inFrustum(XMFLOAT3 playerPosition, XMFLOAT3 negativePoint, XMFLOAT3 positivePoint);
+	bool inFrustum(XMFLOAT3 playerPosition, XMFLOAT3 negativePoint, XMFLOAT3 positivePoint, const float width, const float height);
 };

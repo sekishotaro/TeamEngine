@@ -137,7 +137,7 @@ void GamePlayScene::Initialize()
 	shake_time = 0;
 	shake_x = 0;
 	shake_y = 0;
-	lastTime = 10.0f;
+	lastTime = 60.0f * 2;
 	level = 1;
 	enemySpawn = 1;
 	gravity = 0.125f;
@@ -658,7 +658,10 @@ void GamePlayScene::Update()
 							{
 								shake_power = catch_count;
 							}
-							catch_count = 0;
+							if (catch_count > 0)
+							{
+								catch_count--;
+							}
 							score++;
 							int hundredScore = 0;
 							hundredScore = score / 10;
@@ -697,7 +700,19 @@ void GamePlayScene::Update()
 								{
 									XMFLOAT3 positivePos = { enemy_data[j].e_pos.x + enemy_data[j].e_x_radius, enemy_data[j].e_pos.y + enemy_data[j].e_y_radius, 0 };
 									XMFLOAT3 negativePos = { enemy_data[j].e_pos.x - enemy_data[j].e_x_radius, enemy_data[j].e_pos.y - enemy_data[j].e_y_radius, 0 };
-									if (inFrustum(p_pos, negativePos, positivePos) == true)
+									float w_width = 1280;
+									float w_height = 720;
+									if (catch_count < 6 && catch_count >= 3)
+									{
+										w_width /= 2;
+										w_height /= 2;
+									}
+									else
+									{
+										w_width = 0;
+										w_height = 0;
+									}
+									if (inFrustum(enemy_data[i].e_pos, negativePos, positivePos, w_width, w_height) == true)
 									{
 										enemy[j]->SetModel(model);
 										enemy_data[j].can_catch = true;
@@ -779,10 +794,6 @@ void GamePlayScene::Update()
 	//エネミー更新
 	for (int i = 0; i < enemySpawn; i++)
 	{
-		if (i == 40)
-		{
-			int dh = 0;
-		}
 		//落下の最大値を超えたら
 		if (enemy_data[i].e_pos.y < -300.0f)
 		{
@@ -856,7 +867,7 @@ void GamePlayScene::Update()
 	{
 		XMFLOAT3 camera_pos = p_pos;
 		camera->SetTarget(camera_pos);
-		camera_pos.z -= 55.0f + (2.5 * level);
+		camera_pos.z -= 55.0f + (1.0 * level);
 		camera->SetEye(camera_pos);
 		camera->Update();
 		c_pos = camera->GetTarget();
@@ -873,7 +884,7 @@ void GamePlayScene::Update()
 			camera_pos.y += p_pos.y - old_p_pos.y;
 		}
 		camera->SetTarget(camera_pos);
-		camera_pos.z -= 55.0f + (2.5 * level);
+		camera_pos.z -= 55.0f + (1.0 * level);
 		camera->SetEye(camera_pos);
 		camera->Update();
 		c_pos = camera->GetTarget();
@@ -909,7 +920,7 @@ void GamePlayScene::Update()
 	{
 		level = 3;
 	} 
-else if (score > 2)
+	else if (score > 2)
 	{
 		level = 2;
 	}
@@ -1271,15 +1282,15 @@ float GamePlayScene::GetObjectLength(XMFLOAT3 pos_a, XMFLOAT3 pos_b)
 	return sqrtf(len.x * len.x + len.y * len.y + len.z * len.z);
 }
 
-bool GamePlayScene::inFrustum(XMFLOAT3 playerPosition, XMFLOAT3 negativePoint, XMFLOAT3 positivePoint)
+bool GamePlayScene::inFrustum(XMFLOAT3 playerPosition, XMFLOAT3 negativePoint, XMFLOAT3 positivePoint, const float width, const float height)
 {
 	//長さの単位
 	float IdentityLen = 720 / 2 * sqrtf(3);
 
 	//ターゲットの横と縦の長さ
 	float eyeLen = camera->GetTarget().z - camera->GetEye().z;
-	float targetWidth = 1280 * eyeLen / IdentityLen;
-	float targetHeight = 720 * eyeLen / IdentityLen;
+	float targetWidth = width * eyeLen / IdentityLen;
+	float targetHeight = height * eyeLen / IdentityLen;
 
 	//横
 	if (positivePoint.x <= targetWidth / 2 + playerPosition.x && -targetWidth / 2 + playerPosition.x <= positivePoint.x)
