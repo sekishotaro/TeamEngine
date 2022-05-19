@@ -65,10 +65,11 @@ void GamePlayScene::Initialize()
 	Sprite::LoadTexture(25, L"Resources/Count2.png");
 	Sprite::LoadTexture(26, L"Resources/Count3.png");
 	Sprite::LoadTexture(27, L"Resources/CountStart.png");
+	Sprite::LoadTexture(28, L"Resources/LevelUp.png");
 	// 背景スプライト生成
 	spriteBG = Sprite::Create(11, { 0.0f,0.0f });
 	spriteBG->SetSize({ WinApp::window_width * 1.2, WinApp::window_height * 1.2 });
-	texScore = Sprite::Create(15, { WinApp::window_width - 372, 0 });
+	texScore = Sprite::Create(15, { WinApp::window_width - 532, 0 });
 	texLevel = Sprite::Create(16, { WinApp::window_width - 100, WinApp::window_height - 64 });
 
 	//スプライト生成
@@ -86,7 +87,13 @@ void GamePlayScene::Initialize()
 	spriteScore[1] = Sprite::Create(0, { WinApp::window_width - 32,0 });
 	spriteScore[2] = Sprite::Create(0, { WinApp::window_width - 64,0 });
 	spriteScore[3] = Sprite::Create(0, { WinApp::window_width - 96,0 });
+	spriteScore[4] = Sprite::Create(0, { WinApp::window_width - 128,0 });
+	spriteScore[5] = Sprite::Create(0, { WinApp::window_width - 160,0 });
+	spriteScore[6] = Sprite::Create(0, { WinApp::window_width - 192,0 });
+	spriteScore[7] = Sprite::Create(0, { WinApp::window_width - 224,0 });
+	spriteScore[8] = Sprite::Create(0, { WinApp::window_width - 256,0 });
 	spriteLevel[1] = Sprite::Create(0, { WinApp::window_width - 32 ,WinApp::window_height - 64 });
+	spriteLevelUp = Sprite::Create(28, { WinApp::window_width / 2 - 80 ,WinApp::window_height / 2 - 80 });
 	finish = Sprite::Create(23, { 0.0f ,0.0f });
 
 
@@ -137,8 +144,9 @@ void GamePlayScene::Initialize()
 	shake_time = 0;
 	shake_x = 0;
 	shake_y = 0;
-	lastTime = 10.0f;
+	lastTime = 160.0f;
 	level = 1;
+	levelTime = 0;
 	enemySpawn = 1;
 	gravity = 0.125f;
 	catch_count = 0;
@@ -176,6 +184,8 @@ void GamePlayScene::Initialize()
 		Rope[i]->SetModel(rope);
 		Rope[i]->SetScale({ 0.3, 5, 0.3 });
 		Rope[i]->Update();
+
+		scoreTick[i] = 0;
 	}
 
 	//ロープ
@@ -191,6 +201,7 @@ void GamePlayScene::Initialize()
 	is_jump = false;
 	p_add = 0;
 	p_down = 0;
+	oldLevel = 0;
 	is_attack = false;
 	is_air = false;
 	is_damage = false;
@@ -265,6 +276,8 @@ void GamePlayScene::Update()
 		shockFlag = true;
 		Effect::DeletLocus(locus, camera, p_pos);
 	}
+
+	oldLevel = level;
 	
 	Effect::DeletLocus(locus, camera, p_pos);
 	
@@ -636,12 +649,14 @@ void GamePlayScene::Update()
 						{
 							CircularMotion(enemy_data[i].e_pos, p_pos, GetObjectLength(p_pos, enemy_data[i].e_pos), enemy_data[i].angle, -15);
 							Effect::CreateLocus( locus, *locusModel, enemy_data[i].e_pos);
+							scoreTick[i]++;
 						}
 						//左向きなら
 						else if (player->GetRotation().y == 270)
 						{
 							CircularMotion(enemy_data[i].e_pos, p_pos, GetObjectLength(p_pos, enemy_data[i].e_pos), enemy_data[i].angle, 15);
 							Effect::CreateLocus(locus, *locusModel, enemy_data[i].e_pos);
+							scoreTick[i]++;
 						}
 						//マップの当たり判定
 						if (MapCollide(enemy_data[i].e_pos, enemy_data[i].e_x_radius, enemy_data[i].e_y_radius, enemy_data[i].e_down, 0, enemy_data[i].old_e_pos))
@@ -659,12 +674,30 @@ void GamePlayScene::Update()
 								shake_power = catch_count;
 							}
 							catch_count = 0;
-							score++;
+							score += scoreTick[i];
 							int hundredScore = 0;
+							int hundredScore2 = 0;
+							int hundredScore3 = 0;
+							int hundredScore4 = 0;
+							int hundredScore5 = 0;
+							int hundredScore6 = 0;
+							int hundredScore7 = 0;
 							hundredScore = score / 10;
+							hundredScore2 = score / 100;
+							hundredScore3 = score / 1000;
+							hundredScore4 = score / 10000;
+							hundredScore5 = score / 100000;
+							hundredScore6 = score / 1000000;
+							hundredScore7 = score / 10000000;
 							spriteScore[1]->ChangeTex((int)score % 10);
 							spriteScore[2]->ChangeTex((int)hundredScore % 10);
-							spriteScore[3]->ChangeTex((int)score / 100);
+							spriteScore[3]->ChangeTex((int)hundredScore2 % 10);
+							spriteScore[4]->ChangeTex((int)hundredScore3 % 10);
+							spriteScore[5]->ChangeTex((int)hundredScore4 % 10);
+							spriteScore[6]->ChangeTex((int)hundredScore5 % 10);
+							spriteScore[7]->ChangeTex((int)hundredScore6 % 10);
+							spriteScore[8]->ChangeTex((int)hundredScore7 % 10);
+							scoreTick[i] = 0;
 							if (enemy_data[i].is_add == true)
 							{
 								max_rope += 0.5f;
@@ -889,29 +922,39 @@ void GamePlayScene::Update()
 		camera->Update();
 	}
 
-	if (score > 50)
+	if (score > 1000)
 	{
 		level = 7;
 	} 
-	else if (score > 30)
+	else if (score > 750)
 	{
 		level = 6;
 	} 
-	else if (score > 20)
+	else if (score > 500)
 	{
 		level = 5;
 	} 
-	else if (score > 10)
+	else if (score > 200)
 	{
 		level = 4;
 	}
-	else if (score > 5)
+	else if (score > 70)
 	{
 		level = 3;
 	} 
-else if (score > 2)
+	else if (score > 30)
 	{
 		level = 2;
+	}
+
+	if (level > oldLevel)
+	{
+		levelTime = 1;
+	}
+
+	if (levelTime >= 0)
+	{
+		levelTime -= 0.01;
 	}
 	enemySpawn = level * 6;
 	spriteLevel[1]->ChangeTex((int)level % 10);
@@ -1021,6 +1064,16 @@ void GamePlayScene::Draw()
 	spriteScore[1]->Draw();
 	spriteScore[2]->Draw();
 	spriteScore[3]->Draw();
+	spriteScore[4]->Draw();
+	spriteScore[5]->Draw();
+	spriteScore[6]->Draw();
+	spriteScore[7]->Draw();
+	spriteScore[8]->Draw();
+
+	if (levelTime > 0 && 0.35 > levelTime || levelTime > 0.70 && 1 > levelTime)
+	{
+		spriteLevelUp->Draw();
+	}
 
 	//シーン移行
 	ConvertScene::Draw();

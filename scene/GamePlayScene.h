@@ -87,7 +87,7 @@ public:
 	/// </summary>
 	
 	//定数
-	static const int EnemySpawnMax = 40;
+	static const int EnemySpawnMax = 50;
 	//マップチップ1つの大きさ
 	const float LAND_SCALE = 5.0f;
 
@@ -151,11 +151,13 @@ public:
 	Sprite* texScore = nullptr;
 	Sprite* texLevel = nullptr;
 	Sprite* spriteTimer = nullptr;
+	Sprite* spriteLevelUp = nullptr;
 	Sprite* minimap = nullptr; //ステージ(ミニマップ)
 	Sprite* finish = nullptr; //終わり
 
 	//UI・スコアetc
 	int score; //スコア
+	int scoreTick[EnemySpawnMax]; //スコア計算用
 	bool is_shake; //シェイクフラグ
 	int shake_power; //シェイクの強さ
 	int shake_time; //シェイク時間
@@ -163,8 +165,10 @@ public:
 	float shake_y; //y軸の幅
 	float lastTime; //残り時間
 	int level;
+	int oldLevel;
 	int enemySpawn; //敵の数
 	int catch_count; //何個持ってるか
+	float levelTime;
 
 
 	//汎用変数
