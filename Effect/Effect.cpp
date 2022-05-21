@@ -1,11 +1,17 @@
 #include "Effect.h"
 #include "Vector3.h"
+#include <safe_delete.h>
 
 const float Effect::maxTime = 100.0f;
 std::vector<float> Effect::nowTime;
 std::vector<float> Effect::timeRate;
 std::vector<XMFLOAT3> Effect::generationPos;
 Sprite* Effect::timeLimitSprite;
+std::vector<float> Effect::delayTime;
+std::vector<bool> Effect::processStartFlag;
+std::vector<std::unique_ptr<Object3d>> Effect::destroyEffect;
+Model *Effect::destroyEffectModel;
+
 
 void Effect::CreateLocus(std::vector<std::unique_ptr<Object3d>> &object, Model &model, XMFLOAT3 &pos)
 {
@@ -18,10 +24,24 @@ void Effect::CreateLocus(std::vector<std::unique_ptr<Object3d>> &object, Model &
 
 	nowTime.emplace_back(0.0f);							//時間生成
 	timeRate.emplace_back(0.0f);						//時間の割合生成
+	delayTime.emplace_back(2.0f);						//遅延の生成
+	processStartFlag.emplace_back(false);				//処理開始
 }
 
 void Effect::DeletLocus(std::vector<std::unique_ptr<Object3d>> &object, Camera *camera, XMFLOAT3& player)
 {
+	for (int i = 0; i < object.size(); i++)
+	{
+		if (delayTime[i] > 0)
+		{
+			delayTime[i] -= 0.1f;
+		}
+		else
+		{
+			processStartFlag[i] = true;
+		}
+	}
+
 	//最終地点の検索
 	//長さの単位
 	float IdentityLen = 720 / 2 * sqrtf(3);
@@ -33,37 +53,29 @@ void Effect::DeletLocus(std::vector<std::unique_ptr<Object3d>> &object, Camera *
 
 	//時間管理
 
-	if (object.size() != nowTime.size())
-	{
-		//assert(0);
-	}
-
 	for (int i = 0; i < object.size(); i++)
 	{
-		nowTime[i] += 2.0f;
-
-		timeRate[i] = min(nowTime[i] / maxTime, 1.0f);
-	}
-
-
-
-
-	for (int i = 0; i < object.size(); i++)
-	{
-		XMFLOAT3 position = lerp(generationPos[i], endPos, timeRate[i]);
-
-		object[i]->SetPosition(position);
-
-		if (object[i]->GetPosition().x >= endPos.x && object[i]->GetPosition().y >= endPos.y)
+		if (processStartFlag[i] == true)
 		{
-		
-			object.erase(object.begin() + i);				//対象の削除
-			generationPos.erase(generationPos.begin() + i);	//対象の初期値の削除
-			nowTime.erase(nowTime.begin() + i);				//対象の時間情報の削除
-			timeRate.erase(timeRate.begin() + i);			//対象の時間割合情報の削除
+			nowTime[i] += 2.0f;
+
+			timeRate[i] = min(nowTime[i] / maxTime, 1.0f);
+
+			XMFLOAT3 position = lerp(generationPos[i], endPos, timeRate[i]);
+
+			object[i]->SetPosition(position);
+
+			if (object[i]->GetPosition().x >= endPos.x && object[i]->GetPosition().y >= endPos.y)
+			{
+				object.erase(object.begin() + i);				//対象の削除
+				generationPos.erase(generationPos.begin() + i);	//対象の初期値の削除
+				nowTime.erase(nowTime.begin() + i);				//対象の時間情報の削除
+				timeRate.erase(timeRate.begin() + i);			//対象の時間割合情報の削除
+				delayTime.erase(delayTime.begin() + i);
+				processStartFlag.erase(processStartFlag.begin() + i);
+			}
 		}
 	}
-	
 }
  
 void Effect::ShockWaveUpdate(std::unique_ptr<Object3d>& object, XMFLOAT3& generationPoint, bool *flag)
@@ -89,7 +101,16 @@ void Effect::Initialize()
 {
 	Sprite::LoadTexture(19, L"Resources/timeLimit.png");
 	timeLimitSprite = Sprite::Create(19, {0.0f, 0.0f});
+
+	destroyEffectModel = Model::LoadFromOBJ("sphere");
 }
+
+void Effect::Finalize()
+{
+	safe_delete(timeLimitSprite);
+	safe_delete(destroyEffectModel);
+}
+
 
 void Effect::TimeLimitEffectDraw(float& time)
 {
@@ -103,5 +124,34 @@ void Effect::TimeLimitEffectDraw(float& time)
 		{
 			timeLimitSprite->Draw();
 		}
+	}
+}
+
+void Effect::DestroyEffectCreate(int enemyNum, const XMFLOAT3& pos)
+{
+	for (int i = 0; i < enemyNum; i++)
+	{
+		destroyEffect.emplace_back(Object3d::Create());				//生成
+		destroyEffect.back()->SetModel(destroyEffectModel);		//モデルセット
+		XMFLOAT3 position = { pos.x + i, pos.y, pos.z };
+		destroyEffect.back()->SetPosition(position);						//位置セット
+		destroyEffect.back()->SetRotation({ 0.0f, 90.0f, 0.0f });	//角度セット
+		destroyEffect.back()->SetScale({ 1.0f, 1.0f, 1.0f });		//サイズセット
+	}
+}
+
+void Effect::DestroyEffectUpdate()
+{
+	for (int i = 0; i < destroyEffect.size(); i++)
+	{
+		destroyEffect[i]->Update();
+	}
+}
+
+void Effect::DestroyEffectDraw()
+{
+	for (int i = 0; i < destroyEffect.size(); i++)
+	{
+		destroyEffect[i]->Draw();
 	}
 }

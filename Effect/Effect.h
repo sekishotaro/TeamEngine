@@ -4,6 +4,7 @@
 #include <vector>
 #include "Camera.h"
 #include "Sprite.h"
+#include "Object3d.h"
 
 class Effect
 {
@@ -47,18 +48,41 @@ public:
 	static void Initialize();
 
 	/// <summary>
+	/// 解放
+	/// </summary>
+	static void Finalize();
+
+	/// <summary>
 	/// タイムリミット
 	/// </summary>
 	/// <param name="time">時間</param>
 	static void TimeLimitEffectDraw(float& time);
 
+	/// <summary>
+	/// 撃破時エフェクト生成
+	/// </summary>
+	/// <param name="enemyNum"></param>
+	/// <param name="pos"></param>
+	static void DestroyEffectCreate(int enemyNum, const XMFLOAT3 &pos);
+
+	static void DestroyEffectUpdate();
+
+	/// <summary>
+	/// 撃破時エフェクトの描画
+	/// </summary>
+	static void DestroyEffectDraw();
 
 public:
-	static const float maxTime; //最大値
-	static std::vector<float> nowTime; //今
-	static std::vector<float> timeRate; //軌跡の何%時間が進んだか(率)
+	static const float maxTime;					//最大値
+	static std::vector<float> nowTime;			//今
+	static std::vector<float> timeRate;			//軌跡の何%時間が進んだか(率)
 	static std::vector<XMFLOAT3> generationPos; //初期生成場所
-
+	static std::vector<float> delayTime;		//遅延処理
+	static std::vector <bool> processStartFlag;
 	static Sprite* timeLimitSprite;
+
+	static Model* destroyEffectModel;
+	static std::vector<std::unique_ptr<Object3d>> destroyEffect;
 };
 
+ 

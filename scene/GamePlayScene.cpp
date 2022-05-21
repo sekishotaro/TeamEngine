@@ -113,12 +113,9 @@ void GamePlayScene::Initialize()
 	//エフェクト
 	Effect::Initialize();
 
-
 	//マップチップ用のCSV読み込み
 	//(map, "Resource/scv/なんたら.csv")で追加可能
 	Mapchip::CsvToVector(map, "Resources/csv/demo.csv");//mapNum=0
-
-
 	//マップチップ用のオブジェクトの初期化
 	for (int y = 0; y < map_max_y; y++)
 	{
@@ -262,11 +259,11 @@ void GamePlayScene::Update()
 	//実験用エフェクト置き場
 	if (input->PushKey(DIK_M))  //衝撃波開始
 	{
-		shockFlag = true;
-		Effect::DeletLocus(locus, camera, p_pos);
+		const int mono = 10;
+		Effect::DestroyEffectCreate( mono ,p_pos);
 	}
 	
-	Effect::DeletLocus(locus, camera, p_pos);
+	
 	
 	//シーン切り替え
 	if (ConvertFlag == false)
@@ -685,12 +682,13 @@ void GamePlayScene::Update()
 							}
 							for (int j = 0; j < enemySpawn; j++)
 							{
-								if (enemy_data[j].is_catch == true)
+								if (enemy_data[j].is_catch == true && i != j)
 								{
 									is_attack = true;
 									break;
 								}
 							}
+							
 							for (int j = 0; j < enemySpawn; j++)
 							{
 								if (i != j)
@@ -774,6 +772,12 @@ void GamePlayScene::Update()
 				minienemy[i]->SetPosition({ enemy_data[i].e_pos.x , -enemy_data[i].e_pos.y + 78 });
 			}
 		}
+	}
+
+	if (is_attack == false)
+	{
+
+		Effect::DeletLocus(locus, camera, p_pos); //エフェクト削除処理
 	}
 
 	//エネミー更新
@@ -927,6 +931,7 @@ else if (score > 2)
 	{
 		locus[i]->Update();
 	}
+	Effect::DestroyEffectUpdate();
 
 	//fbxObject1->AnimationFlag = true;
 	//fbxObject1->AnimationNum = 0;
@@ -989,7 +994,9 @@ void GamePlayScene::Draw()
 	{
 		locus[i]->Draw();
 	}
-
+	
+	Effect::DestroyEffectDraw();
+	
 	//FBX3Dオブジェクトの描画
 	//fbxObject1->Draw(cmdList);
 	// 3Dオブジェクト描画後処理
@@ -999,7 +1006,6 @@ void GamePlayScene::Draw()
 	Sprite::PreDraw(cmdList);
 
 	Effect::TimeLimitEffectDraw(lastTime);
-	
 	//ミニマップの描画
 	minimap->Draw();
 	for (int i = 0; i < enemySpawn; i++)
