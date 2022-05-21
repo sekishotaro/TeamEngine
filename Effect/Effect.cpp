@@ -9,9 +9,14 @@ std::vector<XMFLOAT3> Effect::generationPos;
 Sprite* Effect::timeLimitSprite;
 std::vector<float> Effect::delayTime;
 std::vector<bool> Effect::processStartFlag;
+
 std::vector<std::unique_ptr<Object3d>> Effect::destroyEffect;
 Model *Effect::destroyEffectModel;
-
+std::vector<float> Effect::nowTimeD;
+std::vector<float> Effect::timeRateD;
+std::vector<float> Effect::delayTimeD;
+std::vector<bool> Effect::processStartFlagD;
+std::vector<XMFLOAT3> Effect::generationPosD;
 
 void Effect::CreateLocus(std::vector<std::unique_ptr<Object3d>> &object, Model &model, XMFLOAT3 &pos)
 {
@@ -102,7 +107,7 @@ void Effect::Initialize()
 	Sprite::LoadTexture(19, L"Resources/timeLimit.png");
 	timeLimitSprite = Sprite::Create(19, {0.0f, 0.0f});
 
-	destroyEffectModel = Model::LoadFromOBJ("sphere");
+	destroyEffectModel = Model::LoadFromOBJ("locus");
 }
 
 void Effect::Finalize()
@@ -132,21 +137,73 @@ void Effect::DestroyEffectCreate(int enemyNum, const XMFLOAT3& pos)
 	for (int i = 0; i < enemyNum; i++)
 	{
 		destroyEffect.emplace_back(Object3d::Create());				//生成
+		nowTimeD.emplace_back(0.0f);
 		destroyEffect.back()->SetModel(destroyEffectModel);		//モデルセット
-		XMFLOAT3 position = { pos.x + i, pos.y, pos.z };
+		float nx = (rand() % 7);
+		float ny = (rand() % 7);
+		XMFLOAT3 position = { pos.x - 3 + nx, pos.y - 3 + ny, pos.z };
 		destroyEffect.back()->SetPosition(position);						//位置セット
+		generationPosD.emplace_back(position);
 		destroyEffect.back()->SetRotation({ 0.0f, 90.0f, 0.0f });	//角度セット
-		destroyEffect.back()->SetScale({ 1.0f, 1.0f, 1.0f });		//サイズセット
+		destroyEffect.back()->SetScale({ 0.5f, 0.5f, 0.5f });		//サイズセット
+
+		nowTimeD.emplace_back(0.0f);							//時間生成
+		timeRateD.emplace_back(0.0f);						//時間の割合生成
+		delayTimeD.emplace_back(2.0f);						//遅延の生成
+		processStartFlagD.emplace_back(false);				//処理開始
 	}
 }
 
-void Effect::DestroyEffectUpdate()
+void Effect::DestroyEffectUpdate(Camera* camera, XMFLOAT3& player)
 {
 	for (int i = 0; i < destroyEffect.size(); i++)
 	{
+		if (delayTimeD[i] > 0)
+		{
+			delayTimeD[i] -= 0.1f;
+		}
+		else
+		{
+			processStartFlagD[i] = true;
+		}
+	}
+
+	//最終地点の検索
+	//長さの単位
+	float IdentityLen = 720 / 2 * sqrtf(3);
+	//ターゲットの横と縦の長さ
+	float eyeLen = camera->GetTarget().z - camera->GetEye().z;
+	float targetWidth = 1280 * eyeLen / IdentityLen;
+	float targetHeight = 720 * eyeLen / IdentityLen;
+	XMFLOAT3 endPos = { player.x + targetWidth / 2 - 5.0f, player.y + targetHeight / 2 - 5.0f, 0 };
+
+	
+	for (int i = 0; i < destroyEffect.size(); i++)
+	{
 		destroyEffect[i]->Update();
+
+		if (processStartFlagD[i] == true)
+		{
+			nowTimeD[i] += 2.0f;
+
+			timeRateD[i] = min(nowTimeD[i] / maxTime, 1.0f);
+
+			XMFLOAT3 position = lerp(generationPosD[i], endPos, timeRateD[i]);
+
+			destroyEffect[i]->SetPosition(position);
+			if (destroyEffect[i]->GetPosition().x >= endPos.x && destroyEffect[i]->GetPosition().y >= endPos.y)
+			{
+				destroyEffect.erase(destroyEffect.begin() + i);				//対象の削除
+				generationPosD.erase(generationPosD.begin() + i);	//対象の初期値の削除
+				nowTimeD.erase(nowTimeD.begin() + i);				//対象の時間情報の削除
+				timeRateD.erase(timeRateD.begin() + i);			//対象の時間割合情報の削除
+				delayTimeD.erase(delayTimeD.begin() + i);
+				processStartFlagD.erase(processStartFlagD.begin() + i);
+			}
+		}
 	}
 }
+
 
 void Effect::DestroyEffectDraw()
 {

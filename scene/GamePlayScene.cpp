@@ -646,7 +646,6 @@ void GamePlayScene::Update()
 							//エフェクト
 							shockFlag = true;
 
-
 							enemy_data[i].is_alive = false;
 							enemy_data[i].is_catch = false;
 							is_attack = false;
@@ -776,7 +775,6 @@ void GamePlayScene::Update()
 
 	if (is_attack == false)
 	{
-
 		Effect::DeletLocus(locus, camera, p_pos); //エフェクト削除処理
 	}
 
@@ -931,7 +929,7 @@ else if (score > 2)
 	{
 		locus[i]->Update();
 	}
-	Effect::DestroyEffectUpdate();
+	Effect::DestroyEffectUpdate(camera, p_pos);
 
 	//fbxObject1->AnimationFlag = true;
 	//fbxObject1->AnimationNum = 0;

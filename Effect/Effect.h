@@ -65,12 +65,18 @@ public:
 	/// <param name="pos"></param>
 	static void DestroyEffectCreate(int enemyNum, const XMFLOAT3 &pos);
 
-	static void DestroyEffectUpdate();
+	/// <summary>
+	/// 撃破時エフェクト更新
+	/// </summary>
+	/// <param name="camera">カメラ</param>
+	/// <param name="player">自機の位置</param>
+	static void DestroyEffectUpdate(Camera* camera, XMFLOAT3& player);
 
 	/// <summary>
 	/// 撃破時エフェクトの描画
 	/// </summary>
 	static void DestroyEffectDraw();
+
 
 public:
 	static const float maxTime;					//最大値
@@ -83,6 +89,11 @@ public:
 
 	static Model* destroyEffectModel;
 	static std::vector<std::unique_ptr<Object3d>> destroyEffect;
+	static std::vector<float> nowTimeD;
+	static std::vector<float> timeRateD;
+	static std::vector<float> delayTimeD;
+	static std::vector <bool> processStartFlagD;
+	static std::vector<XMFLOAT3> generationPosD;
 };
 
  
