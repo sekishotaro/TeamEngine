@@ -941,6 +941,15 @@ void GamePlayScene::Update()
 	else if (score > 70)
 	{
 		level = 3;
+		Mapchip::SetChipNum(11, 7, map[0]);
+		Mapchip::SetChipNum(12, 7, map[0]);
+		Mapchip::SetChipNum(13, 7, map[0]);
+		Mapchip::SetChipNum(11, 6, map[0]);
+		Mapchip::SetChipNum(12, 6, map[0]);
+		Mapchip::SetChipNum(13, 6, map[0]);
+		Mapchip::SetChipNum(23, 1, map[0]);
+		Mapchip::SetChipNum(24, 1, map[0]);
+		Mapchip::SetChipNum(25, 1, map[0]);
 	} 
 	else if (score > 30)
 	{
@@ -955,6 +964,13 @@ void GamePlayScene::Update()
 	if (levelTime >= 0)
 	{
 		levelTime -= 0.01;
+	}
+	for (int y = 0; y < map_max_y; y++)
+	{
+		for (int x = 0; x < map_max_x; x++)
+		{
+			objBlock[y][x]->Update();
+		}
 	}
 	enemySpawn = level * 6;
 	spriteLevel[1]->ChangeTex((int)level % 10);
