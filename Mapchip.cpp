@@ -42,7 +42,7 @@ void Mapchip::SetChipNum(int x, int y, std::vector<int> map)
 	const int X = x / map_size;
 	const int Y = y / map_size;
 
-	if (map[Y * map_max_x + X] = 0)
+	if (map[Y * map_max_x + X] == 0)
 	{
 		map[Y * map_max_x + X] = 1;
 	}

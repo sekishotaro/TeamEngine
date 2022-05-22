@@ -941,7 +941,7 @@ void GamePlayScene::Update()
 	else if (score > 70)
 	{
 		level = 3;
-		Mapchip::SetChipNum(11, 7, map[0]);
+		Mapchip::SetChipNum(0, 0, map[0]);
 		Mapchip::SetChipNum(12, 7, map[0]);
 		Mapchip::SetChipNum(13, 7, map[0]);
 		Mapchip::SetChipNum(11, 6, map[0]);
