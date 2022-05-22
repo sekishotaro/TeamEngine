@@ -59,6 +59,8 @@ public: //サブクラス
 		float turn_move; //裏返るときの動き
 
 		int escape_time; //逃げるまでの時間
+
+		float max_rope; //ロープの最大
 	};
 
 public: 
@@ -196,9 +198,6 @@ public:
 	//エネミー
 	EnemyData enemy_data[EnemySpawnMax]; //エネミーのデータ
 
-	//ロープ
-	float max_rope; //ロープの最大
-
 	XMFLOAT3 c_pos; //カメラの主点座標
 	bool camera_chase; //カメラが動き出すまでの時間
 
@@ -225,7 +224,7 @@ public:
 	/// <summary>
 	/// ロープの角度変更
 	/// <summary>
-	void RopeMove(XMFLOAT3& pos, const int num);
+	void RopeMove(const int num);
 
 	//オブジェクト同士の当たり判定
 	bool CollisionObject(const std::unique_ptr<Object3d>& object_a, const std::unique_ptr<Object3d>& object_b);
