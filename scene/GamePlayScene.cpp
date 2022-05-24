@@ -418,7 +418,7 @@ void GamePlayScene::Update()
 			p_pos.x += damage_move;
 			damage_time++;
 
-			if (damage_time > 20)
+			if (damage_time > 10)
 			{
 				is_damage = false;
 				damage_move = 0;
@@ -531,12 +531,12 @@ void GamePlayScene::Update()
 						//左
 						if (p_pos.x < enemy_data[i].e_pos.x)
 						{
-							damage_move = -0.4f;
+							damage_move = -0.6f;
 						}
 						//右
 						else
 						{
-							damage_move = 0.4f;
+							damage_move = 0.6f;
 						}
 					}
 				}
@@ -657,27 +657,32 @@ void GamePlayScene::Update()
 						{
 							//エフェクト
 							shockFlag = true;
-
 							enemy_data[i].is_alive = false;
 							enemy_data[i].is_catch = false;
-							is_attack = false;
 							is_shake = true;
+							is_attack = false;
 							if (shake_power == 0)
 							{
 								shake_power = catch_count;
+							}
 							if (catch_count > 0)
 							{
 								catch_count--;
-
-								if (!(catch_count == 0))
+							}
+							for (int j = 0; j < enemySpawn; j++)
+							{
+								if (i != j && enemy_data[j].is_alive == true && enemy_data[j].is_catch == true)
 								{
 									is_attack = true;
+									break;
 								}
 							}
+							if (is_attack == false)
+							{
+								catch_count = 0;
+							}
 							score++;
-							catch_count = 0;
 							score += scoreTick[i];
-							score++;
 							int hundredScore = 0;
 							int hundredScore2 = 0;
 							int hundredScore3 = 0;
@@ -713,21 +718,22 @@ void GamePlayScene::Update()
 							for (int j = 0; j < enemySpawn; j++)
 							{
 								if (i != j && enemy_data[j].is_alive == true && enemy_data[j].enemy_type == TWICE && enemy_data[j].can_catch == false)
+								{
 									XMFLOAT3 positivePos = { enemy_data[j].e_pos.x + enemy_data[j].e_x_radius, enemy_data[j].e_pos.y + enemy_data[j].e_y_radius, 0 };
 									XMFLOAT3 negativePos = { enemy_data[j].e_pos.x - enemy_data[j].e_x_radius, enemy_data[j].e_pos.y - enemy_data[j].e_y_radius, 0 };
-									float w_width = 1280;
-									float w_height = 720;
-									if (catch_count < 6 && catch_count >= 3)
+									float w_width = 210;
+									float w_height = 120;
+									if (catch_count >= 6)
 									{
-										w_width /= 2;
-										w_height /= 2;
-									} else if (catch_count < 3)
+										w_width *= 6;
+										w_height *= 6;
+									}
+									else if (catch_count < 6)
 									{
-										w_width = 0;
-										w_height = 0;
+										w_width *= catch_count;
+										w_height *= catch_count;
 									}
 									if (inFrustum(enemy_data[i].e_pos, negativePos, positivePos, w_width, w_height) == true)
-									if (inFrustum(p_pos, negativePos, positivePos) == true)
 									{
 										enemy[j]->SetModel(model);
 										enemy_data[j].can_catch = true;
@@ -736,6 +742,7 @@ void GamePlayScene::Update()
 								}
 							}
 						}
+
 					} 
 					else
 					{
@@ -743,7 +750,11 @@ void GamePlayScene::Update()
 						{
 							enemy_data[i].escape_time = 0;
 							enemy_data[i].is_catch = false;
-							enemy_data[i].is_alive = false;
+							if (enemy_data[i].enemy_type == TWICE)
+							{
+								enemy[i]->SetModel(model);
+								enemy_data[i].can_catch = true;
+							}
 						}
 						else
 						{
@@ -955,7 +966,6 @@ void GamePlayScene::Update()
 		}
 	} 
 	else if (score > 30)
-else if (score > 2)
 	{
 		level = 2;
 	}
