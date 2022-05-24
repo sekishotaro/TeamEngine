@@ -658,6 +658,11 @@ void GamePlayScene::Update()
 							if (catch_count > 0)
 							{
 								catch_count--;
+
+								if (!(catch_count == 0))
+								{
+									is_attack = true;
+								}
 							}
 							score++;
 							int hundredScore = 0;
@@ -676,15 +681,7 @@ void GamePlayScene::Update()
 							}
 							for (int j = 0; j < enemySpawn; j++)
 							{
-								if (enemy_data[j].is_catch == true)
-								{
-									is_attack = true;
-									break;
-								}
-							}
-							for (int j = 0; j < enemySpawn; j++)
-							{
-								if (i != j)
+								if (i != j && enemy_data[j].is_alive == true && enemy_data[j].enemy_type == TWICE && enemy_data[j].can_catch == false)
 								{
 									XMFLOAT3 positivePos = { enemy_data[j].e_pos.x + enemy_data[j].e_x_radius, enemy_data[j].e_pos.y + enemy_data[j].e_y_radius, 0 };
 									XMFLOAT3 negativePos = { enemy_data[j].e_pos.x - enemy_data[j].e_x_radius, enemy_data[j].e_pos.y - enemy_data[j].e_y_radius, 0 };
@@ -694,8 +691,7 @@ void GamePlayScene::Update()
 									{
 										w_width /= 2;
 										w_height /= 2;
-									}
-									else
+									} else if (catch_count < 3)
 									{
 										w_width = 0;
 										w_height = 0;
