@@ -171,6 +171,7 @@ public:
 	int enemySpawn; //“G‚Ì”
 	int catch_count; //‰½ŒÂ‚Á‚Ä‚é‚©
 	float levelTime;
+	int score_list[3] = { 0, 0, 0 };
 
 
 	//”Ä—p•Ï”
@@ -246,4 +247,8 @@ public:
 	/// <param name="height">c•</param>
 	/// <returns>¬”Û</returns>
 	bool inFrustum(XMFLOAT3 playerPosition, XMFLOAT3 negativePoint, XMFLOAT3 positivePoint, const float width, const float height);
+
+	void LoadText();
+
+	void writeText();
 };

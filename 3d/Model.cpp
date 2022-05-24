@@ -58,7 +58,7 @@ void Model::LoadFormOBJInternal(const std::string &modelname)
 		//1行分の文字列をストリームに変換して解析しやすくする
 		std::istringstream line_stream(line);
 
-		//半角スペースゥ切りで行の先頭文字列を取得
+		//半角スペース区切りで行の先頭文字列を取得
 		string key;
 		getline(line_stream, key, ' ');
 

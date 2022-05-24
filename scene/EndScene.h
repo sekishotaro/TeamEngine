@@ -48,6 +48,11 @@ public:
 
 	//シーン移行完了確認フラグ
 	bool ConvertFlag = false;
+
+	//スコア
+	int score_list[3] = { 0, 0, 0 };
+
+	void LoadText();
 };
 
 

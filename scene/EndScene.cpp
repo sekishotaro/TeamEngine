@@ -5,6 +5,10 @@
 #include "DebugText.h"
 #include "DirectXCommon.h"
 #include "ConvertScene.h"
+#include <fstream> 
+#include <string>
+#include <iostream>
+#include <sstream>
 
 void EndScene::Initialize()
 {
@@ -80,4 +84,33 @@ void EndScene::Draw()
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
+}
+
+void EndScene::LoadText()
+{
+	std::ifstream file;
+	const std::string fileName = "Resources/ScoreList.txt";
+	file.open(fileName);
+	if (file.fail())
+	{
+		assert(0);
+	}
+
+	//1行ずつ読み込む
+	std::string line;
+	while (getline(file, line))
+	{
+		//1行分の文字列をストリームに変換して解析しやすくする
+		std::istringstream line_stream(line);
+
+		//半角スペースゥ切りで行の先頭文字列を取得
+		std::string key;
+		getline(line_stream, key, ' ');
+
+		line_stream >> score_list[0];
+		line_stream >> score_list[1];
+		line_stream >> score_list[2];
+	}
+	//ファイルを閉じる
+	file.close();
 }

@@ -15,6 +15,7 @@
 #include "FbxObject3d.h"
 #include "ConvertScene.h"
 #include "Count.h"
+#include <fstream> 
 
 using namespace DirectX;
 
@@ -287,6 +288,7 @@ void GamePlayScene::Update()
 		if (countFinishFlag == true)
 		{
 			PlayPossibleflag = true;
+			LoadText();
 		}
 	}
 
@@ -312,6 +314,8 @@ void GamePlayScene::Update()
 
 		if (endConvertflag == true)
 		{
+
+
 			//シーン切り替え
 			SceneManager::GetInstance()->ChangeScene("END");
 		}
@@ -1098,11 +1102,6 @@ void GamePlayScene::Update()
 	enemySpawn = level * 6;
 	spriteLevel[1]->ChangeTex((int)level % 10);
 
-	if (input->TriggerKey(DIK_RETURN) || input->TriggerButton(Start))
-	{
-		//BGM止める
-		//Audio::GetInstance()->SoundStop("zaza.wav");
-	}
 
 	//エフェクト
 	for (int i = 0; i < locus.size(); i++)
@@ -1514,4 +1513,68 @@ bool GamePlayScene::inFrustum(XMFLOAT3 playerPosition, XMFLOAT3 negativePoint, X
 	}
 
 	return false;
+}
+
+void GamePlayScene::writeText()
+{
+	for (int i = 0; i < 3; i++)
+	{
+		if (score >= score_list[i])
+		{
+			if (i + 1 < 3)
+			{
+				score_list[i + 1] = score_list[i];
+			}
+			if (i + 2 < 3)
+			{
+				score_list[i + 2] = score_list[i];
+			}
+			score_list[i] = score;
+			break;
+		}
+	}
+
+	std::string first = std::to_string(score_list[0]);
+	std::string second = std::to_string(score_list[1]);
+	std::string third = std::to_string(score_list[2]);
+
+	std::ofstream ofs("Resources/ScoreList.txt");
+	if (!ofs)
+	{
+		assert(0);
+	}
+	else
+	{
+		ofs << " " << first << " " << second << " " << third;
+	}
+	ofs.close();
+}
+
+void GamePlayScene::LoadText()
+{
+	std::ifstream file;
+	const std::string fileName = "Resources/ScoreList.txt";
+	file.open(fileName);
+	if (file.fail())
+	{
+		assert(0);
+	}
+
+	//1行ずつ読み込む
+	std::string line;
+	while (getline(file, line))
+	{
+		//1行分の文字列をストリームに変換して解析しやすくする
+		std::istringstream line_stream(line);
+
+		//半角スペースゥ切りで行の先頭文字列を取得
+		std::string key;
+		getline(line_stream, key, ' ');
+
+		line_stream >> score_list[0];
+		line_stream >> score_list[1];
+		line_stream >> score_list[2];
+	}
+	//ファイルを閉じる
+	file.close();
 }
