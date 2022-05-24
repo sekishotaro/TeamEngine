@@ -156,7 +156,7 @@ public:
 	Sprite* finish = nullptr; //終わり
 
 	//UI・スコアetc
-	int score; //スコア
+	static int score; //スコア
 	int scoreTick[EnemySpawnMax]; //スコア計算用
 	bool is_shake; //シェイクフラグ
 	int shake_power; //シェイクの強さ
@@ -245,4 +245,6 @@ public:
 	/// <param name="positivePoint">対象の正の頂点</param>
 	/// <returns>成否</returns>
 	bool inFrustum(XMFLOAT3 playerPosition, XMFLOAT3 negativePoint, XMFLOAT3 positivePoint);
+
+	static int GetScoreNum() { return score; }
 };

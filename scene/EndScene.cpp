@@ -5,6 +5,7 @@
 #include "DebugText.h"
 #include "DirectXCommon.h"
 #include "ConvertScene.h"
+#include "GamePlayScene.h"
 
 void EndScene::Initialize()
 {
@@ -25,6 +26,7 @@ void EndScene::Finalize()
 void EndScene::Update()
 {
 	// ゲームシーンの毎フレーム処理
+	score = GamePlayScene::GetScoreNum();
 
 	Input* input = Input::GetInstance();
 
@@ -37,6 +39,7 @@ void EndScene::Update()
 	}
 
 	DebugText::GetInstance()->Print(50, 20, 3, "fafafafafafafafafafafafafafaf");
+	DebugText::GetInstance()->Print(50, 20 * 5, 3, "%d", score);
 }
 
 void EndScene::Draw()

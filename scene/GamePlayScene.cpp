@@ -18,6 +18,8 @@
 
 using namespace DirectX;
 
+int GamePlayScene::score;
+
 void GamePlayScene::Initialize()
 {
 	Audio::GetInstance()->LoadWave("futta-dream.wav");
@@ -141,7 +143,7 @@ void GamePlayScene::Initialize()
 	shake_time = 0;
 	shake_x = 0;
 	shake_y = 0;
-	lastTime = 160.0f;
+	lastTime = 20.0f;
 	level = 1;
 	levelTime = 0;
 	enemySpawn = 1;

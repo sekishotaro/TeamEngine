@@ -48,6 +48,11 @@ public:
 
 	//シーン移行完了確認フラグ
 	bool ConvertFlag = false;
+
+	/// <summary>
+	/// スコア
+	/// </summary>
+	int score;
 };
 
 
