@@ -66,6 +66,10 @@ void Effect::DeletLocus(std::vector<std::unique_ptr<Object3d>> &object, Camera *
 
 			timeRate[i] = min(nowTime[i] / maxTime, 1.0f);
 
+			XMFLOAT3 rot = object[i]->GetRotation();
+			rot.x += 1.0f;
+			object[i]->SetRotation(rot);
+
 			XMFLOAT3 position = lerp(generationPos[i], endPos, timeRate[i]);
 
 			object[i]->SetPosition(position);
@@ -186,6 +190,10 @@ void Effect::DestroyEffectUpdate(Camera* camera, XMFLOAT3& player)
 		{
 			nowTimeD[i] += 2.0f;
 
+			XMFLOAT3 rot = destroyEffect[i]->GetRotation();
+			rot.x += 5.0f;
+			destroyEffect[i]->SetRotation(rot);
+
 			timeRateD[i] = min(nowTimeD[i] / maxTime, 1.0f);
 
 			XMFLOAT3 position = lerp(generationPosD[i], endPos, timeRateD[i]);
@@ -210,5 +218,17 @@ void Effect::DestroyEffectDraw()
 	for (int i = 0; i < destroyEffect.size(); i++)
 	{
 		destroyEffect[i]->Draw();
+	}
+}
+
+void Effect::flashingEffectDraw(const std::unique_ptr<Object3d>& object, float flashingTime)
+{	
+	if ( (int)flashingTime % 2 == 0)
+	{
+		object->Draw();
+	}
+	else
+	{
+		//object->Draw();
 	}
 }
