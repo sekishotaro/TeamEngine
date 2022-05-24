@@ -77,6 +77,12 @@ public:
 	/// </summary>
 	static void DestroyEffectDraw();
 
+	/// <summary>
+	/// 点滅オブジェクト
+	/// </summary>
+	/// <param name="object"></param>
+	static void flashingEffectDraw(const std::unique_ptr<Object3d>& object, float flashingTime);
+
 
 public:
 	static const float maxTime;					//最大値

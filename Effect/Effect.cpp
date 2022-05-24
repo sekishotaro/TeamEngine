@@ -220,3 +220,15 @@ void Effect::DestroyEffectDraw()
 		destroyEffect[i]->Draw();
 	}
 }
+
+void Effect::flashingEffectDraw(const std::unique_ptr<Object3d>& object, float flashingTime)
+{	
+	if ( (int)flashingTime % 2 == 0)
+	{
+		object->Draw();
+	}
+	else
+	{
+		//object->Draw();
+	}
+}
