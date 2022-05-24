@@ -433,9 +433,9 @@ void GamePlayScene::Update()
 		//無敵時間
 		if (is_invincible == true)
 		{
-			invincible_time++;
+			invincible_time += 0.166;
 
-			if (invincible_time > 60)
+			if (invincible_time > 6)
 			{
 				invincible_time = 0;
 				is_invincible = false;
@@ -1148,7 +1148,19 @@ void GamePlayScene::Draw()
 			Rope[i]->Draw();
 		}
 	}
-	player->Draw();
+
+	if (is_damage == true)
+	{
+		Effect::flashingEffectDraw(player, damage_time);
+	}
+	else if (is_invincible == true)
+	{
+		Effect::flashingEffectDraw(player, invincible_time);
+	}
+	else
+	{
+		player->Draw();
+	}
 
 	//マップチップの描画
 	for (int y = 0; y < map_max_y; y++)

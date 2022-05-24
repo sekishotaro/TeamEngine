@@ -195,7 +195,7 @@ public:
 
 	//無敵時間
 	bool is_invincible; //無敵状態
-	int invincible_time; //無敵時間
+	float invincible_time; //無敵時間
 
 	//エネミー
 	EnemyData enemy_data[EnemySpawnMax]; //エネミーのデータ
