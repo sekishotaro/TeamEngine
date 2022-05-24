@@ -122,7 +122,7 @@ void TitleScene::Initialize()
 	player->Update();
 
 
-	Sprite::LoadTexture(1, L"Resources/Titlebackground.png");
+	//Sprite::LoadTexture(1, L"Resources/Titlebackground.png");
 	Sprite::LoadTexture(21, L"Resources/switch_In.png");
 	Sprite::LoadTexture(22, L"Resources/switch_Out.png");
 	// 背景スプライト生成
@@ -654,7 +654,7 @@ void TitleScene::Draw()
 	Sprite::PreDraw(cmdList);
 	// 背景スプライト描画
 	spriteBG->Draw();
-	//titleText->Draw();
+	titleText->Draw();
 
 	/// <summary>
 	/// ここに背景スプライトの描画処理を追加できる

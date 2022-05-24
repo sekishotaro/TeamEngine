@@ -16,6 +16,6 @@ public:
 
 	static int GetChipNum(int x, int y, std::vector<int> map);
 
-	static void SetChipNum(int x, int y, std::vector<int> map, int changeNum);
+	static void SetChipNum(int x, int y, std::vector<int> map);
 };
 

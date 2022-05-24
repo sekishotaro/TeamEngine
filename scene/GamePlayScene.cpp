@@ -65,10 +65,11 @@ void GamePlayScene::Initialize()
 	Sprite::LoadTexture(25, L"Resources/Count2.png");
 	Sprite::LoadTexture(26, L"Resources/Count3.png");
 	Sprite::LoadTexture(27, L"Resources/CountStart.png");
+	Sprite::LoadTexture(28, L"Resources/LevelUp.png");
 	// 背景スプライト生成
 	spriteBG = Sprite::Create(11, { 0.0f,0.0f });
 	spriteBG->SetSize({ WinApp::window_width * 1.2, WinApp::window_height * 1.2 });
-	texScore = Sprite::Create(15, { WinApp::window_width - 372, 0 });
+	texScore = Sprite::Create(15, { WinApp::window_width - 532, 0 });
 	texLevel = Sprite::Create(16, { WinApp::window_width - 100, WinApp::window_height - 64 });
 
 	//スプライト生成
@@ -86,7 +87,13 @@ void GamePlayScene::Initialize()
 	spriteScore[1] = Sprite::Create(0, { WinApp::window_width - 32,0 });
 	spriteScore[2] = Sprite::Create(0, { WinApp::window_width - 64,0 });
 	spriteScore[3] = Sprite::Create(0, { WinApp::window_width - 96,0 });
+	spriteScore[4] = Sprite::Create(0, { WinApp::window_width - 128,0 });
+	spriteScore[5] = Sprite::Create(0, { WinApp::window_width - 160,0 });
+	spriteScore[6] = Sprite::Create(0, { WinApp::window_width - 192,0 });
+	spriteScore[7] = Sprite::Create(0, { WinApp::window_width - 224,0 });
+	spriteScore[8] = Sprite::Create(0, { WinApp::window_width - 256,0 });
 	spriteLevel[1] = Sprite::Create(0, { WinApp::window_width - 32 ,WinApp::window_height - 64 });
+	spriteLevelUp = Sprite::Create(28, { WinApp::window_width / 2 - 80 ,WinApp::window_height / 2 - 80 });
 	finish = Sprite::Create(23, { 0.0f ,0.0f });
 
 
@@ -113,12 +120,9 @@ void GamePlayScene::Initialize()
 	//エフェクト
 	Effect::Initialize();
 
-
 	//マップチップ用のCSV読み込み
 	//(map, "Resource/scv/なんたら.csv")で追加可能
 	Mapchip::CsvToVector(map, "Resources/csv/demo.csv");//mapNum=0
-
-
 	//マップチップ用のオブジェクトの初期化
 	for (int y = 0; y < map_max_y; y++)
 	{
@@ -137,8 +141,9 @@ void GamePlayScene::Initialize()
 	shake_time = 0;
 	shake_x = 0;
 	shake_y = 0;
-	lastTime = 60.0f * 2;
+	lastTime = 160.0f;
 	level = 1;
+	levelTime = 0;
 	enemySpawn = 1;
 	gravity = 0.125f;
 	catch_count = 0;
@@ -177,6 +182,8 @@ void GamePlayScene::Initialize()
 		Rope[i]->SetModel(rope);
 		Rope[i]->SetScale({ 0.3, 5, 0.3 });
 		Rope[i]->Update();
+
+		scoreTick[i] = 0;
 	}
 
 	//プレイヤー
@@ -189,6 +196,7 @@ void GamePlayScene::Initialize()
 	is_jump = false;
 	p_add = 0;
 	p_down = 0;
+	oldLevel = 0;
 	is_attack = false;
 	is_air = false;
 	is_damage = false;
@@ -260,11 +268,11 @@ void GamePlayScene::Update()
 	//実験用エフェクト置き場
 	if (input->PushKey(DIK_M))  //衝撃波開始
 	{
-		shockFlag = true;
-		Effect::DeletLocus(locus, camera, p_pos);
+		const int mono = 10;
+		Effect::DestroyEffectCreate( mono ,p_pos);
 	}
-	
-	Effect::DeletLocus(locus, camera, p_pos);
+
+	oldLevel = level;
 	
 	//シーン切り替え
 	if (ConvertFlag == false)
@@ -635,18 +643,21 @@ void GamePlayScene::Update()
 						{
 							CircularMotion(enemy_data[i].e_pos, p_pos, GetObjectLength(p_pos, enemy_data[i].e_pos), enemy_data[i].angle, -15);
 							Effect::CreateLocus( locus, *locusModel, enemy_data[i].e_pos);
+							scoreTick[i]++;
 						}
 						//左向きなら
 						else if (player->GetRotation().y == 270)
 						{
 							CircularMotion(enemy_data[i].e_pos, p_pos, GetObjectLength(p_pos, enemy_data[i].e_pos), enemy_data[i].angle, 15);
 							Effect::CreateLocus(locus, *locusModel, enemy_data[i].e_pos);
+							scoreTick[i]++;
 						}
 						//マップの当たり判定
 						if (MapCollide(enemy_data[i].e_pos, enemy_data[i].e_x_radius, enemy_data[i].e_y_radius, enemy_data[i].e_down, 0, enemy_data[i].old_e_pos))
 						{
 							//エフェクト
 							shockFlag = true;
+
 							enemy_data[i].is_alive = false;
 							enemy_data[i].is_catch = false;
 							is_attack = false;
@@ -654,7 +665,6 @@ void GamePlayScene::Update()
 							if (shake_power == 0)
 							{
 								shake_power = catch_count;
-							}
 							if (catch_count > 0)
 							{
 								catch_count--;
@@ -665,11 +675,32 @@ void GamePlayScene::Update()
 								}
 							}
 							score++;
+							catch_count = 0;
+							score += scoreTick[i];
+							score++;
 							int hundredScore = 0;
+							int hundredScore2 = 0;
+							int hundredScore3 = 0;
+							int hundredScore4 = 0;
+							int hundredScore5 = 0;
+							int hundredScore6 = 0;
+							int hundredScore7 = 0;
 							hundredScore = score / 10;
+							hundredScore2 = score / 100;
+							hundredScore3 = score / 1000;
+							hundredScore4 = score / 10000;
+							hundredScore5 = score / 100000;
+							hundredScore6 = score / 1000000;
+							hundredScore7 = score / 10000000;
 							spriteScore[1]->ChangeTex((int)score % 10);
 							spriteScore[2]->ChangeTex((int)hundredScore % 10);
-							spriteScore[3]->ChangeTex((int)score / 100);
+							spriteScore[3]->ChangeTex((int)hundredScore2 % 10);
+							spriteScore[4]->ChangeTex((int)hundredScore3 % 10);
+							spriteScore[5]->ChangeTex((int)hundredScore4 % 10);
+							spriteScore[6]->ChangeTex((int)hundredScore5 % 10);
+							spriteScore[7]->ChangeTex((int)hundredScore6 % 10);
+							spriteScore[8]->ChangeTex((int)hundredScore7 % 10);
+							scoreTick[i] = 0;
 							if (enemy_data[i].is_add == true)
 							{
 								enemy_data[i].max_rope += 0.5f;
@@ -682,7 +713,6 @@ void GamePlayScene::Update()
 							for (int j = 0; j < enemySpawn; j++)
 							{
 								if (i != j && enemy_data[j].is_alive == true && enemy_data[j].enemy_type == TWICE && enemy_data[j].can_catch == false)
-								{
 									XMFLOAT3 positivePos = { enemy_data[j].e_pos.x + enemy_data[j].e_x_radius, enemy_data[j].e_pos.y + enemy_data[j].e_y_radius, 0 };
 									XMFLOAT3 negativePos = { enemy_data[j].e_pos.x - enemy_data[j].e_x_radius, enemy_data[j].e_pos.y - enemy_data[j].e_y_radius, 0 };
 									float w_width = 1280;
@@ -697,6 +727,7 @@ void GamePlayScene::Update()
 										w_height = 0;
 									}
 									if (inFrustum(enemy_data[i].e_pos, negativePos, positivePos, w_width, w_height) == true)
+									if (inFrustum(p_pos, negativePos, positivePos) == true)
 									{
 										enemy[j]->SetModel(model);
 										enemy_data[j].can_catch = true;
@@ -773,6 +804,11 @@ void GamePlayScene::Update()
 				minienemy[i]->SetPosition({ enemy_data[i].e_pos.x , -enemy_data[i].e_pos.y + 78 });
 			}
 		}
+	}
+
+	if (is_attack == false)
+	{
+		Effect::DeletLocus(locus, camera, p_pos); //エフェクト削除処理
 	}
 
 	//エネミー更新
@@ -883,29 +919,55 @@ void GamePlayScene::Update()
 		camera->Update();
 	}
 
-	if (score > 50)
+	if (score > 1000)
 	{
 		level = 7;
 	} 
-	else if (score > 30)
+	else if (score > 750)
 	{
 		level = 6;
 	} 
-	else if (score > 20)
+	else if (score > 500)
 	{
 		level = 5;
 	} 
-	else if (score > 10)
+	else if (score > 200)
 	{
 		level = 4;
 	}
-	else if (score > 5)
+	else if (score > 70)
 	{
-		level = 3;
+		Mapchip::SetChipNum(0, 0, map[0]);
+		Mapchip::SetChipNum(12, 7, map[0]);
+		Mapchip::SetChipNum(13, 7, map[0]);
+		Mapchip::SetChipNum(11, 6, map[0]);
+		Mapchip::SetChipNum(12, 6, map[0]);
+		Mapchip::SetChipNum(13, 6, map[0]);
+		Mapchip::SetChipNum(23, 1, map[0]);
+		Mapchip::SetChipNum(24, 1, map[0]);
+		Mapchip::SetChipNum(25, 1, map[0]);
+		for (int y = 0; y < map_max_y; y++)
+		{
+			for (int x = 0; x < map_max_x; x++)
+			{
+				objBlock[y][x]->Update();
+			}
+		}
 	} 
-	else if (score > 2)
+	else if (score > 30)
+else if (score > 2)
 	{
 		level = 2;
+	}
+
+	if (level > oldLevel)
+	{
+		levelTime = 1;
+	}
+
+	if (levelTime >= 0)
+	{
+		levelTime -= 0.01;
 	}
 	enemySpawn = level * 6;
 	spriteLevel[1]->ChangeTex((int)level % 10);
@@ -921,6 +983,7 @@ void GamePlayScene::Update()
 	{
 		locus[i]->Update();
 	}
+	Effect::DestroyEffectUpdate(camera, p_pos);
 
 	//fbxObject1->AnimationFlag = true;
 	//fbxObject1->AnimationNum = 0;
@@ -983,7 +1046,9 @@ void GamePlayScene::Draw()
 	{
 		locus[i]->Draw();
 	}
-
+	
+	Effect::DestroyEffectDraw();
+	
 	//FBX3Dオブジェクトの描画
 	//fbxObject1->Draw(cmdList);
 	// 3Dオブジェクト描画後処理
@@ -993,7 +1058,6 @@ void GamePlayScene::Draw()
 	Sprite::PreDraw(cmdList);
 
 	Effect::TimeLimitEffectDraw(lastTime);
-	
 	//ミニマップの描画
 	minimap->Draw();
 	for (int i = 0; i < enemySpawn; i++)
@@ -1015,6 +1079,16 @@ void GamePlayScene::Draw()
 	spriteScore[1]->Draw();
 	spriteScore[2]->Draw();
 	spriteScore[3]->Draw();
+	spriteScore[4]->Draw();
+	spriteScore[5]->Draw();
+	spriteScore[6]->Draw();
+	spriteScore[7]->Draw();
+	spriteScore[8]->Draw();
+
+	if (levelTime > 0 && 0.35 > levelTime || levelTime > 0.70 && 1 > levelTime)
+	{
+		spriteLevelUp->Draw();
+	}
 
 	//シーン移行
 	ConvertScene::Draw();
