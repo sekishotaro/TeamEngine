@@ -276,9 +276,6 @@ void GamePlayScene::Update()
 
 	oldLevel = level;
 	
-	Effect::DeletLocus(locus, camera, p_pos);
-	
-	
 	//ƒV[ƒ“Ø‚è‘Ö‚¦
 	if (ConvertFlag == false)
 	{
