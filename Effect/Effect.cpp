@@ -66,6 +66,10 @@ void Effect::DeletLocus(std::vector<std::unique_ptr<Object3d>> &object, Camera *
 
 			timeRate[i] = min(nowTime[i] / maxTime, 1.0f);
 
+			XMFLOAT3 rot = object[i]->GetRotation();
+			rot.x += 1.0f;
+			object[i]->SetRotation(rot);
+
 			XMFLOAT3 position = lerp(generationPos[i], endPos, timeRate[i]);
 
 			object[i]->SetPosition(position);
@@ -185,6 +189,10 @@ void Effect::DestroyEffectUpdate(Camera* camera, XMFLOAT3& player)
 		if (processStartFlagD[i] == true)
 		{
 			nowTimeD[i] += 2.0f;
+
+			XMFLOAT3 rot = destroyEffect[i]->GetRotation();
+			rot.x += 5.0f;
+			destroyEffect[i]->SetRotation(rot);
 
 			timeRateD[i] = min(nowTimeD[i] / maxTime, 1.0f);
 
