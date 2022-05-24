@@ -20,6 +20,7 @@ void TitleScene::Initialize()
 	// テクスチャ読み込み
 	Sprite::LoadTexture(1, L"Resources/haikei.png");
 	Sprite::LoadTexture(2, L"Resources/titletext.png");
+	Sprite::LoadTexture(3, L"Resources/gameStart.png");
 
 	// オブジェクト生成
 	model = Model::LoadFromOBJ("weakEnemy");
@@ -127,6 +128,9 @@ void TitleScene::Initialize()
 	Sprite::LoadTexture(22, L"Resources/switch_Out.png");
 	// 背景スプライト生成
 	spriteBG = Sprite::Create(1, { 0.0f,0.0f });
+	text = Sprite::Create(3, { 0.0f,0.0f });
+	text->SetPosition({ 0,30 });
+	text->SetSize({ 294,50 });
 
 	ConvertScene::InitializeIn();
 	spriteBG->SetSize({ WinApp::window_width * 1.2, WinApp::window_height * 1.2 });
@@ -655,7 +659,7 @@ void TitleScene::Draw()
 	// 背景スプライト描画
 	spriteBG->Draw();
 	titleText->Draw();
-
+	text->Draw();
 	/// <summary>
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
