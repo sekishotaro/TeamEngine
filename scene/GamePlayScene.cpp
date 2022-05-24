@@ -123,6 +123,7 @@ void GamePlayScene::Initialize()
 	//マップチップ用のCSV読み込み
 	//(map, "Resource/scv/なんたら.csv")で追加可能
 	Mapchip::CsvToVector(map, "Resources/csv/demo.csv");//mapNum=0
+
 	//マップチップ用のオブジェクトの初期化
 	for (int y = 0; y < map_max_y; y++)
 	{
@@ -941,22 +942,6 @@ void GamePlayScene::Update()
 	else if (score > 70)
 	{
 		level = 3;
-		Mapchip::SetChipNum(0, 0, map[0]);
-		Mapchip::SetChipNum(12, 7, map[0]);
-		Mapchip::SetChipNum(13, 7, map[0]);
-		Mapchip::SetChipNum(11, 6, map[0]);
-		Mapchip::SetChipNum(12, 6, map[0]);
-		Mapchip::SetChipNum(13, 6, map[0]);
-		Mapchip::SetChipNum(23, 1, map[0]);
-		Mapchip::SetChipNum(24, 1, map[0]);
-		Mapchip::SetChipNum(25, 1, map[0]);
-		for (int y = 0; y < map_max_y; y++)
-		{
-			for (int x = 0; x < map_max_x; x++)
-			{
-				objBlock[y][x]->Update();
-			}
-		}
 	} 
 	else if (score > 30)
 	{
@@ -966,6 +951,136 @@ void GamePlayScene::Update()
 	if (level > oldLevel)
 	{
 		levelTime = 1;
+	}
+
+	if (level > oldLevel)
+	{
+		if (level == 2)
+		{
+			Mapchip::SetChipNum(11, 7, map[0]);
+			Mapchip::SetChipNum(12, 7, map[0]);
+			Mapchip::SetChipNum(13, 7, map[0]);
+			Mapchip::SetChipNum(11, 8, map[0]);
+			Mapchip::SetChipNum(12, 8, map[0]);
+			Mapchip::SetChipNum(13, 8, map[0]);
+			Mapchip::SetChipNum(23, 3, map[0]);
+			Mapchip::SetChipNum(24, 3, map[0]);
+			Mapchip::SetChipNum(25, 3, map[0]);
+			Mapchip::SetChipNum(26, 3, map[0]);
+			Mapchip::SetChipNum(27, 3, map[0]);
+			Mapchip::SetChipNum(23, 4, map[0]);
+			Mapchip::SetChipNum(24, 4, map[0]);
+			Mapchip::SetChipNum(25, 4, map[0]);
+			Mapchip::SetChipNum(26, 4, map[0]);
+			Mapchip::SetChipNum(27, 4, map[0]);
+			Mapchip::SetChipNum(29, 6, map[0]);
+			Mapchip::SetChipNum(30, 6, map[0]);
+			Mapchip::SetChipNum(31, 6, map[0]);
+			Mapchip::SetChipNum(32, 6, map[0]);
+			Mapchip::SetChipNum(33, 6, map[0]);
+			Mapchip::SetChipNum(29, 7, map[0]);
+			Mapchip::SetChipNum(30, 7, map[0]);
+			Mapchip::SetChipNum(31, 7, map[0]);
+			Mapchip::SetChipNum(32, 7, map[0]);
+			Mapchip::SetChipNum(33, 7, map[0]);
+			Mapchip::SetChipNum(88, 2, map[0]);
+			Mapchip::SetChipNum(89, 2, map[0]);
+			Mapchip::SetChipNum(90, 2, map[0]);
+			Mapchip::SetChipNum(91, 2, map[0]);
+			Mapchip::SetChipNum(92, 2, map[0]);
+			Mapchip::SetChipNum(88, 3, map[0]);
+			Mapchip::SetChipNum(89, 3, map[0]);
+			Mapchip::SetChipNum(90, 3, map[0]);
+			Mapchip::SetChipNum(91, 3, map[0]);
+			Mapchip::SetChipNum(92, 3, map[0]);
+		}
+
+		if (level == 4)
+		{
+			Mapchip::SetChipNum(11, 6, map[0]);
+			Mapchip::SetChipNum(12, 6, map[0]);
+			Mapchip::SetChipNum(13, 6, map[0]);
+			Mapchip::SetChipNum(11, 7, map[0]);
+			Mapchip::SetChipNum(12, 7, map[0]);
+			Mapchip::SetChipNum(13, 7, map[0]);
+			Mapchip::SetChipNum(23, 2, map[0]);
+			Mapchip::SetChipNum(24, 2, map[0]);
+			Mapchip::SetChipNum(25, 2, map[0]);
+			Mapchip::SetChipNum(26, 2, map[0]);
+			Mapchip::SetChipNum(27, 2, map[0]);
+			Mapchip::SetChipNum(23, 3, map[0]);
+			Mapchip::SetChipNum(24, 3, map[0]);
+			Mapchip::SetChipNum(25, 3, map[0]);
+			Mapchip::SetChipNum(26, 3, map[0]);
+			Mapchip::SetChipNum(27, 3, map[0]);
+			Mapchip::SetChipNum(29, 5, map[0]);
+			Mapchip::SetChipNum(30, 5, map[0]);
+			Mapchip::SetChipNum(31, 5, map[0]);
+			Mapchip::SetChipNum(32, 5, map[0]);
+			Mapchip::SetChipNum(33, 5, map[0]);
+			Mapchip::SetChipNum(29, 6, map[0]);
+			Mapchip::SetChipNum(30, 6, map[0]);
+			Mapchip::SetChipNum(31, 6, map[0]);
+			Mapchip::SetChipNum(32, 6, map[0]);
+			Mapchip::SetChipNum(33, 6, map[0]);
+			Mapchip::SetChipNum(88, 1, map[0]);
+			Mapchip::SetChipNum(89, 1, map[0]);
+			Mapchip::SetChipNum(90, 1, map[0]);
+			Mapchip::SetChipNum(91, 1, map[0]);
+			Mapchip::SetChipNum(92, 1, map[0]);
+			Mapchip::SetChipNum(88, 2, map[0]);
+			Mapchip::SetChipNum(89, 2, map[0]);
+			Mapchip::SetChipNum(90, 2, map[0]);
+			Mapchip::SetChipNum(91, 2, map[0]);
+			Mapchip::SetChipNum(92, 2, map[0]);
+		}
+
+		if (level == 6)
+		{
+			Mapchip::SetChipNum(11, 5, map[0]);
+			Mapchip::SetChipNum(12, 5, map[0]);
+			Mapchip::SetChipNum(13, 5, map[0]);
+			Mapchip::SetChipNum(11, 6, map[0]);
+			Mapchip::SetChipNum(12, 6, map[0]);
+			Mapchip::SetChipNum(13, 6, map[0]);
+			Mapchip::SetChipNum(23, 1, map[0]);
+			Mapchip::SetChipNum(24, 1, map[0]);
+			Mapchip::SetChipNum(25, 1, map[0]);
+			Mapchip::SetChipNum(26, 1, map[0]);
+			Mapchip::SetChipNum(27, 1, map[0]);
+			Mapchip::SetChipNum(23, 2, map[0]);
+			Mapchip::SetChipNum(24, 2, map[0]);
+			Mapchip::SetChipNum(25, 2, map[0]);
+			Mapchip::SetChipNum(26, 2, map[0]);
+			Mapchip::SetChipNum(27, 2, map[0]);
+			Mapchip::SetChipNum(29, 4, map[0]);
+			Mapchip::SetChipNum(30, 4, map[0]);
+			Mapchip::SetChipNum(31, 4, map[0]);
+			Mapchip::SetChipNum(32, 4, map[0]);
+			Mapchip::SetChipNum(33, 4, map[0]);
+			Mapchip::SetChipNum(29, 5, map[0]);
+			Mapchip::SetChipNum(30, 5, map[0]);
+			Mapchip::SetChipNum(31, 5, map[0]);
+			Mapchip::SetChipNum(32, 5, map[0]);
+			Mapchip::SetChipNum(33, 5, map[0]);
+			Mapchip::SetChipNum(88, 1, map[0]);
+			Mapchip::SetChipNum(89, 1, map[0]);
+			Mapchip::SetChipNum(90, 1, map[0]);
+			Mapchip::SetChipNum(91, 1, map[0]);
+			Mapchip::SetChipNum(92, 1, map[0]);
+			Mapchip::SetChipNum(88, 0, map[0]);
+			Mapchip::SetChipNum(89, 0, map[0]);
+			Mapchip::SetChipNum(90, 0, map[0]);
+			Mapchip::SetChipNum(91, 0, map[0]);
+			Mapchip::SetChipNum(92, 0, map[0]);
+		}
+		for (int y = 0; y < map_max_y; y++)
+		{
+			for (int x = 0; x < map_max_x; x++)
+			{
+				objBlock[y][x]->Update();
+			}
+		}
 	}
 
 	if (levelTime >= 0)
@@ -1118,6 +1233,10 @@ void GamePlayScene::MapCreate(int mapNumber)
 				//位置と大きさの変更(今は大きさは変更しないで)
 				//objBlock[y][x]->SetScale({ LAND_SCALE, LAND_SCALE, LAND_SCALE });
 				objBlock[y][x]->SetPosition({ x * LAND_SCALE,  -y * LAND_SCALE, 0 });
+			}
+			else
+			{
+				objBlock[y][x]->SetPosition({ 1000, 1000, 0 });
 			}
 		}
 	}
