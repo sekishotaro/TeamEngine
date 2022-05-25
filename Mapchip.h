@@ -7,7 +7,7 @@
 //マップのサイズ(基本は1)
 const int map_size = 1;
 //縦横の最大数(マップによって変更)
-const int map_max_x = 104, map_max_y = 12;
+const int map_max_x = 104, map_max_y = 14;
 
 class Mapchip
 {
@@ -16,6 +16,6 @@ public:
 
 	static int GetChipNum(int x, int y, std::vector<int> map);
 
-	static void SetChipNum(int x, int y, std::vector<int> map);
+	static void SetChipNum(int x, int y, std::vector<int> &map);
 };
 

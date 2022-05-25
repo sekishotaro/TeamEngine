@@ -59,6 +59,8 @@ public: //サブクラス
 		float turn_move; //裏返るときの動き
 
 		int escape_time; //逃げるまでの時間
+
+		float max_rope; //ロープの最大
 	};
 
 public: 
@@ -169,6 +171,7 @@ public:
 	int enemySpawn; //敵の数
 	int catch_count; //何個持ってるか
 	float levelTime;
+	int score_list[3] = { 0, 0, 0 };
 
 
 	//汎用変数
@@ -195,13 +198,10 @@ public:
 
 	//無敵時間
 	bool is_invincible; //無敵状態
-	int invincible_time; //無敵時間
+	float invincible_time; //無敵時間
 
 	//エネミー
 	EnemyData enemy_data[EnemySpawnMax]; //エネミーのデータ
-
-	//ロープ
-	float max_rope; //ロープの最大
 
 	XMFLOAT3 c_pos; //カメラの主点座標
 	bool camera_chase; //カメラが動き出すまでの時間
@@ -229,7 +229,7 @@ public:
 	/// <summary>
 	/// ロープの角度変更
 	/// <summary>
-	void RopeMove(XMFLOAT3& pos, const int num);
+	void RopeMove(const int num);
 
 	//オブジェクト同士の当たり判定
 	bool CollisionObject(const std::unique_ptr<Object3d>& object_a, const std::unique_ptr<Object3d>& object_b);
@@ -243,7 +243,14 @@ public:
 	/// <param name="playerPosition">自機</param>
 	/// <param name="negativePoint">対象の負の頂点</param>
 	/// <param name="positivePoint">対象の正の頂点</param>
+	/// <param name="width">横幅</param>
+	/// <param name="height">縦幅</param>
 	/// <returns>成否</returns>
+	bool inFrustum(XMFLOAT3 playerPosition, XMFLOAT3 negativePoint, XMFLOAT3 positivePoint, const float width, const float height);
+
+	void LoadText();
+
+	void writeText();
 	bool inFrustum(XMFLOAT3 playerPosition, XMFLOAT3 negativePoint, XMFLOAT3 positivePoint);
 
 	static int GetScoreNum() { return score; }

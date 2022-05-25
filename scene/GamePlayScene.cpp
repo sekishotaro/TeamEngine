@@ -15,6 +15,7 @@
 #include "FbxObject3d.h"
 #include "ConvertScene.h"
 #include "Count.h"
+#include <fstream> 
 
 using namespace DirectX;
 
@@ -125,6 +126,7 @@ void GamePlayScene::Initialize()
 	//マップチップ用のCSV読み込み
 	//(map, "Resource/scv/なんたら.csv")で追加可能
 	Mapchip::CsvToVector(map, "Resources/csv/demo.csv");//mapNum=0
+
 	//マップチップ用のオブジェクトの初期化
 	for (int y = 0; y < map_max_y; y++)
 	{
@@ -175,6 +177,7 @@ void GamePlayScene::Initialize()
 		enemy_data[i].can_catch = false;
 		enemy_data[i].is_add = true;
 		enemy_data[i].escape_time = 0;
+		enemy_data[i].max_rope = 15;
 		enemy[i]->SetModel(model);
 		enemy[i]->SetPosition(enemy_data[i].e_pos);
 		enemy[i]->Update();
@@ -187,13 +190,10 @@ void GamePlayScene::Initialize()
 		scoreTick[i] = 0;
 	}
 
-	//ロープ
-	max_rope = 15;
-
 	//プレイヤー
 	player->SetModel(modelPlayer);
 	player->SetScale({ 3, 3, 3 });
-	p_pos = { 0, 10, 0 };
+	p_pos = { 20, 10, 0 };
 	old_p_pos = { 0, 0, 0 };
 	p_x_radius = 0.4f * player->GetScale().x;
 	p_y_radius = 0.8f * player->GetScale().y;
@@ -290,6 +290,7 @@ void GamePlayScene::Update()
 		if (countFinishFlag == true)
 		{
 			PlayPossibleflag = true;
+			LoadText();
 		}
 	}
 
@@ -315,6 +316,8 @@ void GamePlayScene::Update()
 
 		if (endConvertflag == true)
 		{
+
+
 			//シーン切り替え
 			SceneManager::GetInstance()->ChangeScene("END");
 		}
@@ -422,7 +425,7 @@ void GamePlayScene::Update()
 			p_pos.x += damage_move;
 			damage_time++;
 
-			if (damage_time > 20)
+			if (damage_time > 10)
 			{
 				is_damage = false;
 				damage_move = 0;
@@ -434,9 +437,9 @@ void GamePlayScene::Update()
 		//無敵時間
 		if (is_invincible == true)
 		{
-			invincible_time++;
+			invincible_time += 0.166;
 
-			if (invincible_time > 60)
+			if (invincible_time > 6)
 			{
 				invincible_time = 0;
 				is_invincible = false;
@@ -527,6 +530,7 @@ void GamePlayScene::Update()
 						enemy_data[i].is_catch = true;
 						enemy_data[i].is_bounce = false;
 						catch_count++;
+						enemy_data[i].max_rope += static_cast<float>(rand() % 50) / 10 - 2.5f;
 					} 
 					else if (CollisionObject(player, enemy[i]) == true && enemy_data[i].can_catch == false)
 					{
@@ -534,12 +538,12 @@ void GamePlayScene::Update()
 						//左
 						if (p_pos.x < enemy_data[i].e_pos.x)
 						{
-							damage_move = -0.4f;
+							damage_move = -0.6f;
 						}
 						//右
 						else
 						{
-							damage_move = 0.4f;
+							damage_move = 0.6f;
 						}
 					}
 				}
@@ -660,16 +664,31 @@ void GamePlayScene::Update()
 						{
 							//エフェクト
 							shockFlag = true;
-
 							enemy_data[i].is_alive = false;
 							enemy_data[i].is_catch = false;
-							is_attack = false;
 							is_shake = true;
+							is_attack = false;
 							if (shake_power == 0)
 							{
 								shake_power = catch_count;
 							}
-							catch_count = 0;
+							if (catch_count > 0)
+							{
+								catch_count--;
+							}
+							for (int j = 0; j < enemySpawn; j++)
+							{
+								if (i != j && enemy_data[j].is_alive == true && enemy_data[j].is_catch == true)
+								{
+									is_attack = true;
+									break;
+								}
+							}
+							if (is_attack == false)
+							{
+								catch_count = 0;
+							}
+							score++;
 							score += scoreTick[i];
 							int hundredScore = 0;
 							int hundredScore2 = 0;
@@ -696,38 +715,32 @@ void GamePlayScene::Update()
 							scoreTick[i] = 0;
 							if (enemy_data[i].is_add == true)
 							{
-								max_rope += 0.5f;
+								enemy_data[i].max_rope += 0.5f;
 
-								if (max_rope > 25.0f)
+								if (enemy_data[i].max_rope > 25.0f)
 								{
-									max_rope = 25.0f;
-								}
-							}
-							else
-							{
-								max_rope -= 0.5f;
-
-								if (max_rope < 15.0f)
-								{
-									max_rope = 15.0f;
+									enemy_data[i].max_rope = 25.0f;
 								}
 							}
 							for (int j = 0; j < enemySpawn; j++)
 							{
-								if (enemy_data[j].is_catch == true && i != j)
-								{
-									is_attack = true;
-									break;
-								}
-							}
-							
-							for (int j = 0; j < enemySpawn; j++)
-							{
-								if (i != j)
+								if (i != j && enemy_data[j].is_alive == true && enemy_data[j].enemy_type == TWICE && enemy_data[j].can_catch == false)
 								{
 									XMFLOAT3 positivePos = { enemy_data[j].e_pos.x + enemy_data[j].e_x_radius, enemy_data[j].e_pos.y + enemy_data[j].e_y_radius, 0 };
 									XMFLOAT3 negativePos = { enemy_data[j].e_pos.x - enemy_data[j].e_x_radius, enemy_data[j].e_pos.y - enemy_data[j].e_y_radius, 0 };
-									if (inFrustum(p_pos, negativePos, positivePos) == true)
+									float w_width = 210;
+									float w_height = 120;
+									if (catch_count >= 6)
+									{
+										w_width *= 6;
+										w_height *= 6;
+									}
+									else if (catch_count < 6)
+									{
+										w_width *= catch_count;
+										w_height *= catch_count;
+									}
+									if (inFrustum(enemy_data[i].e_pos, negativePos, positivePos, w_width, w_height) == true)
 									{
 										enemy[j]->SetModel(model);
 										enemy_data[j].can_catch = true;
@@ -736,6 +749,7 @@ void GamePlayScene::Update()
 								}
 							}
 						}
+
 					} 
 					else
 					{
@@ -743,7 +757,11 @@ void GamePlayScene::Update()
 						{
 							enemy_data[i].escape_time = 0;
 							enemy_data[i].is_catch = false;
-							enemy_data[i].is_alive = false;
+							if (enemy_data[i].enemy_type == TWICE)
+							{
+								enemy[i]->SetModel(model);
+								enemy_data[i].can_catch = true;
+							}
 						}
 						else
 						{
@@ -793,7 +811,7 @@ void GamePlayScene::Update()
 				//ロープの更新
 				if (enemy_data[i].is_catch == true)
 				{
-					RopeMove(enemy_data[i].e_pos, i);
+					RopeMove(i);
 					if (enemy_data[i].e_pos.x == enemy_data[i].old_e_pos.x && enemy_data[i].e_pos.y == enemy_data[i].old_e_pos.y)
 					{
 						enemy_data[i].e_down = 0;
@@ -814,10 +832,6 @@ void GamePlayScene::Update()
 	//エネミー更新
 	for (int i = 0; i < enemySpawn; i++)
 	{
-		if (i == 40)
-		{
-			int dh = 0;
-		}
 		//落下の最大値を超えたら
 		if (enemy_data[i].e_pos.y < -300.0f)
 		{
@@ -841,7 +855,6 @@ void GamePlayScene::Update()
 		//オブジェクト情報の更新
 		enemy[i]->SetPosition(enemy_data[i].e_pos);
 		enemy[i]->Update();
-		Rope[i]->Update();
 	}
 	
 	//プレイヤー更新
@@ -891,7 +904,7 @@ void GamePlayScene::Update()
 	{
 		XMFLOAT3 camera_pos = p_pos;
 		camera->SetTarget(camera_pos);
-		camera_pos.z -= 55.0f + (2.5 * level);
+		camera_pos.z -= 55.0f + (1.0 * level);
 		camera->SetEye(camera_pos);
 		camera->Update();
 		c_pos = camera->GetTarget();
@@ -908,7 +921,7 @@ void GamePlayScene::Update()
 			camera_pos.y += p_pos.y - old_p_pos.y;
 		}
 		camera->SetTarget(camera_pos);
-		camera_pos.z -= 55.0f + (2.5 * level);
+		camera_pos.z -= 55.0f + (1.0 * level);
 		camera->SetEye(camera_pos);
 		camera->Update();
 		c_pos = camera->GetTarget();
@@ -943,22 +956,6 @@ void GamePlayScene::Update()
 	else if (score > 70)
 	{
 		level = 3;
-		Mapchip::SetChipNum(0, 0, map[0]);
-		Mapchip::SetChipNum(12, 7, map[0]);
-		Mapchip::SetChipNum(13, 7, map[0]);
-		Mapchip::SetChipNum(11, 6, map[0]);
-		Mapchip::SetChipNum(12, 6, map[0]);
-		Mapchip::SetChipNum(13, 6, map[0]);
-		Mapchip::SetChipNum(23, 1, map[0]);
-		Mapchip::SetChipNum(24, 1, map[0]);
-		Mapchip::SetChipNum(25, 1, map[0]);
-		for (int y = 0; y < map_max_y; y++)
-		{
-			for (int x = 0; x < map_max_x; x++)
-			{
-				objBlock[y][x]->Update();
-			}
-		}
 	} 
 	else if (score > 30)
 	{
@@ -970,6 +967,136 @@ void GamePlayScene::Update()
 		levelTime = 1;
 	}
 
+	if (level > oldLevel)
+	{
+		if (level == 2)
+		{
+			Mapchip::SetChipNum(11, 7, map[0]);
+			Mapchip::SetChipNum(12, 7, map[0]);
+			Mapchip::SetChipNum(13, 7, map[0]);
+			Mapchip::SetChipNum(11, 8, map[0]);
+			Mapchip::SetChipNum(12, 8, map[0]);
+			Mapchip::SetChipNum(13, 8, map[0]);
+			Mapchip::SetChipNum(23, 3, map[0]);
+			Mapchip::SetChipNum(24, 3, map[0]);
+			Mapchip::SetChipNum(25, 3, map[0]);
+			Mapchip::SetChipNum(26, 3, map[0]);
+			Mapchip::SetChipNum(27, 3, map[0]);
+			Mapchip::SetChipNum(23, 4, map[0]);
+			Mapchip::SetChipNum(24, 4, map[0]);
+			Mapchip::SetChipNum(25, 4, map[0]);
+			Mapchip::SetChipNum(26, 4, map[0]);
+			Mapchip::SetChipNum(27, 4, map[0]);
+			Mapchip::SetChipNum(29, 6, map[0]);
+			Mapchip::SetChipNum(30, 6, map[0]);
+			Mapchip::SetChipNum(31, 6, map[0]);
+			Mapchip::SetChipNum(32, 6, map[0]);
+			Mapchip::SetChipNum(33, 6, map[0]);
+			Mapchip::SetChipNum(29, 7, map[0]);
+			Mapchip::SetChipNum(30, 7, map[0]);
+			Mapchip::SetChipNum(31, 7, map[0]);
+			Mapchip::SetChipNum(32, 7, map[0]);
+			Mapchip::SetChipNum(33, 7, map[0]);
+			Mapchip::SetChipNum(88, 2, map[0]);
+			Mapchip::SetChipNum(89, 2, map[0]);
+			Mapchip::SetChipNum(90, 2, map[0]);
+			Mapchip::SetChipNum(91, 2, map[0]);
+			Mapchip::SetChipNum(92, 2, map[0]);
+			Mapchip::SetChipNum(88, 3, map[0]);
+			Mapchip::SetChipNum(89, 3, map[0]);
+			Mapchip::SetChipNum(90, 3, map[0]);
+			Mapchip::SetChipNum(91, 3, map[0]);
+			Mapchip::SetChipNum(92, 3, map[0]);
+		}
+
+		if (level == 4)
+		{
+			Mapchip::SetChipNum(11, 6, map[0]);
+			Mapchip::SetChipNum(12, 6, map[0]);
+			Mapchip::SetChipNum(13, 6, map[0]);
+			Mapchip::SetChipNum(11, 7, map[0]);
+			Mapchip::SetChipNum(12, 7, map[0]);
+			Mapchip::SetChipNum(13, 7, map[0]);
+			Mapchip::SetChipNum(23, 2, map[0]);
+			Mapchip::SetChipNum(24, 2, map[0]);
+			Mapchip::SetChipNum(25, 2, map[0]);
+			Mapchip::SetChipNum(26, 2, map[0]);
+			Mapchip::SetChipNum(27, 2, map[0]);
+			Mapchip::SetChipNum(23, 3, map[0]);
+			Mapchip::SetChipNum(24, 3, map[0]);
+			Mapchip::SetChipNum(25, 3, map[0]);
+			Mapchip::SetChipNum(26, 3, map[0]);
+			Mapchip::SetChipNum(27, 3, map[0]);
+			Mapchip::SetChipNum(29, 5, map[0]);
+			Mapchip::SetChipNum(30, 5, map[0]);
+			Mapchip::SetChipNum(31, 5, map[0]);
+			Mapchip::SetChipNum(32, 5, map[0]);
+			Mapchip::SetChipNum(33, 5, map[0]);
+			Mapchip::SetChipNum(29, 6, map[0]);
+			Mapchip::SetChipNum(30, 6, map[0]);
+			Mapchip::SetChipNum(31, 6, map[0]);
+			Mapchip::SetChipNum(32, 6, map[0]);
+			Mapchip::SetChipNum(33, 6, map[0]);
+			Mapchip::SetChipNum(88, 1, map[0]);
+			Mapchip::SetChipNum(89, 1, map[0]);
+			Mapchip::SetChipNum(90, 1, map[0]);
+			Mapchip::SetChipNum(91, 1, map[0]);
+			Mapchip::SetChipNum(92, 1, map[0]);
+			Mapchip::SetChipNum(88, 2, map[0]);
+			Mapchip::SetChipNum(89, 2, map[0]);
+			Mapchip::SetChipNum(90, 2, map[0]);
+			Mapchip::SetChipNum(91, 2, map[0]);
+			Mapchip::SetChipNum(92, 2, map[0]);
+		}
+
+		if (level == 6)
+		{
+			Mapchip::SetChipNum(11, 5, map[0]);
+			Mapchip::SetChipNum(12, 5, map[0]);
+			Mapchip::SetChipNum(13, 5, map[0]);
+			Mapchip::SetChipNum(11, 6, map[0]);
+			Mapchip::SetChipNum(12, 6, map[0]);
+			Mapchip::SetChipNum(13, 6, map[0]);
+			Mapchip::SetChipNum(23, 1, map[0]);
+			Mapchip::SetChipNum(24, 1, map[0]);
+			Mapchip::SetChipNum(25, 1, map[0]);
+			Mapchip::SetChipNum(26, 1, map[0]);
+			Mapchip::SetChipNum(27, 1, map[0]);
+			Mapchip::SetChipNum(23, 2, map[0]);
+			Mapchip::SetChipNum(24, 2, map[0]);
+			Mapchip::SetChipNum(25, 2, map[0]);
+			Mapchip::SetChipNum(26, 2, map[0]);
+			Mapchip::SetChipNum(27, 2, map[0]);
+			Mapchip::SetChipNum(29, 4, map[0]);
+			Mapchip::SetChipNum(30, 4, map[0]);
+			Mapchip::SetChipNum(31, 4, map[0]);
+			Mapchip::SetChipNum(32, 4, map[0]);
+			Mapchip::SetChipNum(33, 4, map[0]);
+			Mapchip::SetChipNum(29, 5, map[0]);
+			Mapchip::SetChipNum(30, 5, map[0]);
+			Mapchip::SetChipNum(31, 5, map[0]);
+			Mapchip::SetChipNum(32, 5, map[0]);
+			Mapchip::SetChipNum(33, 5, map[0]);
+			Mapchip::SetChipNum(88, 1, map[0]);
+			Mapchip::SetChipNum(89, 1, map[0]);
+			Mapchip::SetChipNum(90, 1, map[0]);
+			Mapchip::SetChipNum(91, 1, map[0]);
+			Mapchip::SetChipNum(92, 1, map[0]);
+			Mapchip::SetChipNum(88, 0, map[0]);
+			Mapchip::SetChipNum(89, 0, map[0]);
+			Mapchip::SetChipNum(90, 0, map[0]);
+			Mapchip::SetChipNum(91, 0, map[0]);
+			Mapchip::SetChipNum(92, 0, map[0]);
+		}
+		for (int y = 0; y < map_max_y; y++)
+		{
+			for (int x = 0; x < map_max_x; x++)
+			{
+				objBlock[y][x]->Update();
+			}
+		}
+	}
+
 	if (levelTime >= 0)
 	{
 		levelTime -= 0.01;
@@ -977,11 +1104,6 @@ void GamePlayScene::Update()
 	enemySpawn = level * 6;
 	spriteLevel[1]->ChangeTex((int)level % 10);
 
-	if (input->TriggerKey(DIK_RETURN) || input->TriggerButton(Start))
-	{
-		//BGM止める
-		//Audio::GetInstance()->SoundStop("zaza.wav");
-	}
 
 	//エフェクト
 	for (int i = 0; i < locus.size(); i++)
@@ -1035,7 +1157,19 @@ void GamePlayScene::Draw()
 			Rope[i]->Draw();
 		}
 	}
-	player->Draw();
+
+	if (is_damage == true)
+	{
+		Effect::flashingEffectDraw(player, damage_time);
+	}
+	else if (is_invincible == true)
+	{
+		Effect::flashingEffectDraw(player, invincible_time);
+	}
+	else
+	{
+		player->Draw();
+	}
 
 	//マップチップの描画
 	for (int y = 0; y < map_max_y; y++)
@@ -1120,6 +1254,10 @@ void GamePlayScene::MapCreate(int mapNumber)
 				//位置と大きさの変更(今は大きさは変更しないで)
 				//objBlock[y][x]->SetScale({ LAND_SCALE, LAND_SCALE, LAND_SCALE });
 				objBlock[y][x]->SetPosition({ x * LAND_SCALE,  -y * LAND_SCALE, 0 });
+			}
+			else
+			{
+				objBlock[y][x]->SetPosition({ 1000, 1000, 0 });
 			}
 		}
 	}
@@ -1284,32 +1422,27 @@ bool GamePlayScene::MapCollide(XMFLOAT3& pos, float radiusX, float radiusY, floa
 	return is_hit;
 }
 
-void GamePlayScene::RopeMove(XMFLOAT3& pos, const int num)
+void GamePlayScene::RopeMove(const int num)
 {
-	Rope[num]->SetPosition({ (p_pos.x + enemy_data[num].e_pos.x) / 2, (p_pos.y + enemy_data[num].e_pos.y) / 2, 0 });
-	Rope[num]->Update();
-
-	//ロープの位置を取得
-	XMFLOAT3 r_pos = Rope[num]->GetPosition();
-
 	//プレイヤーとエネミーの距離
 	XMFLOAT2 length = { p_pos.x - enemy_data[num].e_pos.x, p_pos.y - enemy_data[num].e_pos.y };
 	float len = GetObjectLength(p_pos, enemy_data[num].e_pos);
 	//最大値より大きいなら
-	if (len > max_rope)
+	if (len > enemy_data[num].max_rope)
 	{
-		float wq = len / max_rope;
-		len = max_rope;
-		enemy_data[num].e_pos = { p_pos.x - length.x / wq, p_pos.y - length.y / wq, 0 };
-		pos = enemy_data[num].e_pos;
-		MapCollide(pos, enemy_data[num].e_x_radius, enemy_data[num].e_y_radius, p_add, 0, enemy_data[num].e_pos);
+		float tmp = len / (enemy_data[num].max_rope);
+		len = enemy_data[num].max_rope;
+		enemy_data[num].e_pos = { p_pos.x - length.x / tmp, p_pos.y - length.y / tmp, 0 };
+		MapCollide(enemy_data[num].e_pos, enemy_data[num].e_x_radius, enemy_data[num].e_y_radius, p_add, 0, enemy_data[num].e_pos);
 	}
 
 	//ロープの長さ
+	XMFLOAT3 r_pos = { (p_pos.x + enemy_data[num].e_pos.x) / 2, (p_pos.y + enemy_data[num].e_pos.y) / 2, 0 };
 	float angleX = rope_angle->PosForAngle(p_pos.x, r_pos.y, r_pos.x, p_pos.y);
-	Rope[num]->SetPosition({ (p_pos.x + enemy_data[num].e_pos.x) / 2, (p_pos.y + enemy_data[num].e_pos.y) / 2, 0 });
+	Rope[num]->SetPosition(r_pos);
 	Rope[num]->SetScale({ 0.3f, len / 2, 0.3f });
 	Rope[num]->SetRotation({ 0, 0 ,XMConvertToDegrees(angleX) });
+	Rope[num]->Update();
 }
 
 bool GamePlayScene::CollisionObject(const std::unique_ptr<Object3d>& object_a, const std::unique_ptr<Object3d>& object_b)
@@ -1344,15 +1477,15 @@ float GamePlayScene::GetObjectLength(XMFLOAT3 pos_a, XMFLOAT3 pos_b)
 	return sqrtf(len.x * len.x + len.y * len.y + len.z * len.z);
 }
 
-bool GamePlayScene::inFrustum(XMFLOAT3 playerPosition, XMFLOAT3 negativePoint, XMFLOAT3 positivePoint)
+bool GamePlayScene::inFrustum(XMFLOAT3 playerPosition, XMFLOAT3 negativePoint, XMFLOAT3 positivePoint, const float width, const float height)
 {
 	//長さの単位
 	float IdentityLen = 720 / 2 * sqrtf(3);
 
 	//ターゲットの横と縦の長さ
 	float eyeLen = camera->GetTarget().z - camera->GetEye().z;
-	float targetWidth = 1280 * eyeLen / IdentityLen;
-	float targetHeight = 720 * eyeLen / IdentityLen;
+	float targetWidth = width * eyeLen / IdentityLen;
+	float targetHeight = height * eyeLen / IdentityLen;
 
 	//横
 	if (positivePoint.x <= targetWidth / 2 + playerPosition.x && -targetWidth / 2 + playerPosition.x <= positivePoint.x)
@@ -1382,4 +1515,68 @@ bool GamePlayScene::inFrustum(XMFLOAT3 playerPosition, XMFLOAT3 negativePoint, X
 	}
 
 	return false;
+}
+
+void GamePlayScene::writeText()
+{
+	for (int i = 0; i < 3; i++)
+	{
+		if (score >= score_list[i])
+		{
+			if (i + 1 < 3)
+			{
+				score_list[i + 1] = score_list[i];
+			}
+			if (i + 2 < 3)
+			{
+				score_list[i + 2] = score_list[i];
+			}
+			score_list[i] = score;
+			break;
+		}
+	}
+
+	std::string first = std::to_string(score_list[0]);
+	std::string second = std::to_string(score_list[1]);
+	std::string third = std::to_string(score_list[2]);
+
+	std::ofstream ofs("Resources/ScoreList.txt");
+	if (!ofs)
+	{
+		assert(0);
+	}
+	else
+	{
+		ofs << " " << first << " " << second << " " << third;
+	}
+	ofs.close();
+}
+
+void GamePlayScene::LoadText()
+{
+	std::ifstream file;
+	const std::string fileName = "Resources/ScoreList.txt";
+	file.open(fileName);
+	if (file.fail())
+	{
+		assert(0);
+	}
+
+	//1行ずつ読み込む
+	std::string line;
+	while (getline(file, line))
+	{
+		//1行分の文字列をストリームに変換して解析しやすくする
+		std::istringstream line_stream(line);
+
+		//半角スペースゥ切りで行の先頭文字列を取得
+		std::string key;
+		getline(line_stream, key, ' ');
+
+		line_stream >> score_list[0];
+		line_stream >> score_list[1];
+		line_stream >> score_list[2];
+	}
+	//ファイルを閉じる
+	file.close();
 }
