@@ -61,6 +61,8 @@ public: //サブクラス
 		int escape_time; //逃げるまでの時間
 
 		float max_rope; //ロープの最大
+
+		float circle_radius; //円の半径
 	};
 
 public: 
@@ -175,6 +177,7 @@ public:
 	int catch_count; //何個持ってるか
 	float levelTime;
 	int score_list[3] = { 0, 0, 0 };
+	float effect_radius;
 
 
 	//汎用変数
