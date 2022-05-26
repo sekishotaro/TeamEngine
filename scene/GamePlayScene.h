@@ -156,6 +156,9 @@ public:
 	Sprite* spriteLevelUp = nullptr;
 	Sprite* minimap = nullptr; //ステージ(ミニマップ)
 	Sprite* finish = nullptr; //終わり
+	Sprite* cloud[6]; //雲
+
+	XMFLOAT2 cloudPos[6];
 
 	//UI・スコアetc
 	int score; //スコア

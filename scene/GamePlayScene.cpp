@@ -67,6 +67,12 @@ void GamePlayScene::Initialize()
 	Sprite::LoadTexture(26, L"Resources/Count3.png");
 	Sprite::LoadTexture(27, L"Resources/CountStart.png");
 	Sprite::LoadTexture(28, L"Resources/LevelUp.png");
+
+	Sprite::LoadTexture(31, L"Resources/cloud.png");
+	Sprite::LoadTexture(32, L"Resources/cloud2.png");
+	Sprite::LoadTexture(33, L"Resources/cloud3.png");
+	Sprite::LoadTexture(34, L"Resources/cloud4.png");
+	Sprite::LoadTexture(35, L"Resources/cloud5.png");
 	// 背景スプライト生成
 	spriteBG = Sprite::Create(11, { 0.0f,0.0f });
 	spriteBG->SetSize({ WinApp::window_width * 1.2, WinApp::window_height * 1.2 });
@@ -97,6 +103,24 @@ void GamePlayScene::Initialize()
 	spriteLevelUp = Sprite::Create(28, { WinApp::window_width / 2 - 80 ,WinApp::window_height / 2 - 80 });
 	finish = Sprite::Create(23, { 0.0f ,0.0f });
 
+	cloud[0] = Sprite::Create(31, { 63 * 2.4,22 * 2.4 });
+	cloud[1] = Sprite::Create(32, { 252 * 2.4,39 * 2.4 });
+	cloud[2] = Sprite::Create(33, { 334 * 2.4,115 * 2.4 });
+	cloud[3] = Sprite::Create(31, { 406 * 2.4,48 * 2.4 });
+	cloud[4] = Sprite::Create(35, { 582 * 2.4,67 * 2.4 });
+	cloud[5] = Sprite::Create(33, { 126 * 2.4,136 * 2.4 });
+	cloud[0]->SetSize({ 202,96 });
+	cloud[1]->SetSize({ 146,52 });
+	cloud[2]->SetSize({ 222,54 });
+	cloud[3]->SetSize({ 202,96 });
+	cloud[4]->SetSize({ 60,28 });
+	cloud[5]->SetSize({ 222,54 });
+
+	//cloudPosにポジションをセット
+	for (int i = 0; i < 6; i++)
+	{
+		cloudPos[i] = cloud[i]->GetPosition();
+	}
 
 
 	// オブジェクト生成
@@ -291,6 +315,17 @@ void GamePlayScene::Update()
 			LoadText();
 		}
 	}
+
+	for (int i = 0; i < 6; i++)
+	{
+		cloudPos[i].x++;
+		if (cloudPos[i].x >= 1380)
+		{
+			cloudPos[i].x = 0;
+		}
+		cloud[i]->SetPosition(cloudPos[i]);
+	}
+
 
 	//プレイタイムカウントダウン
 	if (countFinishFlag == true)
@@ -1111,6 +1146,11 @@ void GamePlayScene::Draw()
 	// 背景スプライト描画
 	spriteBG->Draw();
 
+	for (int i = 0; i < 6; i++)
+	{
+		cloud[i]->Draw();
+	}
+
 	/// <summary>
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
@@ -1197,14 +1237,10 @@ void GamePlayScene::Draw()
 	texLevel->Draw();
 	spriteLevel[1]->Draw();
 	texScore->Draw();
-	spriteScore[1]->Draw();
-	spriteScore[2]->Draw();
-	spriteScore[3]->Draw();
-	spriteScore[4]->Draw();
-	spriteScore[5]->Draw();
-	spriteScore[6]->Draw();
-	spriteScore[7]->Draw();
-	spriteScore[8]->Draw();
+	for (int i = 1; i < 9; i++)
+	{
+		spriteScore[i]->Draw();
+	}
 
 	if (levelTime > 0 && 0.35 > levelTime || levelTime > 0.70 && 1 > levelTime)
 	{
