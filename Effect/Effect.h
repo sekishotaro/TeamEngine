@@ -40,7 +40,7 @@ public:
 	/// <param name="object">波動</param>
 	/// <param name="generationPoint">発生地点</param>
 	/// <param name="flag">フラグ</param>
-	static void ShockWaveUpdate(std::unique_ptr<Object3d>& object, XMFLOAT3& generationPoint, bool *flag);
+	static void ShockWaveUpdate(std::unique_ptr<Object3d>& object, Camera *camera, float &radius, bool *flag);
 
 	/// <summary>
 	/// 初期化

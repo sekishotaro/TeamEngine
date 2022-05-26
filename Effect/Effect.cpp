@@ -87,22 +87,31 @@ void Effect::DeletLocus(std::vector<std::unique_ptr<Object3d>> &object, Camera *
 	}
 }
  
-void Effect::ShockWaveUpdate(std::unique_ptr<Object3d>& object, XMFLOAT3& generationPoint, bool *flag)
+void Effect::ShockWaveUpdate(std::unique_ptr<Object3d>& object, Camera *camera, float &radius, bool *flag)
 {
-
 	XMFLOAT3 size = object->GetScale();
+
+
+	//長さの単位
+	float IdentityLen = 720 / 2 * sqrtf(3);
+
+	//ターゲットの横と縦の長さ
+	float eyeLen = camera->GetTarget().z - camera->GetEye().z;
+	float targetWidth = radius * eyeLen / IdentityLen;
+
+	if (size.x > targetWidth / 2)
+	{
+		*flag = false;
+		radius = 0;
+	}
+
 	if ( *flag == true)
 	{
-		object->SetScale({ size.x + 5.0f, size.y, size.z + 5.0f });
+		object->SetScale({ size.x + 2.5f, size.y, size.z + 2.5f });
 	}
 	else if ( *flag == false)
 	{
-		object->SetScale({ 1.0f, 1.0f, 1.0f });
-	}
-
-	if (size.x >= 150.0f)
-	{
-		*flag = false;
+		object->SetScale({ 0.0f, 0.0f, 0.0f });
 	}
 }
 

@@ -106,6 +106,7 @@ void GamePlayScene::Initialize()
 	block = Model::LoadFromOBJ("block");
 	rope = Model::LoadFromOBJ("rope");
 	locusModel = Model::LoadFromOBJ("locus");
+	shockWaveModel = Model::LoadFromOBJ("shock");
 
 	for (int i = 0; i < EnemySpawnMax; i++)
 	{
@@ -120,6 +121,11 @@ void GamePlayScene::Initialize()
 	Count::Initilize();
 	//エフェクト
 	Effect::Initialize();
+
+	shock = Object3d::Create();
+	shockWaveModel = Model::LoadFromOBJ("shock");
+	shock->SetModel(shockWaveModel);
+	shock->SetRotation({ 270.0f, 0.0f, 0.0f });
 
 	//マップチップ用のCSV読み込み
 	//(map, "Resource/scv/なんたら.csv")で追加可能
@@ -143,13 +149,14 @@ void GamePlayScene::Initialize()
 	shake_time = 0;
 	shake_x = 0;
 	shake_y = 0;
-	lastTime = 160.0f;
+	lastTime = 10.0f;
 	level = 1;
 	levelTime = 0;
 	enemySpawn = 1;
 	gravity = 0.125f;
 	catch_count = 0;
 	shake_power = 0;
+	effect_radius = 0;
 
 	//オブジェクトにモデルをひも付ける
 	for (int i = 0; i < EnemySpawnMax; i++)
@@ -176,6 +183,7 @@ void GamePlayScene::Initialize()
 		enemy_data[i].is_add = true;
 		enemy_data[i].escape_time = 0;
 		enemy_data[i].max_rope = 15;
+		enemy_data[i].circle_radius = 0;
 		enemy[i]->SetModel(model);
 		enemy[i]->SetPosition(enemy_data[i].e_pos);
 		enemy[i]->Update();
@@ -314,8 +322,6 @@ void GamePlayScene::Update()
 
 		if (endConvertflag == true)
 		{
-
-
 			//シーン切り替え
 			SceneManager::GetInstance()->ChangeScene("END");
 		}
@@ -402,16 +408,16 @@ void GamePlayScene::Update()
 				//プレイヤーの攻撃
 				if (enemy_data[i].is_catch == true)
 				{
+					enemy_data[i].circle_radius = GetObjectLength(p_pos, enemy_data[i].e_pos);
+					is_attack = true;
 					//プレイヤーの向きで投げる方向を変える
-					if (player->GetRotation().y == 90 && p_pos.x > enemy[i]->GetPosition().x)
+					if (player->GetRotation().y == 90 && p_pos.x >= enemy[i]->GetPosition().x)
 					{
 						enemy_data[i].angle = static_cast<int>(XMConvertToDegrees(rope_angle->PosForAngle(p_pos.x, enemy[i]->GetPosition().y, enemy[i]->GetPosition().x, p_pos.y))) - 90;
-						is_attack = true;
 					} 
 					else if (player->GetRotation().y == 270 && p_pos.x < enemy[i]->GetPosition().x)
 					{
 						enemy_data[i].angle = static_cast<int>(XMConvertToDegrees(rope_angle->PosForAngle(p_pos.x, enemy[i]->GetPosition().y, enemy[i]->GetPosition().x, p_pos.y))) - 90;
-						is_attack = true;
 					}
 				}
 			}
@@ -556,7 +562,7 @@ void GamePlayScene::Update()
 						e_rot.z += 10.0f;
 						enemy[i]->SetRotation(e_rot);
 
-						if (e_rot.z >= 90 && enemy_data[i].turn_move > 0.0f)
+						if (e_rot.z >= 90 && enemy_data[i].turn_move >= 0.0f)
 						{
 							enemy_data[i].turn_move = -enemy_data[i].turn_move;
 						}
@@ -590,7 +596,7 @@ void GamePlayScene::Update()
 								}
 								enemy[i]->SetRotation(e_rot);
 							} 
-							else if (Mapchip::GetChipNum(static_cast<int>((enemy_data[i].e_pos.x + p_x_radius + LAND_SCALE / 2) / LAND_SCALE), -static_cast<int>((enemy_data[i].e_pos.y - p_y_radius + LAND_SCALE / 2) / LAND_SCALE - 1), map[0]) == None && enemy_data[i].e_speed > 0)
+							else if (Mapchip::GetChipNum(static_cast<int>((enemy_data[i].e_pos.x + p_x_radius + LAND_SCALE / 2) / LAND_SCALE), -static_cast<int>((enemy_data[i].e_pos.y - p_y_radius + LAND_SCALE / 2) / LAND_SCALE - 1), map[0]) == None && enemy_data[i].e_speed >= 0)
 							{
 								enemy_data[i].e_speed = -enemy_data[i].e_speed;
 
@@ -646,14 +652,14 @@ void GamePlayScene::Update()
 						//右向きなら
 						if (player->GetRotation().y == 90)
 						{
-							CircularMotion(enemy_data[i].e_pos, p_pos, GetObjectLength(p_pos, enemy_data[i].e_pos), enemy_data[i].angle, -15);
+							CircularMotion(enemy_data[i].e_pos, p_pos, enemy_data[i].circle_radius, enemy_data[i].angle, -15);
 							Effect::CreateLocus( locus, *locusModel, enemy_data[i].e_pos);
 							scoreTick[i]++;
 						}
 						//左向きなら
 						else if (player->GetRotation().y == 270)
 						{
-							CircularMotion(enemy_data[i].e_pos, p_pos, GetObjectLength(p_pos, enemy_data[i].e_pos), enemy_data[i].angle, 15);
+							CircularMotion(enemy_data[i].e_pos, p_pos, enemy_data[i].circle_radius, enemy_data[i].angle, 15);
 							Effect::CreateLocus(locus, *locusModel, enemy_data[i].e_pos);
 							scoreTick[i]++;
 						}
@@ -662,6 +668,7 @@ void GamePlayScene::Update()
 						{
 							//エフェクト
 							shockFlag = true;
+							shock->SetPosition(enemy_data[i].e_pos);
 							enemy_data[i].is_alive = false;
 							enemy_data[i].is_catch = false;
 							is_shake = true;
@@ -669,6 +676,17 @@ void GamePlayScene::Update()
 							if (shake_power == 0)
 							{
 								shake_power = catch_count;
+							}
+							if (effect_radius <= 0)
+							{
+								if (catch_count >= 6)
+								{
+									effect_radius = 210 * 6;
+								}
+								else
+								{
+									effect_radius = 210 * catch_count;
+								}
 							}
 							if (catch_count > 0)
 							{
@@ -1104,10 +1122,12 @@ void GamePlayScene::Update()
 
 
 	//エフェクト
+	Effect::ShockWaveUpdate(shock, camera, effect_radius, &shockFlag);
 	for (int i = 0; i < locus.size(); i++)
 	{
 		locus[i]->Update();
 	}
+	shock->Update();
 	Effect::DestroyEffectUpdate(camera, p_pos);
 
 	//fbxObject1->AnimationFlag = true;
@@ -1182,6 +1202,10 @@ void GamePlayScene::Draw()
 	for (int i = 0; i < locus.size(); i++)
 	{
 		locus[i]->Draw();
+	}
+	if (shockFlag == true)
+	{
+		shock->Draw();
 	}
 	
 	Effect::DestroyEffectDraw();
@@ -1462,6 +1486,14 @@ bool GamePlayScene::CollisionObject(const std::unique_ptr<Object3d>& object_a, c
 	//半径の合計より短ければ
 	if (l_x < a_x + b_x && l_y < a_y + b_y)
 	{
+		if (l_x <= 0)
+		{
+			l_x = 0.5f;
+		}
+		if (l_y <= 0)
+		{
+			l_y = 0.5f;
+		}
 		return true;
 	}
 
