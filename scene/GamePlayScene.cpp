@@ -1260,16 +1260,10 @@ void GamePlayScene::SpawnEnemy(int mapNumber, int enemyNumber)
 		enemy_data[enemyNumber].e_pos = { spawnX * LAND_SCALE,  -spawnY * LAND_SCALE, 0 };
 		enemy_data[enemyNumber].is_alive = true;//スポーン
 		enemy_data[enemyNumber].enemy_type = NORMAL;
-		enemy[enemyNumber + 1]->SetPosition({ (spawnX + 1) * LAND_SCALE,  -spawnY * LAND_SCALE, 0 });//位置をセット
-		enemy[enemyNumber + 1]->SetRotation({ 0, 0, 0 });
-		enemy_data[enemyNumber + 1].e_pos = { (spawnX + 1) * LAND_SCALE,  -spawnY * LAND_SCALE, 0 };
-		enemy_data[enemyNumber + 1].is_alive = true;//スポーン
-		enemy_data[enemyNumber + 1].enemy_type = NORMAL;
 		int num = rand() % 101;
 		if (level * 10 > num)
 		{
 			enemy_data[enemyNumber].enemy_type = rand() % JUMP + 1;
-			enemy_data[enemyNumber + 1].enemy_type = rand() % JUMP + 1;
 		}
 		int j_num = 0;
 		for (int j = 0; j < enemySpawn; j++)
@@ -1283,32 +1277,28 @@ void GamePlayScene::SpawnEnemy(int mapNumber, int enemyNumber)
 		if (j_num == 0)
 		{
 			enemy_data[enemyNumber].enemy_type = NORMAL;
-			enemy_data[enemyNumber + 1].enemy_type = NORMAL;
 		}
-		for (int i = 0; i < 2; i++)
+		if (enemy_data[enemyNumber].enemy_type == TWICE)
 		{
-			if (enemy_data[enemyNumber + i].enemy_type == TWICE)
-			{
-				enemy_data[enemyNumber + i].can_catch = false;
-				enemy[enemyNumber + i]->SetModel(enemy_model_2);
-				enemy[enemyNumber + i]->SetRotation({ 0, 0, 0 });
-			} 
-			else
-			{
-				enemy_data[enemyNumber + i].can_catch = true;
-				enemy[enemyNumber + i]->SetModel(model);
-				enemy[enemyNumber + i]->SetRotation({ 0, 0, 0 });
-			}
-			if (enemy_data[enemyNumber + i].enemy_type == JUMP)
-			{
-				enemy_data[enemyNumber + i].is_bounce = true;
-			}
-			else
-			{
-				enemy_data[enemyNumber + i].is_bounce = false;
-			}
-			enemy_data[enemyNumber + i].is_turn = false;
+			enemy_data[enemyNumber].can_catch = false;
+			enemy[enemyNumber]->SetModel(enemy_model_2);
+			enemy[enemyNumber]->SetRotation({ 0, 0, 0 });
 		}
+		else
+		{
+			enemy_data[enemyNumber].can_catch = true;
+			enemy[enemyNumber]->SetModel(model);
+			enemy[enemyNumber]->SetRotation({ 0, 0, 0 });
+		}
+		if (enemy_data[enemyNumber].enemy_type == JUMP)
+		{
+			enemy_data[enemyNumber].is_bounce = true;
+		}
+		else
+		{
+			enemy_data[enemyNumber].is_bounce = false;
+		}
+		enemy_data[enemyNumber].is_turn = false;
 	}
 }
 
