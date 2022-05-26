@@ -1,10 +1,9 @@
 #pragma once
-
 #include <DirectXMath.h>
 
 using namespace DirectX;
 
-class Vector3:public XMFLOAT3 {
+class Vector3 :public XMFLOAT3 {
 public:
 	//コンストラクタ
 	Vector3();
@@ -30,7 +29,9 @@ public:
 //2項演算子オーバーロード
 //※いろんな引数(引数の型と順序)のパターンに対応するため、以下のように準備している
 const XMFLOAT3 operator+(const XMFLOAT3& v1, const XMFLOAT3& v2);
+const XMFLOAT3 operator+(const XMFLOAT3& v, float s);
 const XMFLOAT3 operator-(const XMFLOAT3& v1, const XMFLOAT3& v2);
+const XMFLOAT3 operator-(const XMFLOAT3& v, float s);
 const XMFLOAT3 operator*(const XMFLOAT3& v, float s);
 const XMFLOAT3 operator*(float s, const XMFLOAT3& v);
 const XMFLOAT3 operator/(const XMFLOAT3& v, float s);

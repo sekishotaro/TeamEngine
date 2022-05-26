@@ -112,7 +112,7 @@ void EndScene::Update()
 	
 	ConvertScene::besideOut(ConvertFlag);
 
-	if (input->TriggerKey(DIK_RETURN) || input->TriggerButton(Start))
+	if (input->TriggerKey(DIK_RETURN) || input->TriggerButton(Select))
 	{
 		//ƒV[ƒ“Ø‚è‘Ö‚¦
 		SceneManager::GetInstance()->ChangeScene("TITLE");

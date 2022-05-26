@@ -10,6 +10,7 @@
 #include <vector>
 #include "FbxObject3d.h"
 #include "Mapchip.h"
+#include "Vector3.h"
 
 class GamePlayScene : public BaseScene
 {
@@ -61,6 +62,14 @@ public: //サブクラス
 		int escape_time; //逃げるまでの時間
 
 		float max_rope; //ロープの最大
+
+		float circle_radius; //円の半径
+	};
+
+	struct RopeData
+	{
+		XMFLOAT3 r_pos; // ロープの位置
+		XMFLOAT3 r_vec; // ロープの速度
 	};
 
 public: 
@@ -89,6 +98,7 @@ public:
 	/// </summary>
 	
 	//定数
+	static const int Point = 8;
 	static const int EnemySpawnMax = 50;
 	//マップチップ1つの大きさ
 	const float LAND_SCALE = 5.0f;
@@ -115,7 +125,7 @@ public:
 	std::unique_ptr<Object3d> objBlock[map_max_y][map_max_x]; //ステージブロック
 	std::unique_ptr<Object3d> player = nullptr; //プレイヤー
 	std::unique_ptr<Object3d> enemy[EnemySpawnMax]; //エネミー
-	std::unique_ptr<Object3d> Rope[EnemySpawnMax]; //ロープ
+	std::unique_ptr<Object3d> Rope[EnemySpawnMax][Point]; //ロープ
 
 	//FBX実装
 	FbxModel* fbxModel1 = nullptr;
@@ -156,6 +166,9 @@ public:
 	Sprite* spriteLevelUp = nullptr;
 	Sprite* minimap = nullptr; //ステージ(ミニマップ)
 	Sprite* finish = nullptr; //終わり
+	Sprite* cloud[6]; //雲
+
+	XMFLOAT2 cloudPos[6];
 
 	//UI・スコアetc
 	static int score; //スコア
@@ -172,6 +185,7 @@ public:
 	int catch_count; //何個持ってるか
 	float levelTime;
 	int score_list[3] = { 0, 0, 0 };
+	float effect_radius;
 
 
 	//汎用変数
@@ -203,6 +217,13 @@ public:
 	//エネミー
 	EnemyData enemy_data[EnemySpawnMax]; //エネミーのデータ
 
+	//ロープ
+	RopeData rope_data[EnemySpawnMax][Point];
+	float rope_gravity = 0.125f;
+	float mass[Point];
+	float stiffness = 0.6f;
+	float damping = 0.3f;
+
 	XMFLOAT3 c_pos; //カメラの主点座標
 	bool camera_chase; //カメラが動き出すまでの時間
 
@@ -227,9 +248,14 @@ public:
 	bool MapCollide(XMFLOAT3& pos, float radiusX, float radiusY, float &add, int mapNumber,const XMFLOAT3 old_pos, bool is_jump = false);
 
 	/// <summary>
+	/// ロープの更新
+	/// </summary>
+	void RopeUpdate(float targetX, float targetY, const int enemy_index, const int rope_num);
+
+	/// <summary>
 	/// ロープの角度変更
 	/// <summary>
-	void RopeMove(const int num);
+	void RopeMove(const int enemy_index);
 
 	//オブジェクト同士の当たり判定
 	bool CollisionObject(const std::unique_ptr<Object3d>& object_a, const std::unique_ptr<Object3d>& object_b);

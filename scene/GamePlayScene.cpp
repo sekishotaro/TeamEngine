@@ -69,6 +69,12 @@ void GamePlayScene::Initialize()
 	Sprite::LoadTexture(26, L"Resources/Count3.png");
 	Sprite::LoadTexture(27, L"Resources/CountStart.png");
 	Sprite::LoadTexture(28, L"Resources/LevelUp.png");
+
+	Sprite::LoadTexture(31, L"Resources/cloud.png");
+	Sprite::LoadTexture(32, L"Resources/cloud2.png");
+	Sprite::LoadTexture(33, L"Resources/cloud3.png");
+	Sprite::LoadTexture(34, L"Resources/cloud4.png");
+	Sprite::LoadTexture(35, L"Resources/cloud5.png");
 	// 背景スプライト生成
 	spriteBG = Sprite::Create(11, { 0.0f,0.0f });
 	spriteBG->SetSize({ WinApp::window_width * 1.2, WinApp::window_height * 1.2 });
@@ -99,6 +105,24 @@ void GamePlayScene::Initialize()
 	spriteLevelUp = Sprite::Create(28, { WinApp::window_width / 2 - 80 ,WinApp::window_height / 2 - 80 });
 	finish = Sprite::Create(23, { 0.0f ,0.0f });
 
+	cloud[0] = Sprite::Create(31, { 63 * 2.4,22 * 2.4 });
+	cloud[1] = Sprite::Create(32, { 252 * 2.4,39 * 2.4 });
+	cloud[2] = Sprite::Create(33, { 334 * 2.4,115 * 2.4 });
+	cloud[3] = Sprite::Create(31, { 406 * 2.4,48 * 2.4 });
+	cloud[4] = Sprite::Create(35, { 582 * 2.4,67 * 2.4 });
+	cloud[5] = Sprite::Create(33, { 126 * 2.4,136 * 2.4 });
+	cloud[0]->SetSize({ 202,96 });
+	cloud[1]->SetSize({ 146,52 });
+	cloud[2]->SetSize({ 222,54 });
+	cloud[3]->SetSize({ 202,96 });
+	cloud[4]->SetSize({ 60,28 });
+	cloud[5]->SetSize({ 222,54 });
+
+	//cloudPosにポジションをセット
+	for (int i = 0; i < 6; i++)
+	{
+		cloudPos[i] = cloud[i]->GetPosition();
+	}
 
 
 	// オブジェクト生成
@@ -108,11 +132,15 @@ void GamePlayScene::Initialize()
 	block = Model::LoadFromOBJ("block");
 	rope = Model::LoadFromOBJ("rope");
 	locusModel = Model::LoadFromOBJ("locus");
+	shockWaveModel = Model::LoadFromOBJ("shock");
 
 	for (int i = 0; i < EnemySpawnMax; i++)
 	{
 		enemy[i] = Object3d::Create();
-		Rope[i] = Object3d::Create();
+		for (int j = 0; j < Point; j++)
+		{
+			Rope[i][j] = Object3d::Create();
+		}
 	}
 	player = Object3d::Create();	
 
@@ -122,6 +150,11 @@ void GamePlayScene::Initialize()
 	Count::Initilize();
 	//エフェクト
 	Effect::Initialize();
+
+	shock = Object3d::Create();
+	shockWaveModel = Model::LoadFromOBJ("shock");
+	shock->SetModel(shockWaveModel);
+	shock->SetRotation({ 270.0f, 0.0f, 0.0f });
 
 	//マップチップ用のCSV読み込み
 	//(map, "Resource/scv/なんたら.csv")で追加可能
@@ -145,13 +178,18 @@ void GamePlayScene::Initialize()
 	shake_time = 0;
 	shake_x = 0;
 	shake_y = 0;
+<<<<<<< HEAD
 	lastTime = 20.0f;
+=======
+	lastTime = 10.0f;
+>>>>>>> e1ffd2b8ce3231435dd7d7c2c449c6e17c9f2af2
 	level = 1;
 	levelTime = 0;
 	enemySpawn = 1;
 	gravity = 0.125f;
 	catch_count = 0;
 	shake_power = 0;
+	effect_radius = 0;
 
 	//オブジェクトにモデルをひも付ける
 	for (int i = 0; i < EnemySpawnMax; i++)
@@ -178,14 +216,26 @@ void GamePlayScene::Initialize()
 		enemy_data[i].is_add = true;
 		enemy_data[i].escape_time = 0;
 		enemy_data[i].max_rope = 15;
+		enemy_data[i].circle_radius = 0;
 		enemy[i]->SetModel(model);
 		enemy[i]->SetPosition(enemy_data[i].e_pos);
 		enemy[i]->Update();
 
-		//ロープ
-		Rope[i]->SetModel(rope);
-		Rope[i]->SetScale({ 0.3, 5, 0.3 });
-		Rope[i]->Update();
+		for (int j = 0; j < Point; j++)
+		{
+			//ロープ
+			float t = (float)(j) / (Point - 1);
+			//位置
+			rope_data[i][j].r_pos = { (p_pos.x + enemy_data[i].e_pos.x) / 2, (p_pos.y + enemy_data[i].e_pos.y) / 2, 0 };
+			// 速度
+			rope_data[i][j].r_vec = { 0, 0, 0 };
+			//質量
+			mass[j] = 1.0f;
+
+			Rope[i][j]->SetModel(rope);
+			Rope[i][j]->SetScale({ 0.3, 5, 0.3 });
+			Rope[i][j]->Update();
+		}
 
 		scoreTick[i] = 0;
 	}
@@ -293,6 +343,17 @@ void GamePlayScene::Update()
 		}
 	}
 
+	for (int i = 0; i < 6; i++)
+	{
+		cloudPos[i].x++;
+		if (cloudPos[i].x >= 1380)
+		{
+			cloudPos[i].x = 0;
+		}
+		cloud[i]->SetPosition(cloudPos[i]);
+	}
+
+
 	//プレイタイムカウントダウン
 	if (countFinishFlag == true)
 	{
@@ -315,8 +376,6 @@ void GamePlayScene::Update()
 
 		if (endConvertflag == true)
 		{
-
-
 			//シーン切り替え
 			SceneManager::GetInstance()->ChangeScene("END");
 		}
@@ -403,16 +462,16 @@ void GamePlayScene::Update()
 				//プレイヤーの攻撃
 				if (enemy_data[i].is_catch == true)
 				{
+					enemy_data[i].circle_radius = GetObjectLength(p_pos, enemy_data[i].e_pos);
+					is_attack = true;
 					//プレイヤーの向きで投げる方向を変える
-					if (player->GetRotation().y == 90 && p_pos.x > enemy[i]->GetPosition().x)
+					if (player->GetRotation().y == 90 && p_pos.x >= enemy[i]->GetPosition().x)
 					{
 						enemy_data[i].angle = static_cast<int>(XMConvertToDegrees(rope_angle->PosForAngle(p_pos.x, enemy[i]->GetPosition().y, enemy[i]->GetPosition().x, p_pos.y))) - 90;
-						is_attack = true;
 					} 
 					else if (player->GetRotation().y == 270 && p_pos.x < enemy[i]->GetPosition().x)
 					{
 						enemy_data[i].angle = static_cast<int>(XMConvertToDegrees(rope_angle->PosForAngle(p_pos.x, enemy[i]->GetPosition().y, enemy[i]->GetPosition().x, p_pos.y))) - 90;
-						is_attack = true;
 					}
 				}
 			}
@@ -496,23 +555,7 @@ void GamePlayScene::Update()
 			//敵のスポーン
 			if (enemy_data[i].is_alive == false)
 			{
-				if (is_attack == false)
-				{
-					if (i % 2 == 0)
-					{
-						enemy_data[i + 1].is_alive = false;
-						enemy_data[i + 1].is_catch = false;
-					}
-					if (i % 2 == 1)
-					{
-						enemy_data[i - 1].is_alive = false;
-						enemy_data[i - 1].is_catch = false;
-					}
-				}
-				if (i % 2 == 0)
-				{
-					SpawnEnemy(0, i);
-				}
+				SpawnEnemy(0, i);
 			}
 			//敵の処理
 			else
@@ -557,7 +600,7 @@ void GamePlayScene::Update()
 						e_rot.z += 10.0f;
 						enemy[i]->SetRotation(e_rot);
 
-						if (e_rot.z >= 90 && enemy_data[i].turn_move > 0.0f)
+						if (e_rot.z >= 90 && enemy_data[i].turn_move >= 0.0f)
 						{
 							enemy_data[i].turn_move = -enemy_data[i].turn_move;
 						}
@@ -591,7 +634,7 @@ void GamePlayScene::Update()
 								}
 								enemy[i]->SetRotation(e_rot);
 							} 
-							else if (Mapchip::GetChipNum(static_cast<int>((enemy_data[i].e_pos.x + p_x_radius + LAND_SCALE / 2) / LAND_SCALE), -static_cast<int>((enemy_data[i].e_pos.y - p_y_radius + LAND_SCALE / 2) / LAND_SCALE - 1), map[0]) == None && enemy_data[i].e_speed > 0)
+							else if (Mapchip::GetChipNum(static_cast<int>((enemy_data[i].e_pos.x + p_x_radius + LAND_SCALE / 2) / LAND_SCALE), -static_cast<int>((enemy_data[i].e_pos.y - p_y_radius + LAND_SCALE / 2) / LAND_SCALE - 1), map[0]) == None && enemy_data[i].e_speed >= 0)
 							{
 								enemy_data[i].e_speed = -enemy_data[i].e_speed;
 
@@ -647,14 +690,14 @@ void GamePlayScene::Update()
 						//右向きなら
 						if (player->GetRotation().y == 90)
 						{
-							CircularMotion(enemy_data[i].e_pos, p_pos, GetObjectLength(p_pos, enemy_data[i].e_pos), enemy_data[i].angle, -15);
+							CircularMotion(enemy_data[i].e_pos, p_pos, enemy_data[i].circle_radius, enemy_data[i].angle, -15);
 							Effect::CreateLocus( locus, *locusModel, enemy_data[i].e_pos);
 							scoreTick[i]++;
 						}
 						//左向きなら
 						else if (player->GetRotation().y == 270)
 						{
-							CircularMotion(enemy_data[i].e_pos, p_pos, GetObjectLength(p_pos, enemy_data[i].e_pos), enemy_data[i].angle, 15);
+							CircularMotion(enemy_data[i].e_pos, p_pos, enemy_data[i].circle_radius, enemy_data[i].angle, 15);
 							Effect::CreateLocus(locus, *locusModel, enemy_data[i].e_pos);
 							scoreTick[i]++;
 						}
@@ -663,6 +706,7 @@ void GamePlayScene::Update()
 						{
 							//エフェクト
 							shockFlag = true;
+							shock->SetPosition(enemy_data[i].e_pos);
 							enemy_data[i].is_alive = false;
 							enemy_data[i].is_catch = false;
 							is_shake = true;
@@ -670,6 +714,17 @@ void GamePlayScene::Update()
 							if (shake_power == 0)
 							{
 								shake_power = catch_count;
+							}
+							if (effect_radius <= 0)
+							{
+								if (catch_count >= 6)
+								{
+									effect_radius = 210 * 6;
+								}
+								else
+								{
+									effect_radius = 210 * catch_count;
+								}
 							}
 							if (catch_count > 0)
 							{
@@ -811,9 +866,17 @@ void GamePlayScene::Update()
 				if (enemy_data[i].is_catch == true)
 				{
 					RopeMove(i);
-					if (enemy_data[i].e_pos.x == enemy_data[i].old_e_pos.x && enemy_data[i].e_pos.y == enemy_data[i].old_e_pos.y)
+					rope_data[i][0].r_pos = p_pos;
+					rope_data[i][Point - 1].r_pos = enemy_data[i].e_pos;
+					for (int j = 1; j < Point - 1; j++)
 					{
-						enemy_data[i].e_down = 0;
+						//位置
+						rope_data[i][j].r_pos = (rope_data[i][j - 1].r_pos) / 2 + (rope_data[i][j + 1].r_pos) / 2;
+						//rope_data[i][j].r_pos = lerp(p_pos + rope_data[i][j - 1].r_vec, enemy_data[i].e_pos + rope_data[i][j + 1].r_vec, t);
+
+						RopeUpdate(rope_data[i][j].r_pos.x, rope_data[i][j].r_pos.y, i, j);
+						rope_data[i][j].r_pos = rope_data[i][j].r_pos + rope_data[i][j].r_vec;
+						rope_data[i][j].r_vec = { 0, 0, 0 };
 					}
 				}
 
@@ -1105,10 +1168,12 @@ void GamePlayScene::Update()
 
 
 	//エフェクト
+	Effect::ShockWaveUpdate(shock, camera, effect_radius, &shockFlag);
 	for (int i = 0; i < locus.size(); i++)
 	{
 		locus[i]->Update();
 	}
+	shock->Update();
 	Effect::DestroyEffectUpdate(camera, p_pos);
 
 	//fbxObject1->AnimationFlag = true;
@@ -1127,6 +1192,11 @@ void GamePlayScene::Draw()
 	Sprite::PreDraw(cmdList);
 	// 背景スプライト描画
 	spriteBG->Draw();
+
+	for (int i = 0; i < 6; i++)
+	{
+		cloud[i]->Draw();
+	}
 
 	/// <summary>
 	/// ここに背景スプライトの描画処理を追加できる
@@ -1153,7 +1223,10 @@ void GamePlayScene::Draw()
 		}
 		if (enemy_data[i].is_catch == true)
 		{
-			Rope[i]->Draw();
+			for (int j = 1; j < Point - 1; j++)
+			{
+				Rope[i][j]->Draw();
+			}
 		}
 	}
 
@@ -1183,6 +1256,10 @@ void GamePlayScene::Draw()
 	for (int i = 0; i < locus.size(); i++)
 	{
 		locus[i]->Draw();
+	}
+	if (shockFlag == true)
+	{
+		shock->Draw();
 	}
 	
 	Effect::DestroyEffectDraw();
@@ -1214,14 +1291,10 @@ void GamePlayScene::Draw()
 	texLevel->Draw();
 	spriteLevel[1]->Draw();
 	texScore->Draw();
-	spriteScore[1]->Draw();
-	spriteScore[2]->Draw();
-	spriteScore[3]->Draw();
-	spriteScore[4]->Draw();
-	spriteScore[5]->Draw();
-	spriteScore[6]->Draw();
-	spriteScore[7]->Draw();
-	spriteScore[8]->Draw();
+	for (int i = 1; i < 9; i++)
+	{
+		spriteScore[i]->Draw();
+	}
 
 	if (levelTime > 0 && 0.35 > levelTime || levelTime > 0.70 && 1 > levelTime)
 	{
@@ -1277,16 +1350,10 @@ void GamePlayScene::SpawnEnemy(int mapNumber, int enemyNumber)
 		enemy_data[enemyNumber].e_pos = { spawnX * LAND_SCALE,  -spawnY * LAND_SCALE, 0 };
 		enemy_data[enemyNumber].is_alive = true;//スポーン
 		enemy_data[enemyNumber].enemy_type = NORMAL;
-		enemy[enemyNumber + 1]->SetPosition({ (spawnX + 1) * LAND_SCALE,  -spawnY * LAND_SCALE, 0 });//位置をセット
-		enemy[enemyNumber + 1]->SetRotation({ 0, 0, 0 });
-		enemy_data[enemyNumber + 1].e_pos = { (spawnX + 1) * LAND_SCALE,  -spawnY * LAND_SCALE, 0 };
-		enemy_data[enemyNumber + 1].is_alive = true;//スポーン
-		enemy_data[enemyNumber + 1].enemy_type = NORMAL;
 		int num = rand() % 101;
 		if (level * 10 > num)
 		{
 			enemy_data[enemyNumber].enemy_type = rand() % JUMP + 1;
-			enemy_data[enemyNumber + 1].enemy_type = rand() % JUMP + 1;
 		}
 		int j_num = 0;
 		for (int j = 0; j < enemySpawn; j++)
@@ -1300,32 +1367,28 @@ void GamePlayScene::SpawnEnemy(int mapNumber, int enemyNumber)
 		if (j_num == 0)
 		{
 			enemy_data[enemyNumber].enemy_type = NORMAL;
-			enemy_data[enemyNumber + 1].enemy_type = NORMAL;
 		}
-		for (int i = 0; i < 2; i++)
+		if (enemy_data[enemyNumber].enemy_type == TWICE)
 		{
-			if (enemy_data[enemyNumber + i].enemy_type == TWICE)
-			{
-				enemy_data[enemyNumber + i].can_catch = false;
-				enemy[enemyNumber + i]->SetModel(enemy_model_2);
-				enemy[enemyNumber + i]->SetRotation({ 0, 0, 0 });
-			} 
-			else
-			{
-				enemy_data[enemyNumber + i].can_catch = true;
-				enemy[enemyNumber + i]->SetModel(model);
-				enemy[enemyNumber + i]->SetRotation({ 0, 0, 0 });
-			}
-			if (enemy_data[enemyNumber + i].enemy_type == JUMP)
-			{
-				enemy_data[enemyNumber + i].is_bounce = true;
-			}
-			else
-			{
-				enemy_data[enemyNumber + i].is_bounce = false;
-			}
-			enemy_data[enemyNumber + i].is_turn = false;
+			enemy_data[enemyNumber].can_catch = false;
+			enemy[enemyNumber]->SetModel(enemy_model_2);
+			enemy[enemyNumber]->SetRotation({ 0, 0, 0 });
 		}
+		else
+		{
+			enemy_data[enemyNumber].can_catch = true;
+			enemy[enemyNumber]->SetModel(model);
+			enemy[enemyNumber]->SetRotation({ 0, 0, 0 });
+		}
+		if (enemy_data[enemyNumber].enemy_type == JUMP)
+		{
+			enemy_data[enemyNumber].is_bounce = true;
+		}
+		else
+		{
+			enemy_data[enemyNumber].is_bounce = false;
+		}
+		enemy_data[enemyNumber].is_turn = false;
 	}
 }
 
@@ -1421,27 +1484,61 @@ bool GamePlayScene::MapCollide(XMFLOAT3& pos, float radiusX, float radiusY, floa
 	return is_hit;
 }
 
-void GamePlayScene::RopeMove(const int num)
+void GamePlayScene::RopeUpdate(float targetX, float targetY, const int enemy_index, const int rope_num)
+{
+	float forceX = (targetX - rope_data[enemy_index][rope_num].r_pos.x) * stiffness;
+	float ax = forceX / mass[rope_num];
+	rope_data[enemy_index][rope_num].r_vec.x = damping * (rope_data[enemy_index][rope_num].r_vec.x + ax);
+	rope_data[enemy_index][rope_num].r_vec.x = rope_data[enemy_index][rope_num].r_vec.x;
+
+	float forceY = (targetY - rope_data[enemy_index][rope_num].r_pos.y) * stiffness;
+	forceY -= rope_gravity;
+	float ay = forceY / mass[rope_num];
+	rope_data[enemy_index][rope_num].r_vec.y = damping * (rope_data[enemy_index][rope_num].r_vec.y + ay);
+	rope_data[enemy_index][rope_num].r_vec.y += rope_data[enemy_index][rope_num].r_vec.y;
+}
+
+void GamePlayScene::RopeMove(const int enemy_index)
 {
 	//プレイヤーとエネミーの距離
-	XMFLOAT2 length = { p_pos.x - enemy_data[num].e_pos.x, p_pos.y - enemy_data[num].e_pos.y };
-	float len = GetObjectLength(p_pos, enemy_data[num].e_pos);
+	XMFLOAT2 length = { p_pos.x - enemy_data[enemy_index].e_pos.x, p_pos.y - enemy_data[enemy_index].e_pos.y };
+	float len = GetObjectLength(p_pos, enemy_data[enemy_index].e_pos);
 	//最大値より大きいなら
-	if (len > enemy_data[num].max_rope)
+	if (len > enemy_data[enemy_index].max_rope)
 	{
-		float tmp = len / (enemy_data[num].max_rope);
-		len = enemy_data[num].max_rope;
-		enemy_data[num].e_pos = { p_pos.x - length.x / tmp, p_pos.y - length.y / tmp, 0 };
-		MapCollide(enemy_data[num].e_pos, enemy_data[num].e_x_radius, enemy_data[num].e_y_radius, p_add, 0, enemy_data[num].e_pos);
+		float wq = len / enemy_data[enemy_index].max_rope;
+		len = enemy_data[enemy_index].max_rope;
+		enemy_data[enemy_index].e_pos = { p_pos.x - length.x / wq, p_pos.y - length.y / wq, 0 };
+		MapCollide(enemy_data[enemy_index].e_pos, enemy_data[enemy_index].e_x_radius, enemy_data[enemy_index].e_y_radius, p_add, 0, enemy_data[enemy_index].e_pos);
 	}
 
 	//ロープの長さ
-	XMFLOAT3 r_pos = { (p_pos.x + enemy_data[num].e_pos.x) / 2, (p_pos.y + enemy_data[num].e_pos.y) / 2, 0 };
-	float angleX = rope_angle->PosForAngle(p_pos.x, r_pos.y, r_pos.x, p_pos.y);
-	Rope[num]->SetPosition(r_pos);
-	Rope[num]->SetScale({ 0.3f, len / 2, 0.3f });
-	Rope[num]->SetRotation({ 0, 0 ,XMConvertToDegrees(angleX) });
-	Rope[num]->Update();
+	//Rope[num][num2]->SetPosition({(p_pos.x + enemy_data[num].e_pos.x) / 2, (p_pos.y + enemy_data[num].e_pos.y) / 2, 0});
+	for (int i = 1; i < Point - 1; i++)
+	{
+		//ロープ同士の距離
+		XMFLOAT2 length = {
+			rope_data[enemy_index][i - 1].r_pos.x - rope_data[enemy_index][i + 1].r_pos.x,
+			rope_data[enemy_index][i - 1].r_pos.y - rope_data[enemy_index][i + 1].r_pos.y };
+		float len = GetObjectLength(rope_data[enemy_index][i - 1].r_pos, rope_data[enemy_index][i + 1].r_pos);
+		//最大値より大きいなら
+		if (len > enemy_data[enemy_index].max_rope)
+		{
+			float wq = len / enemy_data[enemy_index].max_rope;
+			len = enemy_data[enemy_index].max_rope;
+			rope_data[enemy_index][i + 1].r_pos = {
+				rope_data[enemy_index][i - 1].r_pos.x - length.x / wq,
+				rope_data[enemy_index][i - 1].r_pos.y - length.y / wq, 0 };
+		}
+
+		float angleX = rope_angle->PosForAngle(
+			rope_data[enemy_index][i - 1].r_pos.x, rope_data[enemy_index][i + 1].r_pos.y,
+			rope_data[enemy_index][i + 1].r_pos.x, rope_data[enemy_index][i - 1].r_pos.y);
+		Rope[enemy_index][i]->SetPosition(rope_data[enemy_index][i].r_pos);
+		Rope[enemy_index][i]->SetScale({ 0.3f, len / 2 , 0.3f });
+		Rope[enemy_index][i]->SetRotation({ 0, 0 ,XMConvertToDegrees(angleX) });
+		Rope[enemy_index][i]->Update();
+	}
 }
 
 bool GamePlayScene::CollisionObject(const std::unique_ptr<Object3d>& object_a, const std::unique_ptr<Object3d>& object_b)
@@ -1463,6 +1560,14 @@ bool GamePlayScene::CollisionObject(const std::unique_ptr<Object3d>& object_a, c
 	//半径の合計より短ければ
 	if (l_x < a_x + b_x && l_y < a_y + b_y)
 	{
+		if (l_x <= 0)
+		{
+			l_x = 0.5f;
+		}
+		if (l_y <= 0)
+		{
+			l_y = 0.5f;
+		}
 		return true;
 	}
 
