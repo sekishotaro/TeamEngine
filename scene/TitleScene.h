@@ -10,9 +10,7 @@
 #include "Camera.h"
 #include <vector>
 #include "Effect.h"
-
-
-
+#include "Vector3.h"
 
 class TitleScene : public BaseScene
 {
@@ -63,6 +61,12 @@ public: //サブクラス
 		float turn_move; //裏返るときの動き
 	};
 
+	struct RopeData
+	{
+		XMFLOAT3 r_pos; // ロープの位置
+		XMFLOAT3 r_vec; // ロープの速度
+	};
+
 public:
 
 	/// <summary>
@@ -86,6 +90,7 @@ public:
 	void Draw() override;
 
 	//定数
+	static const int Point = 8;
 	static const int EnemySpawnMax = 40;
 	//マップチップ1つの大きさ
 	const float LAND_SCALE = 5.0f;
@@ -112,7 +117,7 @@ public:
 	std::unique_ptr<Object3d> objBlock[map_max_y][map_max_x]; //ステージブロック
 	std::unique_ptr<Object3d> player = nullptr; //プレイヤー
 	std::unique_ptr<Object3d> enemy[EnemySpawnMax]; //エネミー
-	std::unique_ptr<Object3d> Rope[EnemySpawnMax]; //ロープ
+	std::unique_ptr<Object3d> Rope[EnemySpawnMax][Point]; //ロープ
 
 	//エフェクト
 	int maxLocus = 0;
@@ -167,6 +172,11 @@ public:
 
 	//ロープ
 	float max_rope; //ロープの最大
+	RopeData rope_data[EnemySpawnMax][Point];
+	float rope_gravity = 0.125f;
+	float mass[Point];
+	float stiffness = 0.6f;
+	float damping = 0.3f;
 
 	/// <summary>
 	/// ゲームシーン用
@@ -199,9 +209,14 @@ public:
 	bool MapCollide(XMFLOAT3& pos, float radiusX, float radiusY, int mapNumber, const XMFLOAT3 old_pos, bool is_jump = false);
 
 	/// <summary>
+	/// ロープの更新
+	/// </summary>
+	void RopeUpdate(float targetX, float targetY, const int enemy_index, const int rope_num);
+
+	/// <summary>
 	/// ロープの角度変更
 	/// <summary>
-	void RopeMove(XMFLOAT3& pos, const int num);
+	void RopeMove(XMFLOAT3& pos, const int enemy_index);
 
 	//オブジェクト同士の当たり判定
 	bool CollisionObject(const std::unique_ptr<Object3d>& object_a, const std::unique_ptr<Object3d>& object_b);

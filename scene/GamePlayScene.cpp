@@ -135,7 +135,10 @@ void GamePlayScene::Initialize()
 	for (int i = 0; i < EnemySpawnMax; i++)
 	{
 		enemy[i] = Object3d::Create();
-		Rope[i] = Object3d::Create();
+		for (int j = 0; j < Point; j++)
+		{
+			Rope[i][j] = Object3d::Create();
+		}
 	}
 	player = Object3d::Create();	
 
@@ -212,10 +215,21 @@ void GamePlayScene::Initialize()
 		enemy[i]->SetPosition(enemy_data[i].e_pos);
 		enemy[i]->Update();
 
-		//ロープ
-		Rope[i]->SetModel(rope);
-		Rope[i]->SetScale({ 0.3, 5, 0.3 });
-		Rope[i]->Update();
+		for (int j = 0; j < Point; j++)
+		{
+			//ロープ
+			float t = (float)(j) / (Point - 1);
+			//位置
+			rope_data[i][j].r_pos = { (p_pos.x + enemy_data[i].e_pos.x) / 2, (p_pos.y + enemy_data[i].e_pos.y) / 2, 0 };
+			// 速度
+			rope_data[i][j].r_vec = { 0, 0, 0 };
+			//質量
+			mass[j] = 1.0f;
+
+			Rope[i][j]->SetModel(rope);
+			Rope[i][j]->SetScale({ 0.3, 5, 0.3 });
+			Rope[i][j]->Update();
+		}
 
 		scoreTick[i] = 0;
 	}
@@ -847,9 +861,17 @@ void GamePlayScene::Update()
 				if (enemy_data[i].is_catch == true)
 				{
 					RopeMove(i);
-					if (enemy_data[i].e_pos.x == enemy_data[i].old_e_pos.x && enemy_data[i].e_pos.y == enemy_data[i].old_e_pos.y)
+					rope_data[i][0].r_pos = p_pos;
+					rope_data[i][Point - 1].r_pos = enemy_data[i].e_pos;
+					for (int j = 1; j < Point - 1; j++)
 					{
-						enemy_data[i].e_down = 0;
+						//位置
+						rope_data[i][j].r_pos = (rope_data[i][j - 1].r_pos) / 2 + (rope_data[i][j + 1].r_pos) / 2;
+						//rope_data[i][j].r_pos = lerp(p_pos + rope_data[i][j - 1].r_vec, enemy_data[i].e_pos + rope_data[i][j + 1].r_vec, t);
+
+						RopeUpdate(rope_data[i][j].r_pos.x, rope_data[i][j].r_pos.y, i, j);
+						rope_data[i][j].r_pos = rope_data[i][j].r_pos + rope_data[i][j].r_vec;
+						rope_data[i][j].r_vec = { 0, 0, 0 };
 					}
 				}
 
@@ -1196,7 +1218,10 @@ void GamePlayScene::Draw()
 		}
 		if (enemy_data[i].is_catch == true)
 		{
-			Rope[i]->Draw();
+			for (int j = 1; j < Point - 1; j++)
+			{
+				Rope[i][j]->Draw();
+			}
 		}
 	}
 
@@ -1454,27 +1479,61 @@ bool GamePlayScene::MapCollide(XMFLOAT3& pos, float radiusX, float radiusY, floa
 	return is_hit;
 }
 
-void GamePlayScene::RopeMove(const int num)
+void GamePlayScene::RopeUpdate(float targetX, float targetY, const int enemy_index, const int rope_num)
+{
+	float forceX = (targetX - rope_data[enemy_index][rope_num].r_pos.x) * stiffness;
+	float ax = forceX / mass[rope_num];
+	rope_data[enemy_index][rope_num].r_vec.x = damping * (rope_data[enemy_index][rope_num].r_vec.x + ax);
+	rope_data[enemy_index][rope_num].r_vec.x = rope_data[enemy_index][rope_num].r_vec.x;
+
+	float forceY = (targetY - rope_data[enemy_index][rope_num].r_pos.y) * stiffness;
+	forceY -= rope_gravity;
+	float ay = forceY / mass[rope_num];
+	rope_data[enemy_index][rope_num].r_vec.y = damping * (rope_data[enemy_index][rope_num].r_vec.y + ay);
+	rope_data[enemy_index][rope_num].r_vec.y += rope_data[enemy_index][rope_num].r_vec.y;
+}
+
+void GamePlayScene::RopeMove(const int enemy_index)
 {
 	//プレイヤーとエネミーの距離
-	XMFLOAT2 length = { p_pos.x - enemy_data[num].e_pos.x, p_pos.y - enemy_data[num].e_pos.y };
-	float len = GetObjectLength(p_pos, enemy_data[num].e_pos);
+	XMFLOAT2 length = { p_pos.x - enemy_data[enemy_index].e_pos.x, p_pos.y - enemy_data[enemy_index].e_pos.y };
+	float len = GetObjectLength(p_pos, enemy_data[enemy_index].e_pos);
 	//最大値より大きいなら
-	if (len > enemy_data[num].max_rope)
+	if (len > enemy_data[enemy_index].max_rope)
 	{
-		float tmp = len / (enemy_data[num].max_rope);
-		len = enemy_data[num].max_rope;
-		enemy_data[num].e_pos = { p_pos.x - length.x / tmp, p_pos.y - length.y / tmp, 0 };
-		MapCollide(enemy_data[num].e_pos, enemy_data[num].e_x_radius, enemy_data[num].e_y_radius, p_add, 0, enemy_data[num].e_pos);
+		float wq = len / enemy_data[enemy_index].max_rope;
+		len = enemy_data[enemy_index].max_rope;
+		enemy_data[enemy_index].e_pos = { p_pos.x - length.x / wq, p_pos.y - length.y / wq, 0 };
+		MapCollide(enemy_data[enemy_index].e_pos, enemy_data[enemy_index].e_x_radius, enemy_data[enemy_index].e_y_radius, p_add, 0, enemy_data[enemy_index].e_pos);
 	}
 
 	//ロープの長さ
-	XMFLOAT3 r_pos = { (p_pos.x + enemy_data[num].e_pos.x) / 2, (p_pos.y + enemy_data[num].e_pos.y) / 2, 0 };
-	float angleX = rope_angle->PosForAngle(p_pos.x, r_pos.y, r_pos.x, p_pos.y);
-	Rope[num]->SetPosition(r_pos);
-	Rope[num]->SetScale({ 0.3f, len / 2, 0.3f });
-	Rope[num]->SetRotation({ 0, 0 ,XMConvertToDegrees(angleX) });
-	Rope[num]->Update();
+	//Rope[num][num2]->SetPosition({(p_pos.x + enemy_data[num].e_pos.x) / 2, (p_pos.y + enemy_data[num].e_pos.y) / 2, 0});
+	for (int i = 1; i < Point - 1; i++)
+	{
+		//ロープ同士の距離
+		XMFLOAT2 length = {
+			rope_data[enemy_index][i - 1].r_pos.x - rope_data[enemy_index][i + 1].r_pos.x,
+			rope_data[enemy_index][i - 1].r_pos.y - rope_data[enemy_index][i + 1].r_pos.y };
+		float len = GetObjectLength(rope_data[enemy_index][i - 1].r_pos, rope_data[enemy_index][i + 1].r_pos);
+		//最大値より大きいなら
+		if (len > enemy_data[enemy_index].max_rope)
+		{
+			float wq = len / enemy_data[enemy_index].max_rope;
+			len = enemy_data[enemy_index].max_rope;
+			rope_data[enemy_index][i + 1].r_pos = {
+				rope_data[enemy_index][i - 1].r_pos.x - length.x / wq,
+				rope_data[enemy_index][i - 1].r_pos.y - length.y / wq, 0 };
+		}
+
+		float angleX = rope_angle->PosForAngle(
+			rope_data[enemy_index][i - 1].r_pos.x, rope_data[enemy_index][i + 1].r_pos.y,
+			rope_data[enemy_index][i + 1].r_pos.x, rope_data[enemy_index][i - 1].r_pos.y);
+		Rope[enemy_index][i]->SetPosition(rope_data[enemy_index][i].r_pos);
+		Rope[enemy_index][i]->SetScale({ 0.3f, len / 2 , 0.3f });
+		Rope[enemy_index][i]->SetRotation({ 0, 0 ,XMConvertToDegrees(angleX) });
+		Rope[enemy_index][i]->Update();
+	}
 }
 
 bool GamePlayScene::CollisionObject(const std::unique_ptr<Object3d>& object_a, const std::unique_ptr<Object3d>& object_b)

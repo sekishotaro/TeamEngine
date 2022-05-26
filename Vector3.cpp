@@ -8,7 +8,7 @@ float Vector3::length() {
 	return sqrt(x * x + y * y + z * z);
 }
 
-XMFLOAT3 Vector3::normalize() 
+XMFLOAT3 Vector3::normalize()
 {
 	float len = length();
 	if (len != 0) {
@@ -73,11 +73,29 @@ const XMFLOAT3 operator+(const XMFLOAT3& v1, const XMFLOAT3& v2) {
 	return w;
 }
 
+const XMFLOAT3 operator+(const XMFLOAT3& v1, float s)
+{
+	XMFLOAT3 w;
+	w.x = v1.x + s;
+	w.y = v1.y + s;
+	w.z = v1.z + s;
+	return w;
+}
+
 const XMFLOAT3 operator-(const XMFLOAT3& v1, const XMFLOAT3& v2) {
 	XMFLOAT3 w;
 	w.x = v1.x - v2.x;
 	w.y = v1.y - v2.y;
 	w.z = v1.z - v2.z;
+	return w;
+}
+
+const XMFLOAT3 operator-(const XMFLOAT3& v1, float s)
+{
+	XMFLOAT3 w;
+	w.x = v1.x - s;
+	w.y = v1.y - s;
+	w.z = v1.z - s;
 	return w;
 }
 
@@ -107,7 +125,7 @@ const XMFLOAT3 operator/(const XMFLOAT3& v, float s) {
 
 //ê¸å`ï‚ä‘
 const XMFLOAT3 lerp(const XMFLOAT3& start, const XMFLOAT3& end, const float t) {
-	return start * (1.0 - t) + end * t;
+	return start * (1.0f - t) + end * t;
 }
 
 const XMFLOAT3 easeInQuad(const XMFLOAT3& start, const XMFLOAT3& end, const float t) {
