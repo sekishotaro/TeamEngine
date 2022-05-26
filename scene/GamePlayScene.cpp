@@ -290,7 +290,6 @@ void GamePlayScene::Update()
 		if (countFinishFlag == true)
 		{
 			PlayPossibleflag = true;
-			LoadText();
 		}
 	}
 
@@ -1515,68 +1514,4 @@ bool GamePlayScene::inFrustum(XMFLOAT3 playerPosition, XMFLOAT3 negativePoint, X
 	}
 
 	return false;
-}
-
-void GamePlayScene::writeText()
-{
-	for (int i = 0; i < 3; i++)
-	{
-		if (score >= score_list[i])
-		{
-			if (i + 1 < 3)
-			{
-				score_list[i + 1] = score_list[i];
-			}
-			if (i + 2 < 3)
-			{
-				score_list[i + 2] = score_list[i];
-			}
-			score_list[i] = score;
-			break;
-		}
-	}
-
-	std::string first = std::to_string(score_list[0]);
-	std::string second = std::to_string(score_list[1]);
-	std::string third = std::to_string(score_list[2]);
-
-	std::ofstream ofs("Resources/ScoreList.txt");
-	if (!ofs)
-	{
-		assert(0);
-	}
-	else
-	{
-		ofs << " " << first << " " << second << " " << third;
-	}
-	ofs.close();
-}
-
-void GamePlayScene::LoadText()
-{
-	std::ifstream file;
-	const std::string fileName = "Resources/ScoreList.txt";
-	file.open(fileName);
-	if (file.fail())
-	{
-		assert(0);
-	}
-
-	//1行ずつ読み込む
-	std::string line;
-	while (getline(file, line))
-	{
-		//1行分の文字列をストリームに変換して解析しやすくする
-		std::istringstream line_stream(line);
-
-		//半角スペースゥ切りで行の先頭文字列を取得
-		std::string key;
-		getline(line_stream, key, ' ');
-
-		line_stream >> score_list[0];
-		line_stream >> score_list[1];
-		line_stream >> score_list[2];
-	}
-	//ファイルを閉じる
-	file.close();
 }

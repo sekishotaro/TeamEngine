@@ -248,10 +248,5 @@ public:
 	/// <returns>ê¨î€</returns>
 	bool inFrustum(XMFLOAT3 playerPosition, XMFLOAT3 negativePoint, XMFLOAT3 positivePoint, const float width, const float height);
 
-	void LoadText();
-
-	void writeText();
-	bool inFrustum(XMFLOAT3 playerPosition, XMFLOAT3 negativePoint, XMFLOAT3 positivePoint);
-
 	static int GetScoreNum() { return score; }
 };
