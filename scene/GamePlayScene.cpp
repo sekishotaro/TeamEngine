@@ -495,23 +495,7 @@ void GamePlayScene::Update()
 			//“G‚ÌƒXƒ|[ƒ“
 			if (enemy_data[i].is_alive == false)
 			{
-				if (is_attack == false)
-				{
-					if (i % 2 == 0)
-					{
-						enemy_data[i + 1].is_alive = false;
-						enemy_data[i + 1].is_catch = false;
-					}
-					if (i % 2 == 1)
-					{
-						enemy_data[i - 1].is_alive = false;
-						enemy_data[i - 1].is_catch = false;
-					}
-				}
-				if (i % 2 == 0)
-				{
-					SpawnEnemy(0, i);
-				}
+				SpawnEnemy(0, i);
 			}
 			//“G‚Ìˆ—
 			else
