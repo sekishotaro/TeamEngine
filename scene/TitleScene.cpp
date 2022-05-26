@@ -147,17 +147,10 @@ void TitleScene::Update()
 	// ゲームシーンの毎フレーム処理
 	Input* input = Input::GetInstance();
 
-	//実験用エフェクト置き場
-	if (input->PushKey(DIK_M))  //衝撃波開始
-	{
-		shockFlag = true;
-		Effect::DeletLocus(locus, camera, p_pos);
-	}
-
-
 	Effect::DeletLocus(locus, camera, p_pos);
 
-	Effect::ShockWaveUpdate(shock, p_pos, &shockFlag);
+	float r = 150.0f;
+	Effect::ShockWaveUpdate(shock, camera, r, &shockFlag);
 
 	MapCreate(0);
 	for (int y = 0; y < map_max_y; y++)
@@ -566,7 +559,7 @@ void TitleScene::Update()
 		}
 	}
 
-	if (input->TriggerKey(DIK_RETURN) || input->TriggerButton(Start))
+	if (input->TriggerKey(DIK_RETURN) || input->TriggerButton(Select))
 	{
 		startFlag = true;
 	}
