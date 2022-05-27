@@ -178,11 +178,7 @@ void GamePlayScene::Initialize()
 	shake_time = 0;
 	shake_x = 0;
 	shake_y = 0;
-<<<<<<< HEAD
 	lastTime = 20.0f;
-=======
-	lastTime = 10.0f;
->>>>>>> e1ffd2b8ce3231435dd7d7c2c449c6e17c9f2af2
 	level = 1;
 	levelTime = 0;
 	enemySpawn = 1;
