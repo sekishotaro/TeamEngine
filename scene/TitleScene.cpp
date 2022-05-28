@@ -118,7 +118,7 @@ void TitleScene::Initialize()
 	//プレイヤー
 	player->SetModel(modelPlayer);
 	player->SetScale({ 3, 3, 3 });
-	p_pos = { 0, 10, 0 };
+	p_pos = { 50, 10, 0 };
 	old_p_pos = { 0, 0, 0 };
 	p_x_radius = 0.4f * player->GetScale().x;
 	p_y_radius = 0.8f * player->GetScale().y;
@@ -681,7 +681,6 @@ void TitleScene::Draw()
 	// 背景スプライト描画
 	spriteBG->Draw();
 	titleText->Draw();
-	text->Draw();
 	/// <summary>
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
@@ -740,6 +739,8 @@ void TitleScene::Draw()
 
 	// 前景スプライト描画前処理
 	Sprite::PreDraw(cmdList);
+
+	text->Draw();
 
 	// デバッグテキストの描画
 	//DebugText::GetInstance()->DrawAll(cmdList);
