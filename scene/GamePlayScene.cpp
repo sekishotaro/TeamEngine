@@ -19,7 +19,7 @@
 
 using namespace DirectX;
 
-//int GamePlayScene::score;
+int GamePlayScene::score;
 
 void GamePlayScene::Initialize()
 {
@@ -178,7 +178,7 @@ void GamePlayScene::Initialize()
 	shake_time = 0;
 	shake_x = 0;
 	shake_y = 0;
-	lastTime = 120.0f;
+	lastTime = 10.0f;
 	level = 1;
 	levelTime = 0;
 	enemySpawn = 1;
@@ -570,7 +570,6 @@ void GamePlayScene::Update()
 						enemy_data[i].is_bounce = false;
 						catch_count++;
 						enemy_data[i].max_rope += static_cast<float>(rand() % 50) / 10 - 2.5f;
-						enemy[i]->SetRotation({0, 0, 0});
 					} 
 					else if (CollisionObject(player, enemy[i]) == true && enemy_data[i].can_catch == false)
 					{
