@@ -25,24 +25,21 @@ void EndScene::Initialize()
 	Sprite::LoadTexture(7, L"Resources/Number7.png");
 	Sprite::LoadTexture(8, L"Resources/Number8.png");
 	Sprite::LoadTexture(9, L"Resources/Number9.png");
-	Sprite::LoadTexture(10, L"Resources/Titlebackground.png");
+	Sprite::LoadTexture(10, L"Resources/Endhaikei.png");
+	Sprite::LoadTexture(11, L"Resources/gametitle.png");
+	Sprite::LoadTexture(12, L"Resources/new record.png");
 	Sprite::LoadTexture(21, L"Resources/switch_In.png");
 	Sprite::LoadTexture(22, L"Resources/switch_Out.png");
 	// 背景スプライト生成
 	spriteBG = Sprite::Create(10, { 0.0f,0.0f });
+	totitle = Sprite::Create(11, { 0.0f,50.0f });
+	newrecord = Sprite::Create(12, { 0.0f,50.0f });
+	newrecord->SetPosition({ 100,350 });
 
-	ScoreSpriteInitialize(digitsNum, spriteScoreNo1, WinApp::window_width / 3 * 2, 128);
-	ScoreSpriteInitialize(digitsNum, spriteScoreNo2, WinApp::window_width / 3 * 2, 256);
-	ScoreSpriteInitialize(digitsNum, spriteScoreNo3, WinApp::window_width / 3 * 2, 384);
-	ScoreSpriteInitialize(digitsNum, spriteScore, WinApp::window_width / 3 * 2, 512);
-	//spriteScore[1] = Sprite::Create(0, { WinApp::window_width - 32,0 });
-	//spriteScore[2] = Sprite::Create(0, { WinApp::window_width - 64,0 });
-	//spriteScore[3] = Sprite::Create(0, { WinApp::window_width - 96,0 });
-	//spriteScore[4] = Sprite::Create(0, { WinApp::window_width - 128,0 });
-	//spriteScore[5] = Sprite::Create(0, { WinApp::window_width - 160,0 });
-	//spriteScore[6] = Sprite::Create(0, { WinApp::window_width - 192,0 });
-	//spriteScore[7] = Sprite::Create(0, { WinApp::window_width - 224,0 });
-	//spriteScore[8] = Sprite::Create(0, { WinApp::window_width - 256,0 });
+	ScoreSpriteInitialize(digitsNum, spriteScoreNo1, WinApp::window_width / 3 * 2.5, 128);
+	ScoreSpriteInitialize(digitsNum, spriteScoreNo2, WinApp::window_width / 3 * 2.5, 256);
+	ScoreSpriteInitialize(digitsNum, spriteScoreNo3, WinApp::window_width / 3 * 2.5, 384);
+	ScoreSpriteInitialize(digitsNum, spriteScore, WinApp::window_width / 3 * 2.5, 512);
 
 	ConvertScene::InitializeOut();
 }
@@ -56,7 +53,7 @@ void EndScene::Finalize()
 void EndScene::Update()
 {
 	// ゲームシーンの毎フレーム処理
-	nowPlayScore = GamePlayScene::GetScoreNum();
+	//nowPlayScore = GamePlayScene::GetScoreNum();
 	LoadText();
 
 	time += 0.166;
@@ -133,7 +130,11 @@ void EndScene::Draw()
 	Sprite::PreDraw(cmdList);
 	// 背景スプライト描画
 	spriteBG->Draw();
-
+	totitle->Draw();
+	if (rankFluctuationNum == 1)
+	{
+		newrecord->Draw();
+	}
 	/// <summary>
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
@@ -200,7 +201,7 @@ void EndScene::Draw()
 	
 
 	// デバッグテキストの描画
-	DebugText::GetInstance()->DrawAll(cmdList);
+	//DebugText::GetInstance()->DrawAll(cmdList);
 
 	ConvertScene::Draw();
 
