@@ -44,6 +44,8 @@ public:
 	/// ゲームシーン用
 	/// </summary>
 	Sprite* spriteBG = nullptr;
+	Sprite* totitle = nullptr;
+	Sprite* newrecord = nullptr;
 	Sprite* spriteScore[10]; //スコア
 	Sprite* spriteScoreNo1[10]; //歴代1位スコア
 	Sprite* spriteScoreNo2[10]; //歴代2位スコア
