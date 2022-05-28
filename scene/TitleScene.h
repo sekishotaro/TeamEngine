@@ -67,6 +67,8 @@ public: //サブクラス
 		XMFLOAT3 r_vec; // ロープの速度
 	};
 
+	int num = 0;
+
 public:
 
 	/// <summary>

@@ -51,6 +51,7 @@ void TitleScene::Initialize()
 	level = 1;
 	enemySpawn = 1;
 	gravity = 0.125f;
+	num = 0;
 
 	for (int i = 0; i < EnemySpawnMax; i++)
 	{
@@ -547,6 +548,7 @@ void TitleScene::Update()
 						{
 							enemy_data[i].e_down = 0;
 							enemy_data[i].is_grand = true;
+
 							if (enemy_data[i].enemy_type == JUMP && enemy_data[i].is_catch == false)
 							{
 								enemy_data[i].is_bounce = true;
@@ -585,9 +587,12 @@ void TitleScene::Update()
 		}
 	}
 
-	if (input->TriggerKey(DIK_RETURN) || input->TriggerButton(Select))
+	if (num > 60)
 	{
-		startFlag = true;
+		if (input->TriggerKey(DIK_RETURN) || input->TriggerButton(Select))
+		{
+			startFlag = true;
+		}
 	}
 
 	if (startFlag == true)
@@ -601,7 +606,7 @@ void TitleScene::Update()
 		}
 	}
 
-	DebugText::GetInstance()->Print(50, 20, 3, "fafa");
+	num++;
 
 	//エネミー更新
 	for (int i = 0; i < enemySpawn; i++)

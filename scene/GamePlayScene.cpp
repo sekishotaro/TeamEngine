@@ -178,7 +178,7 @@ void GamePlayScene::Initialize()
 	shake_time = 0;
 	shake_x = 0;
 	shake_y = 0;
-	lastTime = 20.0f;
+	lastTime = 120.0f;
 	level = 1;
 	levelTime = 0;
 	enemySpawn = 1;
@@ -458,8 +458,8 @@ void GamePlayScene::Update()
 				//プレイヤーの攻撃
 				if (enemy_data[i].is_catch == true)
 				{
-					enemy_data[i].circle_radius = GetObjectLength(p_pos, enemy_data[i].e_pos);
 					is_attack = true;
+					enemy_data[i].circle_radius = GetObjectLength(p_pos, enemy_data[i].e_pos);
 					//プレイヤーの向きで投げる方向を変える
 					if (player->GetRotation().y == 90 && p_pos.x >= enemy[i]->GetPosition().x)
 					{
@@ -479,7 +479,7 @@ void GamePlayScene::Update()
 			p_pos.x += damage_move;
 			damage_time++;
 
-			if (damage_time > 10)
+			if (damage_time > 20)
 			{
 				is_damage = false;
 				damage_move = 0;
@@ -491,9 +491,9 @@ void GamePlayScene::Update()
 		//無敵時間
 		if (is_invincible == true)
 		{
-			invincible_time += 0.166;
+			invincible_time += 1;
 
-			if (invincible_time > 6)
+			if (invincible_time > 75)
 			{
 				invincible_time = 0;
 				is_invincible = false;
@@ -576,12 +576,12 @@ void GamePlayScene::Update()
 						//左
 						if (p_pos.x < enemy_data[i].e_pos.x)
 						{
-							damage_move = -0.6f;
+							damage_move = -0.45f;
 						}
 						//右
 						else
 						{
-							damage_move = 0.6f;
+							damage_move = 0.45f;
 						}
 					}
 				}
@@ -683,6 +683,10 @@ void GamePlayScene::Update()
 				{
 					if (is_attack == true)
 					{
+						if (enemy_data[i].circle_radius == 0)
+						{
+							enemy_data[i].circle_radius = 1.25f;
+						}
 						//右向きなら
 						if (player->GetRotation().y == 90)
 						{
@@ -722,22 +726,6 @@ void GamePlayScene::Update()
 									effect_radius = 210 * catch_count;
 								}
 							}
-							if (catch_count > 0)
-							{
-								catch_count--;
-							}
-							for (int j = 0; j < enemySpawn; j++)
-							{
-								if (i != j && enemy_data[j].is_alive == true && enemy_data[j].is_catch == true)
-								{
-									is_attack = true;
-									break;
-								}
-							}
-							if (is_attack == false)
-							{
-								catch_count = 0;
-							}
 							score++;
 							score += scoreTick[i];
 							int hundredScore = 0;
@@ -774,7 +762,11 @@ void GamePlayScene::Update()
 							}
 							for (int j = 0; j < enemySpawn; j++)
 							{
-								if (i != j && enemy_data[j].is_alive == true && enemy_data[j].enemy_type == TWICE && enemy_data[j].can_catch == false)
+								if (i == j)
+								{
+									continue;
+								}
+								if (enemy_data[j].is_alive == true && enemy_data[j].enemy_type == TWICE && enemy_data[j].is_catch == false)
 								{
 									XMFLOAT3 positivePos = { enemy_data[j].e_pos.x + enemy_data[j].e_x_radius, enemy_data[j].e_pos.y + enemy_data[j].e_y_radius, 0 };
 									XMFLOAT3 negativePos = { enemy_data[j].e_pos.x - enemy_data[j].e_x_radius, enemy_data[j].e_pos.y - enemy_data[j].e_y_radius, 0 };
@@ -797,9 +789,17 @@ void GamePlayScene::Update()
 										enemy_data[j].is_turn = true;
 									}
 								}
+								if (enemy_data[j].is_alive == true && enemy_data[j].is_catch == true)
+								{
+									is_attack = true;
+									break;
+								}
+							}
+							if (catch_count > 0)
+							{
+								catch_count--;
 							}
 						}
-
 					} 
 					else
 					{
@@ -811,6 +811,8 @@ void GamePlayScene::Update()
 							{
 								enemy[i]->SetModel(model);
 								enemy_data[i].can_catch = true;
+								enemy_data[i].is_normal = true;
+								enemy[i]->SetRotation({0, 0, 0});
 							}
 						}
 						else
@@ -1385,6 +1387,7 @@ void GamePlayScene::SpawnEnemy(int mapNumber, int enemyNumber)
 			enemy_data[enemyNumber].is_bounce = false;
 		}
 		enemy_data[enemyNumber].is_turn = false;
+		enemy_data[enemyNumber].is_normal = true;
 	}
 }
 
@@ -1499,13 +1502,14 @@ void GamePlayScene::RopeMove(const int enemy_index)
 	//プレイヤーとエネミーの距離
 	XMFLOAT2 length = { p_pos.x - enemy_data[enemy_index].e_pos.x, p_pos.y - enemy_data[enemy_index].e_pos.y };
 	float len = GetObjectLength(p_pos, enemy_data[enemy_index].e_pos);
+
 	//最大値より大きいなら
 	if (len > enemy_data[enemy_index].max_rope)
 	{
 		float wq = len / enemy_data[enemy_index].max_rope;
 		len = enemy_data[enemy_index].max_rope;
 		enemy_data[enemy_index].e_pos = { p_pos.x - length.x / wq, p_pos.y - length.y / wq, 0 };
-		MapCollide(enemy_data[enemy_index].e_pos, enemy_data[enemy_index].e_x_radius, enemy_data[enemy_index].e_y_radius, p_add, 0, enemy_data[enemy_index].e_pos);
+		MapCollide(enemy_data[enemy_index].e_pos, enemy_data[enemy_index].e_x_radius, enemy_data[enemy_index].e_y_radius, p_add, 0, enemy_data[enemy_index].old_e_pos);
 	}
 
 	//ロープの長さ
@@ -1514,8 +1518,8 @@ void GamePlayScene::RopeMove(const int enemy_index)
 	{
 		//ロープ同士の距離
 		XMFLOAT2 length = {
-			rope_data[enemy_index][i - 1].r_pos.x - rope_data[enemy_index][i + 1].r_pos.x,
-			rope_data[enemy_index][i - 1].r_pos.y - rope_data[enemy_index][i + 1].r_pos.y };
+		rope_data[enemy_index][i - 1].r_pos.x - rope_data[enemy_index][i + 1].r_pos.x,
+		rope_data[enemy_index][i - 1].r_pos.y - rope_data[enemy_index][i + 1].r_pos.y };
 		float len = GetObjectLength(rope_data[enemy_index][i - 1].r_pos, rope_data[enemy_index][i + 1].r_pos);
 		//最大値より大きいなら
 		if (len > enemy_data[enemy_index].max_rope)
@@ -1523,13 +1527,13 @@ void GamePlayScene::RopeMove(const int enemy_index)
 			float wq = len / enemy_data[enemy_index].max_rope;
 			len = enemy_data[enemy_index].max_rope;
 			rope_data[enemy_index][i + 1].r_pos = {
-				rope_data[enemy_index][i - 1].r_pos.x - length.x / wq,
-				rope_data[enemy_index][i - 1].r_pos.y - length.y / wq, 0 };
+			rope_data[enemy_index][i - 1].r_pos.x - length.x / wq,
+			rope_data[enemy_index][i - 1].r_pos.y - length.y / wq, 0 };
 		}
 
 		float angleX = rope_angle->PosForAngle(
-			rope_data[enemy_index][i - 1].r_pos.x, rope_data[enemy_index][i + 1].r_pos.y,
-			rope_data[enemy_index][i + 1].r_pos.x, rope_data[enemy_index][i - 1].r_pos.y);
+		rope_data[enemy_index][i - 1].r_pos.x, rope_data[enemy_index][i + 1].r_pos.y,
+		rope_data[enemy_index][i + 1].r_pos.x, rope_data[enemy_index][i - 1].r_pos.y);
 		Rope[enemy_index][i]->SetPosition(rope_data[enemy_index][i].r_pos);
 		Rope[enemy_index][i]->SetScale({ 0.3f, len / 2 , 0.3f });
 		Rope[enemy_index][i]->SetRotation({ 0, 0 ,XMConvertToDegrees(angleX) });
@@ -1554,16 +1558,8 @@ bool GamePlayScene::CollisionObject(const std::unique_ptr<Object3d>& object_a, c
 	float l_y = sqrtf(powf(A.y - B.y, 2));
 
 	//半径の合計より短ければ
-	if (l_x < a_x + b_x && l_y < a_y + b_y)
+	if (l_x <= a_x + b_x && l_y <= a_y + b_y)
 	{
-		if (l_x <= 0)
-		{
-			l_x = 0.5f;
-		}
-		if (l_y <= 0)
-		{
-			l_y = 0.5f;
-		}
 		return true;
 	}
 
