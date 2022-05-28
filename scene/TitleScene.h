@@ -90,7 +90,7 @@ public:
 	void Draw() override;
 
 	//定数
-	static const int Point = 8;
+	static const int Point = 10;
 	static const int EnemySpawnMax = 40;
 	//マップチップ1つの大きさ
 	const float LAND_SCALE = 5.0f;
@@ -175,8 +175,10 @@ public:
 	RopeData rope_data[EnemySpawnMax][Point];
 	float rope_gravity = 0.125f;
 	float mass[Point];
-	float stiffness = 0.6f;
+	float stiffness = 0.7f;
 	float damping = 0.3f;
+	float timeRate[Point];
+	float angleX[Point];
 
 	/// <summary>
 	/// ゲームシーン用
