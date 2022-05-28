@@ -194,7 +194,7 @@ void GamePlayScene::Initialize()
 		enemy_data[i].e_pos = { 0, 0, 0 };
 		enemy[i]->SetScale({ 3, 3, 3 });
 		enemy[i]->Update();
-		enemy_data[i].e_x_radius = 0.6f * player->GetScale().x;
+		enemy_data[i].e_x_radius = 0.5f * player->GetScale().x;
 		enemy_data[i].e_y_radius = 0.8f * player->GetScale().y;
 		enemy_data[i].is_normal = true;
 		enemy_data[i].is_bounce = false;
@@ -205,7 +205,7 @@ void GamePlayScene::Initialize()
 		enemy_data[i].e_speed = 0.25f;
 		enemy_data[i].e_down = 0.0f;
 		enemy_data[i].angle = 0;
-		enemy_data[i].turn_move = 1;
+		enemy_data[i].turn_move = 2.0f;
 		enemy_data[i].enemy_type = NORMAL;
 		enemy_data[i].e_acc = 0;
 		enemy_data[i].can_catch = false;
@@ -213,6 +213,7 @@ void GamePlayScene::Initialize()
 		enemy_data[i].escape_time = 0;
 		enemy_data[i].max_rope = 15;
 		enemy_data[i].circle_radius = 0;
+		enemy[i]->SetRotation({ 0, 270, 0 });
 		enemy[i]->SetModel(model);
 		enemy[i]->SetPosition(enemy_data[i].e_pos);
 		enemy[i]->Update();
@@ -623,10 +624,13 @@ void GamePlayScene::Update()
 								//向きを変える
 								XMFLOAT3 e_rot;
 								e_rot = enemy[i]->GetRotation();
-								e_rot.y += 180.0f;
-								if (e_rot.y >= 360)
+								if (enemy_data[i].e_speed > 0)
 								{
-									e_rot.y = 0;
+									e_rot.y = 270.0f;
+								}
+								else
+								{
+									e_rot.y = 90.0f;
 								}
 								enemy[i]->SetRotation(e_rot);
 							} 
@@ -637,10 +641,12 @@ void GamePlayScene::Update()
 								//向きを変える
 								XMFLOAT3 e_rot;
 								e_rot = enemy[i]->GetRotation();
-								e_rot.y += 180.0f;
-								if (e_rot.y >= 360)
+								if (enemy_data[i].e_speed > 0)
 								{
-									e_rot.y = 0;
+									e_rot.y = 270.0f;
+								} else
+								{
+									e_rot.y = 90.0f;
 								}
 								enemy[i]->SetRotation(e_rot);
 							} 
@@ -651,10 +657,12 @@ void GamePlayScene::Update()
 								//向きを変える
 								XMFLOAT3 e_rot;
 								e_rot = enemy[i]->GetRotation();
-								e_rot.y += 180.0f;
-								if (e_rot.y >= 360)
+								if (enemy_data[i].e_speed > 0)
 								{
-									e_rot.y = 0;
+									e_rot.y = 270.0f;
+								} else
+								{
+									e_rot.y = 90.0f;
 								}
 								enemy[i]->SetRotation(e_rot);
 							} 
@@ -667,10 +675,12 @@ void GamePlayScene::Update()
 									//向きを変える
 									XMFLOAT3 e_rot;
 									e_rot = enemy[i]->GetRotation();
-									e_rot.y += 180.0f;
-									if (e_rot.y >= 360)
+									if (enemy_data[i].e_speed > 0)
 									{
-										e_rot.y = 0;
+										e_rot.y = 270.0f;
+									} else
+									{
+										e_rot.y = 90.0f;
 									}
 									enemy[i]->SetRotation(e_rot);
 								}
@@ -812,7 +822,18 @@ void GamePlayScene::Update()
 								enemy[i]->SetModel(model);
 								enemy_data[i].can_catch = true;
 								enemy_data[i].is_normal = true;
-								enemy[i]->SetRotation({0, 0, 0});
+								XMFLOAT3 e_rot;
+								e_rot = enemy[i]->GetRotation();
+								if (enemy_data[i].e_speed > 0)
+								{
+									e_rot.y = 270.0f;
+								} 
+								else
+								{
+									e_rot.y = 90.0f;
+								}
+								e_rot.z = 0;
+								enemy[i]->SetRotation(e_rot);
 							}
 						}
 						else
@@ -1344,7 +1365,17 @@ void GamePlayScene::SpawnEnemy(int mapNumber, int enemyNumber)
 	if (Mapchip::GetChipNum(spawnX, spawnY, map[mapNumber]) == None && Mapchip::GetChipNum(spawnX + 1, spawnY, map[mapNumber]) == None)
 	{
 		enemy[enemyNumber]->SetPosition({ spawnX * LAND_SCALE,  -spawnY * LAND_SCALE, 0 });//位置をセット
-		enemy[enemyNumber]->SetRotation({ 0, 0, 0 });
+		XMFLOAT3 e_rot;
+		e_rot = enemy[enemyNumber]->GetRotation();
+		if (enemy_data[enemyNumber].e_speed > 0)
+		{
+			e_rot.y = 270.0f;
+		} 
+		else
+		{
+			e_rot.y = 90.0f;
+		}
+		enemy[enemyNumber]->SetRotation(e_rot);
 		enemy_data[enemyNumber].e_pos = { spawnX * LAND_SCALE,  -spawnY * LAND_SCALE, 0 };
 		enemy_data[enemyNumber].is_alive = true;//スポーン
 		enemy_data[enemyNumber].enemy_type = NORMAL;
