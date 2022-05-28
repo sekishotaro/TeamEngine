@@ -25,7 +25,7 @@ void EndScene::Initialize()
 	Sprite::LoadTexture(7, L"Resources/Number7.png");
 	Sprite::LoadTexture(8, L"Resources/Number8.png");
 	Sprite::LoadTexture(9, L"Resources/Number9.png");
-	Sprite::LoadTexture(10, L"Resources/Titlebackground.png");
+	Sprite::LoadTexture(10, L"Resources/background.png");
 	Sprite::LoadTexture(21, L"Resources/switch_In.png");
 	Sprite::LoadTexture(22, L"Resources/switch_Out.png");
 	// 背景スプライト生成
@@ -200,7 +200,7 @@ void EndScene::Draw()
 	
 
 	// デバッグテキストの描画
-	DebugText::GetInstance()->DrawAll(cmdList);
+	//DebugText::GetInstance()->DrawAll(cmdList);
 
 	ConvertScene::Draw();
 
