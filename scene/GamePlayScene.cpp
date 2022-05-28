@@ -194,7 +194,7 @@ void GamePlayScene::Initialize()
 		enemy_data[i].e_pos = { 0, 0, 0 };
 		enemy[i]->SetScale({ 3, 3, 3 });
 		enemy[i]->Update();
-		enemy_data[i].e_x_radius = 0.5f * player->GetScale().x;
+		enemy_data[i].e_x_radius = 0.4f * player->GetScale().x;
 		enemy_data[i].e_y_radius = 0.8f * player->GetScale().y;
 		enemy_data[i].is_normal = true;
 		enemy_data[i].is_bounce = false;
@@ -1367,6 +1367,7 @@ void GamePlayScene::SpawnEnemy(int mapNumber, int enemyNumber)
 		enemy[enemyNumber]->SetPosition({ spawnX * LAND_SCALE,  -spawnY * LAND_SCALE, 0 });//位置をセット
 		XMFLOAT3 e_rot;
 		e_rot = enemy[enemyNumber]->GetRotation();
+		e_rot = {0, 0, 0};
 		if (enemy_data[enemyNumber].e_speed > 0)
 		{
 			e_rot.y = 270.0f;
@@ -1401,13 +1402,11 @@ void GamePlayScene::SpawnEnemy(int mapNumber, int enemyNumber)
 		{
 			enemy_data[enemyNumber].can_catch = false;
 			enemy[enemyNumber]->SetModel(enemy_model_2);
-			enemy[enemyNumber]->SetRotation({ 0, 0, 0 });
 		}
 		else
 		{
 			enemy_data[enemyNumber].can_catch = true;
 			enemy[enemyNumber]->SetModel(model);
-			enemy[enemyNumber]->SetRotation({ 0, 0, 0 });
 		}
 		if (enemy_data[enemyNumber].enemy_type == JUMP)
 		{
