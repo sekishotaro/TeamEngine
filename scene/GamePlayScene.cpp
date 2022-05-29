@@ -178,7 +178,7 @@ void GamePlayScene::Initialize()
 	shake_time = 0;
 	shake_x = 0;
 	shake_y = 0;
-	lastTime = 10.0f;
+	lastTime = 30.0f;
 	level = 1;
 	levelTime = 0;
 	enemySpawn = 1;
@@ -1451,7 +1451,7 @@ bool GamePlayScene::MapCollide(XMFLOAT3& pos, float radiusX, float radiusY, floa
 						if (is_jump == false)
 						{
 							is_hit = true;
-						}
+						} 
 						else
 						{
 							add = 0;
