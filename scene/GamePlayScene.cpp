@@ -79,7 +79,7 @@ void GamePlayScene::Initialize()
 	spriteBG = Sprite::Create(11, { 0.0f,0.0f });
 	spriteBG->SetSize({ WinApp::window_width * 1.2, WinApp::window_height * 1.2 });
 	texScore = Sprite::Create(15, { WinApp::window_width - 532, 0 });
-	texLevel = Sprite::Create(16, { WinApp::window_width - 100, WinApp::window_height - 64 });
+	texLevel = Sprite::Create(16, { WinApp::window_width - 100 - 32, WinApp::window_height - 64 - 32 });
 
 	//スプライト生成
 	minimap = Sprite::Create(12, { 0.0f,70.0f });
@@ -101,7 +101,7 @@ void GamePlayScene::Initialize()
 	spriteScore[6] = Sprite::Create(0, { WinApp::window_width - 192,0 });
 	spriteScore[7] = Sprite::Create(0, { WinApp::window_width - 224,0 });
 	spriteScore[8] = Sprite::Create(0, { WinApp::window_width - 256,0 });
-	spriteLevel[1] = Sprite::Create(0, { WinApp::window_width - 32 ,WinApp::window_height - 64 });
+	spriteLevel[1] = Sprite::Create(0, { WinApp::window_width - 48 ,WinApp::window_height - 96 });
 	spriteLevelUp = Sprite::Create(28, { WinApp::window_width / 2 - 80 ,WinApp::window_height / 2 - 80 });
 	finish = Sprite::Create(23, { 0.0f ,0.0f });
 
@@ -700,6 +700,10 @@ void GamePlayScene::Update()
 								}
 							}
 							score++;
+							if (enemy_data[i].enemy_type = TWICE)
+							{
+								score++;
+							}
 							score += scoreTick[i];
 							int hundredScore = 0;
 							int hundredScore2 = 0;
@@ -982,27 +986,27 @@ void GamePlayScene::Update()
 		camera->Update();
 	}
 
-	if (score > 1000)
+	if (score > 2000)
 	{
 		level = 7;
 	} 
-	else if (score > 750)
+	else if (score > 1500)
 	{
 		level = 6;
 	} 
-	else if (score > 500)
+	else if (score > 1200)
 	{
 		level = 5;
 	} 
-	else if (score > 200)
+	else if (score > 500)
 	{
 		level = 4;
 	}
-	else if (score > 70)
+	else if (score > 200)
 	{
 		level = 3;
 	} 
-	else if (score > 30)
+	else if (score > 50)
 	{
 		level = 2;
 	}
