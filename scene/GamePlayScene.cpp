@@ -700,6 +700,10 @@ void GamePlayScene::Update()
 								}
 							}
 							score++;
+							if (enemy_data[i].enemy_type = TWICE)
+							{
+								score++;
+							}
 							score += scoreTick[i];
 							int hundredScore = 0;
 							int hundredScore2 = 0;
@@ -982,27 +986,27 @@ void GamePlayScene::Update()
 		camera->Update();
 	}
 
-	if (score > 1000)
+	if (score > 2000)
 	{
 		level = 7;
 	} 
-	else if (score > 750)
+	else if (score > 1500)
 	{
 		level = 6;
 	} 
-	else if (score > 500)
+	else if (score > 1200)
 	{
 		level = 5;
 	} 
-	else if (score > 200)
+	else if (score > 500)
 	{
 		level = 4;
 	}
-	else if (score > 70)
+	else if (score > 200)
 	{
 		level = 3;
 	} 
-	else if (score > 30)
+	else if (score > 50)
 	{
 		level = 2;
 	}
