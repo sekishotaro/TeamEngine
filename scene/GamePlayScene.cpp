@@ -178,7 +178,7 @@ void GamePlayScene::Initialize()
 	shake_time = 0;
 	shake_x = 0;
 	shake_y = 0;
-	lastTime = 30.0f;
+	lastTime = 60.0f;
 	level = 1;
 	levelTime = 0;
 	enemySpawn = 1;
@@ -276,6 +276,15 @@ void GamePlayScene::Initialize()
 	
 	//乱数
 	srand(time(NULL));
+
+	MapCreate(0);
+	for (int y = 0; y < map_max_y; y++)
+	{
+		for (int x = 0; x < map_max_x; x++)
+		{
+			objBlock[y][x]->Update();
+		}
+	}
 }
 
 void GamePlayScene::Finalize()
@@ -385,16 +394,6 @@ void GamePlayScene::Update()
 	second = (int)lastTime % 60;
 	spriteTime[2]->ChangeTex(second % 10);
 	spriteTime[1]->ChangeTex(second / 10);
-
-	//Mキーでマップチップ設置
-	MapCreate(0);
-	for (int y = 0; y < map_max_y; y++)
-	{
-		for (int x = 0; x < map_max_x; x++)
-		{
-			objBlock[y][x]->Update();
-		}
-	}
 
 	//プレイヤー処理
 	if (PlayPossibleflag == true)
@@ -616,37 +615,45 @@ void GamePlayScene::Update()
 
 						 if (enemy_data[i].is_grand == true)
 						{
-							 XMFLOAT3 e_rot;
-							 e_rot = enemy[i]->GetRotation();
-							 if (enemy_data[i].e_speed > 0)
-							 {
-								 e_rot.y = 270.0f;
-							 } else
-							 {
-								 e_rot.y = 90.0f;
-							 }
-							 enemy[i]->SetRotation(e_rot);
-
+							 bool st = false;
 							//端まで行ったら
 							 if (MapCollide(enemy_data[i].e_pos, enemy_data[i].e_x_radius, enemy_data[i].e_y_radius, enemy_data[i].e_down, 0, enemy_data[i].old_e_pos))
 							 {
 								 enemy_data[i].e_speed = -enemy_data[i].e_speed;
+								 st = true;
 							 }
 							else if (Mapchip::GetChipNum(static_cast<int>((enemy_data[i].e_pos.x + p_x_radius + LAND_SCALE / 2) / LAND_SCALE), -static_cast<int>((enemy_data[i].e_pos.y - p_y_radius + LAND_SCALE / 2) / LAND_SCALE - 1), map[0]) == None && enemy_data[i].e_speed >= 0)
 							{
 								enemy_data[i].e_speed = -enemy_data[i].e_speed;
+								st = true;
 							} 
 							else if (Mapchip::GetChipNum(static_cast<int>((enemy_data[i].e_pos.x - p_x_radius + LAND_SCALE / 2) / LAND_SCALE), -static_cast<int>((enemy_data[i].e_pos.y - p_y_radius + LAND_SCALE / 2) / LAND_SCALE - 1), map[0]) == None && enemy_data[i].e_speed < 0)
 							{
 								enemy_data[i].e_speed = -enemy_data[i].e_speed;
+								st = true;
 							} 
 							else if ((enemy_data[i].e_pos.x - p_x_radius + LAND_SCALE / 2) / LAND_SCALE < 0)
 							{
 								if (Mapchip::GetChipNum(-1, -static_cast<int>((enemy_data[i].e_pos.y - p_y_radius + LAND_SCALE / 2) / LAND_SCALE - 1), map[0]) == None && enemy_data[i].e_speed < 0)
 								{
 									enemy_data[i].e_speed = -enemy_data[i].e_speed;
+									st = true;
 								}
 							}
+							 if (st == true)
+							 {
+								 XMFLOAT3 e_rot;
+								 e_rot = enemy[i]->GetRotation();
+								 if (enemy_data[i].e_speed > 0)
+								 {
+									 e_rot.y = 270.0f;
+								 } 
+								 else
+								 {
+									 e_rot.y = 90.0f;
+								 }
+								 enemy[i]->SetRotation(e_rot);
+							 }
 						}
 					}
 				}
@@ -1153,7 +1160,6 @@ void GamePlayScene::Update()
 	enemySpawn = level * 6;
 	spriteLevel[1]->ChangeTex((int)level % 10);
 
-
 	//エフェクト
 	Effect::ShockWaveUpdate(shock, camera, effect_radius, &shockFlag);
 	for (int i = 0; i < locus.size(); i++)
@@ -1162,11 +1168,6 @@ void GamePlayScene::Update()
 	}
 	shock->Update();
 	Effect::DestroyEffectUpdate(camera, p_pos);
-
-	//fbxObject1->AnimationFlag = true;
-	//fbxObject1->AnimationNum = 0;
-	//アップデート
-	//fbxObject1->Update();
 }
 
 void GamePlayScene::Draw()
@@ -1518,7 +1519,10 @@ void GamePlayScene::RopeMove(const int enemy_index)
 		float wq = len / enemy_data[enemy_index].max_rope;
 		len = enemy_data[enemy_index].max_rope;
 		enemy_data[enemy_index].e_pos = { p_pos.x - length.x / wq, p_pos.y - length.y / wq, 0 };
-		MapCollide(enemy_data[enemy_index].e_pos, enemy_data[enemy_index].e_x_radius, enemy_data[enemy_index].e_y_radius, p_add, 0, enemy_data[enemy_index].old_e_pos);
+		if (MapCollide(enemy_data[enemy_index].e_pos, enemy_data[enemy_index].e_x_radius, enemy_data[enemy_index].e_y_radius, p_add, 0, enemy_data[enemy_index].old_e_pos))
+		{
+			int y = 0;
+		}
 	}
 
 	if (is_attack == true)
