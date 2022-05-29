@@ -19,7 +19,7 @@
 
 using namespace DirectX;
 
-//int GamePlayScene::score;
+int GamePlayScene::score;
 
 void GamePlayScene::Initialize()
 {
@@ -178,7 +178,7 @@ void GamePlayScene::Initialize()
 	shake_time = 0;
 	shake_x = 0;
 	shake_y = 0;
-	lastTime = 120.0f;
+	lastTime = 10.0f;
 	level = 1;
 	levelTime = 0;
 	enemySpawn = 1;
@@ -616,73 +616,35 @@ void GamePlayScene::Update()
 
 						 if (enemy_data[i].is_grand == true)
 						{
-							//端まで行ったら
-							if (MapCollide(enemy_data[i].e_pos, enemy_data[i].e_x_radius, enemy_data[i].e_y_radius, enemy_data[i].e_down, 0, enemy_data[i].old_e_pos))
-							{
-								enemy_data[i].e_speed = -enemy_data[i].e_speed;
+							 XMFLOAT3 e_rot;
+							 e_rot = enemy[i]->GetRotation();
+							 if (enemy_data[i].e_speed > 0)
+							 {
+								 e_rot.y = 270.0f;
+							 } else
+							 {
+								 e_rot.y = 90.0f;
+							 }
+							 enemy[i]->SetRotation(e_rot);
 
-								//向きを変える
-								XMFLOAT3 e_rot;
-								e_rot = enemy[i]->GetRotation();
-								if (enemy_data[i].e_speed > 0)
-								{
-									e_rot.y = 270.0f;
-								}
-								else
-								{
-									e_rot.y = 90.0f;
-								}
-								enemy[i]->SetRotation(e_rot);
-							} 
+							//端まで行ったら
+							 if (MapCollide(enemy_data[i].e_pos, enemy_data[i].e_x_radius, enemy_data[i].e_y_radius, enemy_data[i].e_down, 0, enemy_data[i].old_e_pos))
+							 {
+								 enemy_data[i].e_speed = -enemy_data[i].e_speed;
+							 }
 							else if (Mapchip::GetChipNum(static_cast<int>((enemy_data[i].e_pos.x + p_x_radius + LAND_SCALE / 2) / LAND_SCALE), -static_cast<int>((enemy_data[i].e_pos.y - p_y_radius + LAND_SCALE / 2) / LAND_SCALE - 1), map[0]) == None && enemy_data[i].e_speed >= 0)
 							{
 								enemy_data[i].e_speed = -enemy_data[i].e_speed;
-
-								//向きを変える
-								XMFLOAT3 e_rot;
-								e_rot = enemy[i]->GetRotation();
-								if (enemy_data[i].e_speed > 0)
-								{
-									e_rot.y = 270.0f;
-								} else
-								{
-									e_rot.y = 90.0f;
-								}
-								enemy[i]->SetRotation(e_rot);
 							} 
 							else if (Mapchip::GetChipNum(static_cast<int>((enemy_data[i].e_pos.x - p_x_radius + LAND_SCALE / 2) / LAND_SCALE), -static_cast<int>((enemy_data[i].e_pos.y - p_y_radius + LAND_SCALE / 2) / LAND_SCALE - 1), map[0]) == None && enemy_data[i].e_speed < 0)
 							{
 								enemy_data[i].e_speed = -enemy_data[i].e_speed;
-
-								//向きを変える
-								XMFLOAT3 e_rot;
-								e_rot = enemy[i]->GetRotation();
-								if (enemy_data[i].e_speed > 0)
-								{
-									e_rot.y = 270.0f;
-								} else
-								{
-									e_rot.y = 90.0f;
-								}
-								enemy[i]->SetRotation(e_rot);
 							} 
 							else if ((enemy_data[i].e_pos.x - p_x_radius + LAND_SCALE / 2) / LAND_SCALE < 0)
 							{
 								if (Mapchip::GetChipNum(-1, -static_cast<int>((enemy_data[i].e_pos.y - p_y_radius + LAND_SCALE / 2) / LAND_SCALE - 1), map[0]) == None && enemy_data[i].e_speed < 0)
 								{
 									enemy_data[i].e_speed = -enemy_data[i].e_speed;
-
-									//向きを変える
-									XMFLOAT3 e_rot;
-									e_rot = enemy[i]->GetRotation();
-									if (enemy_data[i].e_speed > 0)
-									{
-										e_rot.y = 270.0f;
-									} else
-									{
-										e_rot.y = 90.0f;
-									}
-									enemy[i]->SetRotation(e_rot);
 								}
 							}
 						}
@@ -1574,7 +1536,6 @@ void GamePlayScene::RopeMove(const int enemy_index)
 		Rope[enemy_index][1]->SetRotation({ 0, 0 ,XMConvertToDegrees(angleX[1]) });
 		Rope[enemy_index][1]->Update();
 	}
-
 	else
 	{
 		for (int i = 1; i < Point - 1; i++)

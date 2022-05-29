@@ -53,7 +53,7 @@ void EndScene::Finalize()
 void EndScene::Update()
 {
 	// ゲームシーンの毎フレーム処理
-	//nowPlayScore = GamePlayScene::GetScoreNum();
+	nowPlayScore = GamePlayScene::GetScoreNum();
 	LoadText();
 
 	time += 0.166;

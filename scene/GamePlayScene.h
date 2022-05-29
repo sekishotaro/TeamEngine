@@ -171,7 +171,7 @@ public:
 	XMFLOAT2 cloudPos[6];
 
 	//UI・スコアetc
-	int score; //スコア
+	static int score; //スコア
 	int scoreTick[EnemySpawnMax]; //スコア計算用
 	bool is_shake; //シェイクフラグ
 	int shake_power; //シェイクの強さ
@@ -276,5 +276,5 @@ public:
 	/// <returns>成否</returns>
 	bool inFrustum(XMFLOAT3 playerPosition, XMFLOAT3 negativePoint, XMFLOAT3 positivePoint, const float width, const float height);
 
-	/*static int GetScoreNum() { return score; }*/
+	static int GetScoreNum() { return score; }
 };
