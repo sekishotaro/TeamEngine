@@ -1,0 +1,7 @@
+attack 叩きつける　敵が地面に
+swing  叩きつける動作　開始　
+jump   ジャンプ
+enter  決定
+score  スコア加算
+catch  敵を捕まえた時
+alarm  制限時間の警告音
