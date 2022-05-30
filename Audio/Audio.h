@@ -93,7 +93,7 @@ public: //メンバ関数
 	/// 音声再生
 	/// </summary>
 	/// <param name="filename">サウンドデータ名</param>
-	void PlayWave(const std::string &filename, bool LoopFlag = false);
+	void PlayWave(const std::string &filename, float volume, bool LoopFlag = false);
 
 	/// <summary>
 	/// サウンドを止める

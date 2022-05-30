@@ -10,7 +10,6 @@ using namespace DirectX;
 
 void TitleScene::Initialize()
 {
-
 	// カメラ生成
 	camera = new Camera(WinApp::window_width, WinApp::window_height);
 
@@ -29,8 +28,10 @@ void TitleScene::Initialize()
 	block = Model::LoadFromOBJ("block");
 	rope = Model::LoadFromOBJ("rope");
 	locusModel = Model::LoadFromOBJ("locus");
-
 	block = Model::LoadFromOBJ("block");
+
+	//BGM SE 読み込み
+	Audio::GetInstance()->LoadWave("SE/enter.wav");
 
 	//マップチップ用のCSV読み込み
 	//(map, "Resource/scv/なんたら.csv")で追加可能
@@ -593,6 +594,7 @@ void TitleScene::Update()
 	{
 		if (input->TriggerKey(DIK_RETURN) || input->TriggerButton(Select))
 		{
+			Audio::GetInstance()->PlayWave("SE/enter.wav", 0.3f, false);
 			startFlag = true;
 		}
 	}
