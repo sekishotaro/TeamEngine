@@ -276,8 +276,6 @@ void GamePlayScene::Initialize()
 	
 	//乱数
 	srand(time(NULL));
-
-	MapCreate(0);
 }
 
 void GamePlayScene::Finalize()
@@ -318,6 +316,7 @@ void GamePlayScene::Update()
 	// ゲームシーンの毎フレーム処理
 	Input* input = Input::GetInstance();
 
+	MapCreate(0);
 	for (int y = 0; y < map_max_y; y++)
 	{
 		for (int x = 0; x < map_max_x; x++)
@@ -1516,11 +1515,30 @@ void GamePlayScene::RopeMove(const int enemy_index)
 		float wq = len / enemy_data[enemy_index].max_rope;
 		len = enemy_data[enemy_index].max_rope;
 		enemy_data[enemy_index].e_pos = { p_pos.x - length.x / wq, p_pos.y - length.y / wq, 0 };
-		while (MapCollide(enemy_data[enemy_index].e_pos, enemy_data[enemy_index].e_x_radius, enemy_data[enemy_index].e_y_radius, p_add, 0, enemy_data[enemy_index].old_e_pos))
+		while (1)
 		{
-			if (true)
+			if (MapCollide(enemy_data[enemy_index].e_pos, enemy_data[enemy_index].e_x_radius, enemy_data[enemy_index].e_y_radius, p_add, 0, enemy_data[enemy_index].old_e_pos))
 			{
-
+				if (GetLeftMapChip(enemy_data[enemy_index].e_pos) == Ground || GetLeftMapChip(enemy_data[enemy_index].e_pos) == Ground)
+				{
+					enemy_data[enemy_index].e_pos.y += LAND_SCALE;
+				}
+				else
+				{
+					break;
+				}
+				if (GetUpMapChip(enemy_data[enemy_index].e_pos) == Ground)
+				{
+					break;
+				}
+				else
+				{
+					break;
+				}
+			} 
+			else
+			{
+				break;
 			}
 		}
 	}
@@ -1644,4 +1662,22 @@ bool GamePlayScene::inFrustum(XMFLOAT3 playerPosition, XMFLOAT3 negativePoint, X
 	}
 
 	return false;
+}
+
+int GamePlayScene::GetLeftMapChip(XMFLOAT3 position)
+{
+	int chip = Mapchip::GetChipNum(static_cast<int>((position.x + LAND_SCALE / 2) / LAND_SCALE - 1), -static_cast<int>((position.y - LAND_SCALE / 2) / LAND_SCALE), map[0]);
+	return chip;
+}
+
+int GamePlayScene::GetRightMapChip(XMFLOAT3 position)
+{
+	int chip = Mapchip::GetChipNum(static_cast<int>((position.x + LAND_SCALE / 2) / LAND_SCALE + 1), -static_cast<int>((position.y - LAND_SCALE / 2) / LAND_SCALE), map[0]);
+	return chip;
+}
+
+int GamePlayScene::GetUpMapChip(XMFLOAT3 position)
+{
+	int chip = Mapchip::GetChipNum(static_cast<int>((position.x + LAND_SCALE / 2) / LAND_SCALE), -static_cast<int>((position.y - LAND_SCALE / 2) / LAND_SCALE + 1), map[0]);
+	return chip;
 }

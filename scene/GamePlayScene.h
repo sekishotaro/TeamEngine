@@ -277,4 +277,10 @@ public:
 	bool inFrustum(XMFLOAT3 playerPosition, XMFLOAT3 negativePoint, XMFLOAT3 positivePoint, const float width, const float height);
 
 	static int GetScoreNum() { return score; }
+
+	int GetLeftMapChip(XMFLOAT3 position);
+
+	int GetRightMapChip(XMFLOAT3 position);
+
+	int GetUpMapChip(XMFLOAT3 position);
 };
