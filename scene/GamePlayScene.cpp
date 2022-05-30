@@ -142,7 +142,7 @@ void GamePlayScene::Initialize()
 			Rope[i][j] = Object3d::Create();
 		}
 	}
-	player = Object3d::Create();	
+	player = Object3d::Create();
 
 	
 	//シーン切り替え
@@ -1332,7 +1332,7 @@ void GamePlayScene::SpawnEnemy(int mapNumber, int enemyNumber)
 	spawnX = rand() % map_max_x;
 	const float LAND_SCALE = 5.0f;
 
-	if (Mapchip::GetChipNum(spawnX, spawnY, map[mapNumber]) == None && Mapchip::GetChipNum(spawnX + 1, spawnY, map[mapNumber]) == None)
+	if (Mapchip::GetChipNum(spawnX, spawnY, map[mapNumber]) == None && Mapchip::GetChipNum(spawnX + 1, spawnY, map[mapNumber]) == None && spawnY > 4)
 	{
 		enemy[enemyNumber]->SetPosition({ spawnX * LAND_SCALE,  -spawnY * LAND_SCALE, 0 });//位置をセット
 		XMFLOAT3 e_rot;

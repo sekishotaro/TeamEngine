@@ -114,12 +114,15 @@ public:
 	Model* block = nullptr;
 	Model* rope = nullptr;
 
+	Model* modelBoard = nullptr;
+
 	//オブジェクト
 	std::vector<std::vector<int>> map; //マップチップ
 	std::unique_ptr<Object3d> objBlock[map_max_y][map_max_x]; //ステージブロック
 	std::unique_ptr<Object3d> player = nullptr; //プレイヤー
 	std::unique_ptr<Object3d> enemy[EnemySpawnMax]; //エネミー
 	std::unique_ptr<Object3d> Rope[EnemySpawnMax][Point]; //ロープ
+	std::unique_ptr<Object3d> board = nullptr; //いた
 
 	//エフェクト
 	int maxLocus = 0;
