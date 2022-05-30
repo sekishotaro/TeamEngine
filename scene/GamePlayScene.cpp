@@ -278,13 +278,6 @@ void GamePlayScene::Initialize()
 	srand(time(NULL));
 
 	MapCreate(0);
-	for (int y = 0; y < map_max_y; y++)
-	{
-		for (int x = 0; x < map_max_x; x++)
-		{
-			objBlock[y][x]->Update();
-		}
-	}
 }
 
 void GamePlayScene::Finalize()
@@ -325,11 +318,12 @@ void GamePlayScene::Update()
 	// ゲームシーンの毎フレーム処理
 	Input* input = Input::GetInstance();
 
-	//実験用エフェクト置き場
-	if (input->PushKey(DIK_M))  //衝撃波開始
+	for (int y = 0; y < map_max_y; y++)
 	{
-		const int mono = 10;
-		Effect::DestroyEffectCreate( mono ,p_pos);
+		for (int x = 0; x < map_max_x; x++)
+		{
+			objBlock[y][x]->Update();
+		}
 	}
 
 	oldLevel = level;
