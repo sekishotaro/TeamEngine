@@ -1522,10 +1522,7 @@ void GamePlayScene::RopeMove(const int enemy_index)
 		float wq = len / enemy_data[enemy_index].max_rope;
 		len = enemy_data[enemy_index].max_rope;
 		enemy_data[enemy_index].e_pos = { p_pos.x - length.x / wq, p_pos.y - length.y / wq, 0 };
-		while (MapCollide(enemy_data[enemy_index].e_pos, enemy_data[enemy_index].e_x_radius, enemy_data[enemy_index].e_y_radius, p_add, 0, enemy_data[enemy_index].old_e_pos))
-		{
-			enemy_data[enemy_index].e_pos.y += 1;
-		}
+		MapCollide(enemy_data[enemy_index].e_pos, enemy_data[enemy_index].e_x_radius, enemy_data[enemy_index].e_y_radius, p_add, 0, enemy_data[enemy_index].old_e_pos);
 	}
 
 	if (is_attack == true)
