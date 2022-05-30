@@ -1,6 +1,4 @@
 #include "Audio.h"
-
-
 #include <Windows.h>
 #include <cassert>
 #include <fstream>
@@ -51,7 +49,6 @@ void Audio::Finalize()
 		Unload(&it->second);
 	}
 	soundDatas_.clear();
-
 }
 
 void Audio::LoadWave(const std::string &filename)
@@ -160,7 +157,7 @@ void Audio::CreateSoundData(SoundData &soundData)
 	assert(SUCCEEDED(result));
 }
 
-void Audio::PlayWave(const std::string &filename, bool LoopFlag)
+void Audio::PlayWave(const std::string &filename, float volume, bool LoopFlag)
 {
 	HRESULT result;
 
@@ -189,6 +186,7 @@ void Audio::PlayWave(const std::string &filename, bool LoopFlag)
 
 	//波形データの再生
 	result = soundData.pSourceVoice->SubmitSourceBuffer(&buf);
+	result = soundData.pSourceVoice->SetVolume(volume);
 	result = soundData.pSourceVoice->Start();
 	
 	//再生確認フラグの確認

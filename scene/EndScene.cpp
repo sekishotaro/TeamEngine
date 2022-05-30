@@ -36,6 +36,9 @@ void EndScene::Initialize()
 	newrecord = Sprite::Create(12, { 0.0f,50.0f });
 	newrecord->SetPosition({ 100,350 });
 
+	//BGM SE “Ç‚Ýž‚Ý
+	Audio::GetInstance()->LoadWave("SE/enter.wav");
+
 	ScoreSpriteInitialize(digitsNum, spriteScoreNo1, WinApp::window_width / 3 * 2.5, 128);
 	ScoreSpriteInitialize(digitsNum, spriteScoreNo2, WinApp::window_width / 3 * 2.5, 256);
 	ScoreSpriteInitialize(digitsNum, spriteScoreNo3, WinApp::window_width / 3 * 2.5, 384);
@@ -111,6 +114,7 @@ void EndScene::Update()
 
 	if (input->TriggerKey(DIK_RETURN) || input->TriggerButton(Select))
 	{
+		Audio::GetInstance()->PlayWave("SE/enter.wav", 0.3f, false);
 		//ƒV[ƒ“Ø‚è‘Ö‚¦
 		SceneManager::GetInstance()->ChangeScene("TITLE");
 	}
