@@ -80,6 +80,7 @@
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(ProjectDir)lib\fbx_sdk\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)lib\fbx_sdk\lib;$(LibraryPath)</LibraryPath>
+    <TargetName>Arc Smash</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -128,7 +129,6 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>libfbxsdk-md.lib;libxml2-md.lib;zlib-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)Arc Smash$(TargetExt)</OutputFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -240,6 +240,7 @@
     <ClCompile Include="3d\FbxLoader.cpp" />
     <ClCompile Include="3d\FbxModel.cpp" />
     <ClCompile Include="3d\FbxObject3d.cpp" />
+    <ClCompile Include="3d\Model.cpp" />
     <ClCompile Include="Angle.cpp" />
     <ClCompile Include="Audio\Audio.cpp" />
     <ClCompile Include="camera\Camera.cpp" />
@@ -260,7 +261,6 @@
     <ClCompile Include="scene\GamePlayScene.cpp" />
     <ClCompile Include="Input\Input.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="3d\Model.cpp" />
     <ClCompile Include="MyGame.cpp" />
     <ClCompile Include="3d\Object3d.cpp" />
     <ClCompile Include="scene\SceneFactory.cpp" />
@@ -274,6 +274,7 @@
     <ClInclude Include="3d\FbxLoader.h" />
     <ClInclude Include="3d\FbxModel.h" />
     <ClInclude Include="3d\FbxObject3d.h" />
+    <ClInclude Include="3d\Model.h" />
     <ClInclude Include="Angle.h" />
     <ClInclude Include="camera\Camera.h" />
     <ClInclude Include="Count.h" />
@@ -294,7 +295,6 @@
     <ClInclude Include="Framework.h" />
     <ClInclude Include="scene\GamePlayScene.h" />
     <ClInclude Include="Input\Input.h" />
-    <ClInclude Include="3d\Model.h" />
     <ClInclude Include="MyGame.h" />
     <ClInclude Include="3d\Object3d.h" />
     <ClInclude Include="base\SafeDelete.h" />

@@ -194,8 +194,8 @@ void GamePlayScene::Initialize()
 		enemy_data[i].e_pos = { 0, 0, 0 };
 		enemy[i]->SetScale({ 3, 3, 3 });
 		enemy[i]->Update();
-		enemy_data[i].e_x_radius = 0.4f * player->GetScale().x;
-		enemy_data[i].e_y_radius = 0.8f * player->GetScale().y;
+		enemy_data[i].e_x_radius = 0.55f * player->GetScale().x;
+		enemy_data[i].e_y_radius = 0.6f * player->GetScale().y;
 		enemy_data[i].is_normal = true;
 		enemy_data[i].is_bounce = false;
 		enemy_data[i].is_catch = false;
@@ -1160,6 +1160,7 @@ void GamePlayScene::Update()
 	enemySpawn = level * 6;
 	spriteLevel[1]->ChangeTex((int)level % 10);
 
+
 	//エフェクト
 	Effect::ShockWaveUpdate(shock, camera, effect_radius, &shockFlag);
 	for (int i = 0; i < locus.size(); i++)
@@ -1378,11 +1379,13 @@ void GamePlayScene::SpawnEnemy(int mapNumber, int enemyNumber)
 		{
 			enemy_data[enemyNumber].can_catch = false;
 			enemy[enemyNumber]->SetModel(enemy_model_2);
+			enemy_data[enemyNumber].e_x_radius = 0.55f * player->GetScale().x;
 		}
 		else
 		{
 			enemy_data[enemyNumber].can_catch = true;
 			enemy[enemyNumber]->SetModel(model);
+			enemy_data[enemyNumber].e_x_radius = 0.4f * player->GetScale().x;
 		}
 		if (enemy_data[enemyNumber].enemy_type == JUMP)
 		{
@@ -1519,9 +1522,9 @@ void GamePlayScene::RopeMove(const int enemy_index)
 		float wq = len / enemy_data[enemy_index].max_rope;
 		len = enemy_data[enemy_index].max_rope;
 		enemy_data[enemy_index].e_pos = { p_pos.x - length.x / wq, p_pos.y - length.y / wq, 0 };
-		if (MapCollide(enemy_data[enemy_index].e_pos, enemy_data[enemy_index].e_x_radius, enemy_data[enemy_index].e_y_radius, p_add, 0, enemy_data[enemy_index].old_e_pos))
+		while (MapCollide(enemy_data[enemy_index].e_pos, enemy_data[enemy_index].e_x_radius, enemy_data[enemy_index].e_y_radius, p_add, 0, enemy_data[enemy_index].old_e_pos))
 		{
-			int y = 0;
+			enemy_data[enemy_index].e_pos.y += 1;
 		}
 	}
 
