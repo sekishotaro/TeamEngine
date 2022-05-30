@@ -195,7 +195,7 @@ void GamePlayScene::Initialize()
 		enemy[i]->SetScale({ 3, 3, 3 });
 		enemy[i]->Update();
 		enemy_data[i].e_x_radius = 0.55f * player->GetScale().x;
-		enemy_data[i].e_y_radius = 0.6f * player->GetScale().y;
+		enemy_data[i].e_y_radius = 0.8f * player->GetScale().y;
 		enemy_data[i].is_normal = true;
 		enemy_data[i].is_bounce = false;
 		enemy_data[i].is_catch = false;
@@ -1516,7 +1516,13 @@ void GamePlayScene::RopeMove(const int enemy_index)
 		float wq = len / enemy_data[enemy_index].max_rope;
 		len = enemy_data[enemy_index].max_rope;
 		enemy_data[enemy_index].e_pos = { p_pos.x - length.x / wq, p_pos.y - length.y / wq, 0 };
-		MapCollide(enemy_data[enemy_index].e_pos, enemy_data[enemy_index].e_x_radius, enemy_data[enemy_index].e_y_radius, p_add, 0, enemy_data[enemy_index].old_e_pos);
+		while (MapCollide(enemy_data[enemy_index].e_pos, enemy_data[enemy_index].e_x_radius, enemy_data[enemy_index].e_y_radius, p_add, 0, enemy_data[enemy_index].old_e_pos))
+		{
+			if (true)
+			{
+
+			}
+		}
 	}
 
 	if (is_attack == true)
