@@ -207,21 +207,10 @@ void TitleScene::Update()
 					player->SetRotation(XMFLOAT3(0, 270, 0));
 				}
 			}
-			//キーボード用
-			if (input->PushKey(DIK_D))
-			{
-				p_pos.x += 0.5f + 0.08 * (level - 1);
-				player->SetRotation(XMFLOAT3(0, 90, 0));
-			}
-			if (input->PushKey(DIK_A))
-			{
-				p_pos.x -= 0.5f + 0.08 * (level - 1);
-				player->SetRotation(XMFLOAT3(0, 270, 0));
-			}
 		}
 
 		//攻撃
-		if ((input->TriggerKey(DIK_SPACE) || input->PushButton(Button_B)) && is_attack == false && is_damage == false)
+		if (input->PushButton(Button_B) && is_attack == false && is_damage == false)
 		{
 			for (int i = 0; i < enemySpawn; i++)
 			{
@@ -271,7 +260,7 @@ void TitleScene::Update()
 		}
 
 		//ジャンプ
-		if ((input->TriggerKey(DIK_W) || input->TriggerButton(Button_A)) && is_air == false && is_jump == false && is_damage == false)
+		if (input->TriggerButton(Button_A) && is_air == false && is_jump == false && is_damage == false)
 		{
 			is_jump = true;
 
@@ -598,7 +587,7 @@ void TitleScene::Update()
 
 	if (num > 60)
 	{
-		if (input->TriggerKey(DIK_RETURN) || input->TriggerButton(Select))
+		if (input->TriggerButton(Select))
 		{
 			Audio::GetInstance()->PlayWave("SE/enter.wav", 0.3f, false);
 			startFlag = true;

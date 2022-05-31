@@ -118,7 +118,7 @@ void EndScene::Update()
 	
 	ConvertScene::besideOut(ConvertFlag);
 
-	if (input->TriggerKey(DIK_RETURN) || input->TriggerButton(Select))
+	if (input->TriggerButton(Select))
 	{
 		Audio::GetInstance()->PlayWave("SE/enter.wav", 0.3f, false);
 		//ƒV[ƒ“Ø‚è‘Ö‚¦
