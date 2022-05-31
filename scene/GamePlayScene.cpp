@@ -24,7 +24,6 @@ int GamePlayScene::score;
 void GamePlayScene::Initialize()
 {
 	Audio::GetInstance()->LoadWave("futta-dream.wav");
-	Audio::GetInstance()->LoadWave("zaza.wav");
 	
 	//デバイスのセット
 	FbxObject3d::SetDevice(DirectXCommon::GetInstance()->GetDev());
@@ -1022,10 +1021,12 @@ void GamePlayScene::Update()
 	{
 		if (level == 2)
 		{
+			Mapchip::SetChipNum(10, 7 + 4, map[0]);
 			Mapchip::SetChipNum(11, 7 + 4, map[0]);
 			Mapchip::SetChipNum(12, 7 + 4, map[0]);
-			Mapchip::SetChipNum(11, 8 + 4, map[0]);
 			Mapchip::SetChipNum(13, 7 + 4, map[0]);
+			Mapchip::SetChipNum(14, 7 + 4, map[0]);
+			Mapchip::SetChipNum(11, 8 + 4, map[0]);
 			Mapchip::SetChipNum(12, 8 + 4, map[0]);
 			Mapchip::SetChipNum(13, 8 + 4, map[0]);
 			Mapchip::SetChipNum(23, 3 + 4, map[0]);
@@ -1033,6 +1034,7 @@ void GamePlayScene::Update()
 			Mapchip::SetChipNum(25, 3 + 4, map[0]);
 			Mapchip::SetChipNum(26, 3 + 4, map[0]);
 			Mapchip::SetChipNum(27, 3 + 4, map[0]);
+			Mapchip::SetChipNum(28, 3 + 4, map[0]);
 			Mapchip::SetChipNum(23, 4 + 4, map[0]);
 			Mapchip::SetChipNum(24, 4 + 4, map[0]);
 			Mapchip::SetChipNum(25, 4 + 4, map[0]);
@@ -1043,6 +1045,7 @@ void GamePlayScene::Update()
 			Mapchip::SetChipNum(31, 6 + 4, map[0]);
 			Mapchip::SetChipNum(32, 6 + 4, map[0]);
 			Mapchip::SetChipNum(33, 6 + 4, map[0]);
+			Mapchip::SetChipNum(34, 6 + 4, map[0]);
 			Mapchip::SetChipNum(29, 7 + 4, map[0]);
 			Mapchip::SetChipNum(30, 7 + 4, map[0]);
 			Mapchip::SetChipNum(31, 7 + 4, map[0]);
@@ -1053,6 +1056,7 @@ void GamePlayScene::Update()
 			Mapchip::SetChipNum(90, 2 + 4, map[0]);
 			Mapchip::SetChipNum(91, 2 + 4, map[0]);
 			Mapchip::SetChipNum(92, 2 + 4, map[0]);
+			Mapchip::SetChipNum(93, 2 + 4, map[0]);
 			Mapchip::SetChipNum(88, 3 + 4, map[0]);
 			Mapchip::SetChipNum(89, 3 + 4, map[0]);
 			Mapchip::SetChipNum(90, 3 + 4, map[0]);
@@ -1062,82 +1066,111 @@ void GamePlayScene::Update()
 
 		if (level == 4)
 		{
+			Mapchip::SetChipNum(9, 6 + 4, map[0]);
+			Mapchip::SetChipNum(10, 6 + 4, map[0]);
 			Mapchip::SetChipNum(11, 6 + 4, map[0]);
 			Mapchip::SetChipNum(12, 6 + 4, map[0]);
 			Mapchip::SetChipNum(13, 6 + 4, map[0]);
+			Mapchip::SetChipNum(14, 6 + 4, map[0]);
+			Mapchip::SetChipNum(10, 7 + 4, map[0]);
 			Mapchip::SetChipNum(11, 7 + 4, map[0]);
 			Mapchip::SetChipNum(12, 7 + 4, map[0]);
 			Mapchip::SetChipNum(13, 7 + 4, map[0]);
+			Mapchip::SetChipNum(14, 7 + 4, map[0]);
 			Mapchip::SetChipNum(23, 2 + 4, map[0]);
 			Mapchip::SetChipNum(24, 2 + 4, map[0]);
 			Mapchip::SetChipNum(25, 2 + 4, map[0]);
 			Mapchip::SetChipNum(26, 2 + 4, map[0]);
 			Mapchip::SetChipNum(27, 2 + 4, map[0]);
+			Mapchip::SetChipNum(28, 2 + 4, map[0]);
 			Mapchip::SetChipNum(23, 3 + 4, map[0]);
 			Mapchip::SetChipNum(24, 3 + 4, map[0]);
 			Mapchip::SetChipNum(25, 3 + 4, map[0]);
 			Mapchip::SetChipNum(26, 3 + 4, map[0]);
 			Mapchip::SetChipNum(27, 3 + 4, map[0]);
+			Mapchip::SetChipNum(28, 3 + 4, map[0]);
 			Mapchip::SetChipNum(29, 5 + 4, map[0]);
 			Mapchip::SetChipNum(30, 5 + 4, map[0]);
 			Mapchip::SetChipNum(31, 5 + 4, map[0]);
 			Mapchip::SetChipNum(32, 5 + 4, map[0]);
 			Mapchip::SetChipNum(33, 5 + 4, map[0]);
+			Mapchip::SetChipNum(34, 5 + 4, map[0]);
 			Mapchip::SetChipNum(29, 6 + 4, map[0]);
 			Mapchip::SetChipNum(30, 6 + 4, map[0]);
 			Mapchip::SetChipNum(31, 6 + 4, map[0]);
 			Mapchip::SetChipNum(32, 6 + 4, map[0]);
 			Mapchip::SetChipNum(33, 6 + 4, map[0]);
+			Mapchip::SetChipNum(34, 6 + 4, map[0]);
+			Mapchip::SetChipNum(87, 1 + 4, map[0]);
 			Mapchip::SetChipNum(88, 1 + 4, map[0]);
 			Mapchip::SetChipNum(89, 1 + 4, map[0]);
 			Mapchip::SetChipNum(90, 1 + 4, map[0]);
 			Mapchip::SetChipNum(91, 1 + 4, map[0]);
 			Mapchip::SetChipNum(92, 1 + 4, map[0]);
+			Mapchip::SetChipNum(93, 1 + 4, map[0]);
 			Mapchip::SetChipNum(88, 2 + 4, map[0]);
 			Mapchip::SetChipNum(89, 2 + 4, map[0]);
 			Mapchip::SetChipNum(90, 2 + 4, map[0]);
 			Mapchip::SetChipNum(91, 2 + 4, map[0]);
 			Mapchip::SetChipNum(92, 2 + 4, map[0]);
+			Mapchip::SetChipNum(93, 2 + 4, map[0]);
 		}
 
 		if (level == 6)
 		{
+			Mapchip::SetChipNum(8, 5 + 4, map[0]);
+			Mapchip::SetChipNum(9, 5 + 4, map[0]);
+			Mapchip::SetChipNum(10, 5 + 4, map[0]);
 			Mapchip::SetChipNum(11, 5 + 4, map[0]);
 			Mapchip::SetChipNum(12, 5 + 4, map[0]);
 			Mapchip::SetChipNum(13, 5 + 4, map[0]);
+			Mapchip::SetChipNum(14, 5 + 4, map[0]);
+			Mapchip::SetChipNum(9, 6 + 4, map[0]);
+			Mapchip::SetChipNum(10, 6 + 4, map[0]);
 			Mapchip::SetChipNum(11, 6 + 4, map[0]);
 			Mapchip::SetChipNum(12, 6 + 4, map[0]);
 			Mapchip::SetChipNum(13, 6 + 4, map[0]);
+			Mapchip::SetChipNum(14, 6 + 4, map[0]);
+			Mapchip::SetChipNum(22, 1 + 4, map[0]);
 			Mapchip::SetChipNum(23, 1 + 4, map[0]);
 			Mapchip::SetChipNum(24, 1 + 4, map[0]);
 			Mapchip::SetChipNum(25, 1 + 4, map[0]);
 			Mapchip::SetChipNum(26, 1 + 4, map[0]);
 			Mapchip::SetChipNum(27, 1 + 4, map[0]);
+			Mapchip::SetChipNum(28, 1 + 4, map[0]);
 			Mapchip::SetChipNum(23, 2 + 4, map[0]);
 			Mapchip::SetChipNum(24, 2 + 4, map[0]);
 			Mapchip::SetChipNum(25, 2 + 4, map[0]);
 			Mapchip::SetChipNum(26, 2 + 4, map[0]);
 			Mapchip::SetChipNum(27, 2 + 4, map[0]);
+			Mapchip::SetChipNum(28, 2 + 4, map[0]);
+			Mapchip::SetChipNum(28, 4 + 4, map[0]);
 			Mapchip::SetChipNum(29, 4 + 4, map[0]);
 			Mapchip::SetChipNum(30, 4 + 4, map[0]);
 			Mapchip::SetChipNum(31, 4 + 4, map[0]);
 			Mapchip::SetChipNum(32, 4 + 4, map[0]);
 			Mapchip::SetChipNum(33, 4 + 4, map[0]);
+			Mapchip::SetChipNum(34, 4 + 4, map[0]);
 			Mapchip::SetChipNum(29, 5 + 4, map[0]);
 			Mapchip::SetChipNum(30, 5 + 4, map[0]);
 			Mapchip::SetChipNum(31, 5 + 4, map[0]);
 			Mapchip::SetChipNum(32, 5 + 4, map[0]);
 			Mapchip::SetChipNum(33, 5 + 4, map[0]);
+			Mapchip::SetChipNum(34, 5 + 4, map[0]);
+			Mapchip::SetChipNum(87, 1 + 4, map[0]);
 			Mapchip::SetChipNum(88, 1 + 4, map[0]);
 			Mapchip::SetChipNum(89, 1 + 4, map[0]);
 			Mapchip::SetChipNum(90, 1 + 4, map[0]);
 			Mapchip::SetChipNum(91, 1 + 4, map[0]);
 			Mapchip::SetChipNum(92, 1 + 4, map[0]);
+			Mapchip::SetChipNum(93, 1 + 4, map[0]);
+			Mapchip::SetChipNum(87, 0 + 4, map[0]);
 			Mapchip::SetChipNum(88, 0 + 4, map[0]);
 			Mapchip::SetChipNum(89, 0 + 4, map[0]);
 			Mapchip::SetChipNum(90, 0 + 4, map[0]);
 			Mapchip::SetChipNum(91, 0 + 4, map[0]);
 			Mapchip::SetChipNum(92, 0 + 4, map[0]);
+			Mapchip::SetChipNum(93, 0 + 4, map[0]);
 		}
 		for (int y = 0; y < map_max_y; y++)
 		{
