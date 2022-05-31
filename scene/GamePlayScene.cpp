@@ -29,6 +29,8 @@ void GamePlayScene::Initialize()
 	Audio::GetInstance()->LoadWave("SE/jump.wav");
 	Audio::GetInstance()->LoadWave("SE/score.wav");
 	Audio::GetInstance()->LoadWave("SE/swing.wav");
+	Audio::GetInstance()->LoadWave("SE/damage.wav");
+	Audio::GetInstance()->LoadWave("BGM/alarm.wav");
 
 	//デバイスのセット
 	FbxObject3d::SetDevice(DirectXCommon::GetInstance()->GetDev());
@@ -316,8 +318,6 @@ void GamePlayScene::Finalize()
 
 void GamePlayScene::Update()
 {
-	Audio::GetInstance()->PlayWave("BGM/GameBGM.wav", 0.05, false);
-
 	// ゲームシーンの毎フレーム処理
 	Input* input = Input::GetInstance();
 
@@ -344,6 +344,7 @@ void GamePlayScene::Update()
 		if (countFinishFlag == true)
 		{
 			PlayPossibleflag = true;
+			Audio::GetInstance()->PlayWave("BGM/GameBGM.wav", 0.05, true);
 		}
 	}
 
@@ -382,6 +383,7 @@ void GamePlayScene::Update()
 		{
 			//シーン切り替え
 			Audio::GetInstance()->SoundStop("BGM/GameBGM.wav");
+			Audio::GetInstance()->SoundStop("BGM/alarm.wav");
 			SceneManager::GetInstance()->ChangeScene("END");
 		}
 	}
@@ -466,6 +468,7 @@ void GamePlayScene::Update()
 				damage_move = 0;
 				damage_time = 0;
 				is_invincible = true;
+				Audio::GetInstance()->SoundStop("SE/damage.wav");
 			}
 		}
 
@@ -570,6 +573,7 @@ void GamePlayScene::Update()
 						{
 							damage_move = 0.45f;
 						}
+						Audio::GetInstance()->PlayWave("SE/damage.wav", 0.05, false);
 					}
 				}
 				//更新処理
@@ -715,7 +719,7 @@ void GamePlayScene::Update()
 							hundredScore6 = score / 1000000;
 							hundredScore7 = score / 10000000;
 							Audio::GetInstance()->SoundStop("SE/swing.wav");
-							Audio::GetInstance()->PlayWave("SE/attack.wav", 0.15, false);
+							Audio::GetInstance()->PlayWave("SE/attack.wav", 0.2, false);
 							spriteScore[1]->ChangeTex((int)score % 10);
 							spriteScore[2]->ChangeTex((int)hundredScore % 10);
 							spriteScore[3]->ChangeTex((int)hundredScore2 % 10);
@@ -1330,7 +1334,6 @@ void GamePlayScene::Draw()
 	}
 	
 	// デバッグテキストの描画
-	DebugText::GetInstance()->DrawAll(cmdList);
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
