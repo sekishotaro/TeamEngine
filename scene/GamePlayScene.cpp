@@ -238,7 +238,7 @@ void GamePlayScene::Initialize()
 	//プレイヤー
 	player->SetModel(modelPlayer);
 	player->SetScale({ 3, 3, 3 });
-	p_pos = { 20, 10, 0 };
+	p_pos = { map_max_x / 2 * LAND_SCALE, 10, 0 };
 	old_p_pos = { 0, 0, 0 };
 	p_x_radius = 0.4f * player->GetScale().x;
 	p_y_radius = 0.8f * player->GetScale().y;
@@ -311,7 +311,7 @@ void GamePlayScene::Finalize()
 
 void GamePlayScene::Update()
 {
-	Audio::GetInstance()->PlayWave("futta-dream.wav", 5, true);
+	//Audio::GetInstance()->PlayWave("futta-dream.wav", 5, true);
 
 	// ゲームシーンの毎フレーム処理
 	Input* input = Input::GetInstance();
