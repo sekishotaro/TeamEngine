@@ -33,6 +33,7 @@ void TitleScene::Initialize()
 
 	//BGM SE 読み込み
 	Audio::GetInstance()->LoadWave("SE/enter.wav");
+	Audio::GetInstance()->LoadWave("BGM/TitleEndBGM.wav");
 
 	//マップチップ用のCSV読み込み
 	//(map, "Resource/scv/なんたら.csv")で追加可能
@@ -166,6 +167,7 @@ void TitleScene::Finalize()
 
 void TitleScene::Update()
 {
+	Audio::GetInstance()->PlayWave("BGM/TitleEndBGM.wav", 0.05 , true);
 	// ゲームシーンの毎フレーム処理
 	Input* input = Input::GetInstance();
 
@@ -589,7 +591,7 @@ void TitleScene::Update()
 	{
 		if (input->TriggerButton(Select))
 		{
-			Audio::GetInstance()->PlayWave("SE/enter.wav", 0.3f, false);
+			Audio::GetInstance()->PlayWave("SE/enter.wav", 0.05f, false);
 			startFlag = true;
 		}
 	}
@@ -601,6 +603,7 @@ void TitleScene::Update()
 		if (Convertflag == true)
 		{
 			//シーン切り替え
+			Audio::GetInstance()->SoundStop("BGM/TitleEndBGM.wav");
 			SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
 		}
 	}
