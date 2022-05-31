@@ -111,6 +111,7 @@ public:
 		None, Ground
 	};
 
+
 	//ƒNƒ‰ƒX
 	Angle* rope_angle = new Angle(); //Angle
 	Camera* camera = nullptr; //ƒJƒƒ‰

@@ -23,8 +23,13 @@ int GamePlayScene::score;
 
 void GamePlayScene::Initialize()
 {
-	Audio::GetInstance()->LoadWave("futta-dream.wav");
-	
+	Audio::GetInstance()->LoadWave("BGM/GameBGM.wav");
+	Audio::GetInstance()->LoadWave("SE/attack.wav");
+	Audio::GetInstance()->LoadWave("SE/catch.wav");
+	Audio::GetInstance()->LoadWave("SE/jump.wav");
+	Audio::GetInstance()->LoadWave("SE/score.wav");
+	Audio::GetInstance()->LoadWave("SE/swing.wav");
+
 	//デバイスのセット
 	FbxObject3d::SetDevice(DirectXCommon::GetInstance()->GetDev());
 	// カメラ生成
@@ -311,7 +316,7 @@ void GamePlayScene::Finalize()
 
 void GamePlayScene::Update()
 {
-	Audio::GetInstance()->PlayWave("futta-dream.wav", 5, true);
+	Audio::GetInstance()->PlayWave("BGM/GameBGM.wav", 5, false);
 
 	// ゲームシーンの毎フレーム処理
 	Input* input = Input::GetInstance();
@@ -452,6 +457,7 @@ void GamePlayScene::Update()
 				if (enemy_data[i].is_catch == true)
 				{
 					is_attack = true;
+					Audio::GetInstance()->PlayWave("SE/swing.wav", 5, false);
 					enemy_data[i].circle_radius = GetObjectLength(p_pos, enemy_data[i].e_pos);
 					//プレイヤーの向きで投げる方向を変える
 					if (player->GetRotation().y == 90 && p_pos.x >= enemy[i]->GetPosition().x)
@@ -497,6 +503,7 @@ void GamePlayScene::Update()
 		if ((input->TriggerKey(DIK_W) || input->TriggerButton(Button_A)) && is_air == false && is_jump == false && is_damage == false)
 		{
 			is_jump = true;
+			Audio::GetInstance()->PlayWave("SE/jump.wav", 5, false);
 
 			//上昇率の初期化
 			p_add = 2.25f + (level - 1) * 0.125f;
@@ -509,10 +516,12 @@ void GamePlayScene::Update()
 			p_add -= gravity;
 			p_pos.y += p_add;
 
+
 			if (MapCollide(p_pos, p_x_radius, p_y_radius, p_add, 0, old_p_pos, true))
 			{
 				//初期化
 				is_jump = false;
+				Audio::GetInstance()->SoundStop("SE/jump.wav");
 			}
 		}
 		//重力
@@ -562,6 +571,9 @@ void GamePlayScene::Update()
 						enemy_data[i].is_bounce = false;
 						catch_count++;
 						enemy_data[i].max_rope += static_cast<float>(rand() % 50) / 10 - 2.5f;
+						Audio::GetInstance()->SoundStop("SE/attack.wav");
+						Audio::GetInstance()->SoundStop("SE/catch.wav");
+						Audio::GetInstance()->PlayWave("SE/catch.wav", 5, false);
 					} 
 					else if (CollisionObject(player, enemy[i]) == true && enemy_data[i].can_catch == false)
 					{
@@ -720,6 +732,8 @@ void GamePlayScene::Update()
 							hundredScore5 = score / 100000;
 							hundredScore6 = score / 1000000;
 							hundredScore7 = score / 10000000;
+							Audio::GetInstance()->SoundStop("SE/swing.wav");
+							Audio::GetInstance()->PlayWave("SE/attack.wav", 5, false);
 							spriteScore[1]->ChangeTex((int)score % 10);
 							spriteScore[2]->ChangeTex((int)hundredScore % 10);
 							spriteScore[3]->ChangeTex((int)hundredScore2 % 10);
