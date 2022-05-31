@@ -80,7 +80,7 @@ void GamePlayScene::Initialize()
 	// 背景スプライト生成
 	spriteBG = Sprite::Create(11, { 0.0f,0.0f });
 	spriteBG->SetSize({ WinApp::window_width * 1.2, WinApp::window_height * 1.2 });
-	texScore = Sprite::Create(15, { WinApp::window_width - 532, 0 });
+	texScore = Sprite::Create(15, { WinApp::window_width - 547, 15 });
 	texLevel = Sprite::Create(16, { WinApp::window_width - 100 - 32, WinApp::window_height - 64 - 32 });
 
 	//スプライト生成
@@ -90,19 +90,19 @@ void GamePlayScene::Initialize()
 	{
 		minienemy[i] = Sprite::Create(14, { 40.0f,20.0f });
 	}
-	spriteTimer = Sprite::Create(18, { 0,0 });
-	spriteTime[0] = Sprite::Create(0, { 64,0 });
-	spriteCoron = Sprite::Create(17, { 96,0 });
-	spriteTime[1] = Sprite::Create(0, { 128,0 });
-	spriteTime[2] = Sprite::Create(0, { 160,0 });
-	spriteScore[1] = Sprite::Create(0, { WinApp::window_width - 32,0 });
-	spriteScore[2] = Sprite::Create(0, { WinApp::window_width - 64,0 });
-	spriteScore[3] = Sprite::Create(0, { WinApp::window_width - 96,0 });
-	spriteScore[4] = Sprite::Create(0, { WinApp::window_width - 128,0 });
-	spriteScore[5] = Sprite::Create(0, { WinApp::window_width - 160,0 });
-	spriteScore[6] = Sprite::Create(0, { WinApp::window_width - 192,0 });
-	spriteScore[7] = Sprite::Create(0, { WinApp::window_width - 224,0 });
-	spriteScore[8] = Sprite::Create(0, { WinApp::window_width - 256,0 });
+	spriteTimer = Sprite::Create(18, { 10,15 });
+	spriteTime[0] = Sprite::Create(0, { 74,15 });
+	spriteCoron = Sprite::Create(17, { 106,15 });
+	spriteTime[1] = Sprite::Create(0, { 138,15 });
+	spriteTime[2] = Sprite::Create(0, { 170,15 });
+	spriteScore[1] = Sprite::Create(0, { WinApp::window_width - 47,15 });
+	spriteScore[2] = Sprite::Create(0, { WinApp::window_width - 79,15 });
+	spriteScore[3] = Sprite::Create(0, { WinApp::window_width - 111,15 });
+	spriteScore[4] = Sprite::Create(0, { WinApp::window_width - 143,15 });
+	spriteScore[5] = Sprite::Create(0, { WinApp::window_width - 175,15 });
+	spriteScore[6] = Sprite::Create(0, { WinApp::window_width - 207,15 });
+	spriteScore[7] = Sprite::Create(0, { WinApp::window_width - 239,15 });
+	spriteScore[8] = Sprite::Create(0, { WinApp::window_width - 271,15 });
 	spriteLevel[1] = Sprite::Create(0, { WinApp::window_width - 48 ,WinApp::window_height - 96 });
 	spriteLevelUp = Sprite::Create(28, { WinApp::window_width / 2 - 80 ,WinApp::window_height / 2 - 80 });
 	finish = Sprite::Create(23, { 0.0f ,0.0f });
@@ -196,7 +196,7 @@ void GamePlayScene::Initialize()
 		enemy_data[i].e_pos = { 0, 0, 0 };
 		enemy[i]->SetScale({ 3, 3, 3 });
 		enemy[i]->Update();
-		enemy_data[i].e_x_radius = 0.55f * player->GetScale().x;
+		enemy_data[i].e_x_radius = 0.4f * player->GetScale().x;
 		enemy_data[i].e_y_radius = 0.8f * player->GetScale().y;
 		enemy_data[i].is_normal = true;
 		enemy_data[i].is_bounce = false;
@@ -427,29 +427,10 @@ void GamePlayScene::Update()
 					}
 				}
 			}
-			//キーボード用
-			if (input->PushKey(DIK_D))
-			{
-				p_pos.x += 0.5f + 0.08 * (level - 1);
-				//進行方向に向きを変える
-				if (is_attack == false)
-				{
-					player->SetRotation(XMFLOAT3(0, 90, 0));
-				}
-			}
-			if (input->PushKey(DIK_A))
-			{
-				p_pos.x -= 0.5f + 0.08 * (level - 1);
-				//進行方向に向きを変える
-				if (is_attack == false)
-				{
-					player->SetRotation(XMFLOAT3(0, 270, 0));
-				}
-			}
 		}
 
 		//攻撃
-		if ((input->TriggerKey(DIK_SPACE) || input->PushButton(Button_B)) && is_attack == false && is_damage == false)
+		if (input->PushButton(Button_B) && is_attack == false && is_damage == false)
 		{
 			for (int i = 0; i < enemySpawn; i++)
 			{
@@ -500,7 +481,7 @@ void GamePlayScene::Update()
 		}
 
 		//ジャンプ
-		if ((input->TriggerKey(DIK_W) || input->TriggerButton(Button_A)) && is_air == false && is_jump == false && is_damage == false)
+		if (input->TriggerButton(Button_A) && is_air == false && is_jump == false && is_damage == false)
 		{
 			is_jump = true;
 			Audio::GetInstance()->PlayWave("SE/jump.wav", 5, false);
@@ -1422,13 +1403,11 @@ void GamePlayScene::SpawnEnemy(int mapNumber, int enemyNumber)
 		{
 			enemy_data[enemyNumber].can_catch = false;
 			enemy[enemyNumber]->SetModel(enemy_model_2);
-			enemy_data[enemyNumber].e_x_radius = 0.55f * player->GetScale().x;
 		}
 		else
 		{
 			enemy_data[enemyNumber].can_catch = true;
 			enemy[enemyNumber]->SetModel(model);
-			enemy_data[enemyNumber].e_x_radius = 0.4f * player->GetScale().x;
 		}
 		if (enemy_data[enemyNumber].enemy_type == JUMP)
 		{
