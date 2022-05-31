@@ -38,12 +38,14 @@ void EndScene::Initialize()
 	totitle = Sprite::Create(11, { 0.0f,50.0f });
 	newrecord = Sprite::Create(12, { 0.0f,50.0f });
 	newrecord->SetPosition({ 100,350 });
+	newrecord->SetSize({ 288,30 });
 	rank[0] = Sprite::Create(23, { 576,128.0f });
 	rank[1] = Sprite::Create(24, { 576,256.0f });
 	rank[2] = Sprite::Create(25, { 576,384.0f });
 
 	//BGM SE 読み込み
 	Audio::GetInstance()->LoadWave("SE/enter.wav");
+	Audio::GetInstance()->LoadWave("BGM/TitleEndBGM.wav");
 
 	ScoreSpriteInitialize(digitsNum, spriteScoreNo1, WinApp::window_width / 3 * 2.5, 128);
 	ScoreSpriteInitialize(digitsNum, spriteScoreNo2, WinApp::window_width / 3 * 2.5, 256);
@@ -61,6 +63,7 @@ void EndScene::Finalize()
 
 void EndScene::Update()
 {
+	Audio::GetInstance()->PlayWave("BGM/TitleEndBGM.wav", 0.07f , true);
 	// ゲームシーンの毎フレーム処理
 	nowPlayScore = GamePlayScene::GetScoreNum();
 	LoadText();
@@ -120,7 +123,8 @@ void EndScene::Update()
 
 	if (input->TriggerButton(Select))
 	{
-		Audio::GetInstance()->PlayWave("SE/enter.wav", 0.3f, false);
+		Audio::GetInstance()->PlayWave("SE/enter.wav", 0.05f, false);
+		Audio::GetInstance()->SoundStop("BGM/TitleEndBGM.wav");
 		//シーン切り替え
 		SceneManager::GetInstance()->ChangeScene("TITLE");
 	}

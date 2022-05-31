@@ -316,7 +316,7 @@ void GamePlayScene::Finalize()
 
 void GamePlayScene::Update()
 {
-	Audio::GetInstance()->PlayWave("BGM/GameBGM.wav", 5, false);
+	Audio::GetInstance()->PlayWave("BGM/GameBGM.wav", 0.05, false);
 
 	// ゲームシーンの毎フレーム処理
 	Input* input = Input::GetInstance();
@@ -381,6 +381,7 @@ void GamePlayScene::Update()
 		if (endConvertflag == true)
 		{
 			//シーン切り替え
+			Audio::GetInstance()->SoundStop("BGM/GameBGM.wav");
 			SceneManager::GetInstance()->ChangeScene("END");
 		}
 	}
@@ -438,7 +439,7 @@ void GamePlayScene::Update()
 				if (enemy_data[i].is_catch == true)
 				{
 					is_attack = true;
-					Audio::GetInstance()->PlayWave("SE/swing.wav", 5, false);
+					Audio::GetInstance()->PlayWave("SE/swing.wav", 0.05, false);
 					enemy_data[i].circle_radius = GetObjectLength(p_pos, enemy_data[i].e_pos);
 					//プレイヤーの向きで投げる方向を変える
 					if (player->GetRotation().y == 90 && p_pos.x >= enemy[i]->GetPosition().x)
@@ -484,7 +485,7 @@ void GamePlayScene::Update()
 		if (input->TriggerButton(Button_A) && is_air == false && is_jump == false && is_damage == false)
 		{
 			is_jump = true;
-			Audio::GetInstance()->PlayWave("SE/jump.wav", 5, false);
+			Audio::GetInstance()->PlayWave("SE/jump.wav", 0.05, false);
 
 			//上昇率の初期化
 			p_add = 2.25f + (level - 1) * 0.125f;
@@ -554,7 +555,7 @@ void GamePlayScene::Update()
 						enemy_data[i].max_rope += static_cast<float>(rand() % 50) / 10 - 2.5f;
 						Audio::GetInstance()->SoundStop("SE/attack.wav");
 						Audio::GetInstance()->SoundStop("SE/catch.wav");
-						Audio::GetInstance()->PlayWave("SE/catch.wav", 5, false);
+						Audio::GetInstance()->PlayWave("SE/catch.wav", 0.05, false);
 					} 
 					else if (CollisionObject(player, enemy[i]) == true && enemy_data[i].can_catch == false)
 					{
@@ -714,7 +715,7 @@ void GamePlayScene::Update()
 							hundredScore6 = score / 1000000;
 							hundredScore7 = score / 10000000;
 							Audio::GetInstance()->SoundStop("SE/swing.wav");
-							Audio::GetInstance()->PlayWave("SE/attack.wav", 5, false);
+							Audio::GetInstance()->PlayWave("SE/attack.wav", 0.05, false);
 							spriteScore[1]->ChangeTex((int)score % 10);
 							spriteScore[2]->ChangeTex((int)hundredScore % 10);
 							spriteScore[3]->ChangeTex((int)hundredScore2 % 10);
