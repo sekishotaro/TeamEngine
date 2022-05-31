@@ -17,7 +17,7 @@ void WinApp::Initializa()
 {
 	w.cbSize = sizeof(WNDCLASSEX);
 	w.lpfnWndProc = (WNDPROC)WindowProc; // ウィンドウプロシージャを設定
-	w.lpszClassName = L"Arc Smash"; // ウィンドウクラス名
+	w.lpszClassName = L"ArcSmash"; // ウィンドウクラス名
 	w.hInstance = GetModuleHandle(nullptr); // ウィンドウハンドル
 	w.hCursor = LoadCursor(NULL, IDC_ARROW); // カーソル指定
 
