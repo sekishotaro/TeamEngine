@@ -46,6 +46,7 @@ void EndScene::Initialize()
 	//BGM SE 読み込み
 	Audio::GetInstance()->LoadWave("SE/enter.wav");
 	Audio::GetInstance()->LoadWave("BGM/TitleEndBGM.wav");
+	Audio::GetInstance()->SoundStop("BGM/alarm.wav");
 
 	ScoreSpriteInitialize(digitsNum, spriteScoreNo1, WinApp::window_width / 3 * 2.5, 128);
 	ScoreSpriteInitialize(digitsNum, spriteScoreNo2, WinApp::window_width / 3 * 2.5, 256);
@@ -63,7 +64,7 @@ void EndScene::Finalize()
 
 void EndScene::Update()
 {
-	Audio::GetInstance()->PlayWave("BGM/TitleEndBGM.wav", 0.07f , true);
+	Audio::GetInstance()->PlayWave("BGM/TitleEndBGM.wav", 0.05f , true);
 	// ゲームシーンの毎フレーム処理
 	nowPlayScore = GamePlayScene::GetScoreNum();
 	LoadText();
@@ -123,14 +124,11 @@ void EndScene::Update()
 
 	if (input->TriggerButton(Select))
 	{
-		Audio::GetInstance()->PlayWave("SE/enter.wav", 0.05f, false);
+		Audio::GetInstance()->PlayWave("SE/enter.wav", 0.2f, false);
 		Audio::GetInstance()->SoundStop("BGM/TitleEndBGM.wav");
 		//シーン切り替え
 		SceneManager::GetInstance()->ChangeScene("TITLE");
 	}
-
-	DebugText::GetInstance()->Print(50, 20, 3, "fafafafafafafafafafafafafafaf");
-	DebugText::GetInstance()->Print(50, 20 * 5, 3, "%d", nowPlayScore);
 }
 
 void EndScene::Draw()
@@ -219,7 +217,6 @@ void EndScene::Draw()
 	
 
 	// デバッグテキストの描画
-	//DebugText::GetInstance()->DrawAll(cmdList);
 
 	ConvertScene::Draw();
 

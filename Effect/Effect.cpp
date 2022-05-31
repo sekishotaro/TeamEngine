@@ -1,5 +1,6 @@
 #include "Effect.h"
 #include "Vector3.h"
+#include "Audio.h"
 #include <safe_delete.h>
 
 const float Effect::maxTime = 100.0f;
@@ -134,6 +135,7 @@ void Effect::TimeLimitEffectDraw(float& time)
 {
 	if (time <= 10.0)
 	{
+		Audio::GetInstance()->PlayWave("BGM/alarm.wav", 0.2, false);
 		if ((int)time % 2 == 0)
 		{
 			//timeLimitSprite->Draw();

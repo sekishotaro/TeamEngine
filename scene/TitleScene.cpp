@@ -34,6 +34,7 @@ void TitleScene::Initialize()
 	//BGM SE 読み込み
 	Audio::GetInstance()->LoadWave("SE/enter.wav");
 	Audio::GetInstance()->LoadWave("BGM/TitleEndBGM.wav");
+	Audio::GetInstance()->SoundStop("SE/enter.wav");
 
 	//マップチップ用のCSV読み込み
 	//(map, "Resource/scv/なんたら.csv")で追加可能
@@ -591,7 +592,7 @@ void TitleScene::Update()
 	{
 		if (input->TriggerButton(Select))
 		{
-			Audio::GetInstance()->PlayWave("SE/enter.wav", 0.05f, false);
+			Audio::GetInstance()->PlayWave("SE/enter.wav", 0.2f, false);
 			startFlag = true;
 		}
 	}
@@ -666,15 +667,6 @@ void TitleScene::Update()
 	}
 	shock->Update();
 	board->Update();
-
-
-	//プレイヤーの座標（X：Y)
-	/*DebugText::GetInstance()->Print(50, 35 * 3, 2, "player_x:%f", p_pos.x);
-	DebugText::GetInstance()->Print(50, 35 * 4, 2, "player_y:%f", p_pos.y);
-	DebugText::GetInstance()->Print(50, 35 * 5, 2, "rope_len:%f", max_rope);
-	DebugText::GetInstance()->Print(50, 35 * 6, 2, "enemySpawn:%d", enemySpawn);
-	DebugText::GetInstance()->Print(50, 35 * 7, 2, "min:%f~max:%f", p_pos.x - 123 / 2, p_pos.x + 123 / 2);
-	DebugText::GetInstance()->Print(50, 35 * 8, 2, "min:%f~max:%f", p_pos.y - 70 / 2, p_pos.y + 70 / 2);*/
 }
 
 void TitleScene::Draw()
@@ -761,7 +753,6 @@ void TitleScene::Draw()
 	text->Draw();
 
 	// デバッグテキストの描画
-	//DebugText::GetInstance()->DrawAll(cmdList);
 
 	ConvertScene::Draw();
 
