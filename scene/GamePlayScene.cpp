@@ -439,7 +439,7 @@ void GamePlayScene::Update()
 				if (enemy_data[i].is_catch == true)
 				{
 					is_attack = true;
-					Audio::GetInstance()->PlayWave("SE/swing.wav", 0.05, false);
+					Audio::GetInstance()->PlayWave("SE/swing.wav", 0.15, false);
 					enemy_data[i].circle_radius = GetObjectLength(p_pos, enemy_data[i].e_pos);
 					//ƒvƒŒƒCƒ„[‚ÌŒü‚«‚Å“Š‚°‚é•ûŒü‚ð•Ï‚¦‚é
 					if (player->GetRotation().y == 90 && p_pos.x >= enemy[i]->GetPosition().x)
@@ -485,7 +485,7 @@ void GamePlayScene::Update()
 		if (input->TriggerButton(Button_A) && is_air == false && is_jump == false && is_damage == false)
 		{
 			is_jump = true;
-			Audio::GetInstance()->PlayWave("SE/jump.wav", 0.05, false);
+			Audio::GetInstance()->PlayWave("SE/jump.wav", 0.1, false);
 
 			//ã¸—¦‚Ì‰Šú‰»
 			p_add = 2.25f + (level - 1) * 0.125f;
@@ -715,7 +715,7 @@ void GamePlayScene::Update()
 							hundredScore6 = score / 1000000;
 							hundredScore7 = score / 10000000;
 							Audio::GetInstance()->SoundStop("SE/swing.wav");
-							Audio::GetInstance()->PlayWave("SE/attack.wav", 0.05, false);
+							Audio::GetInstance()->PlayWave("SE/attack.wav", 0.15, false);
 							spriteScore[1]->ChangeTex((int)score % 10);
 							spriteScore[2]->ChangeTex((int)hundredScore % 10);
 							spriteScore[3]->ChangeTex((int)hundredScore2 % 10);
