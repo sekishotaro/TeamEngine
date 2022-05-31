@@ -50,6 +50,7 @@ public:
 	Sprite* spriteScoreNo1[10]; //歴代1位スコア
 	Sprite* spriteScoreNo2[10]; //歴代2位スコア
 	Sprite* spriteScoreNo3[10]; //歴代3位スコア
+	Sprite* rank[3]; //1st等の描画
 
 	//シーン移行完了確認フラグ
 	bool ConvertFlag = false;

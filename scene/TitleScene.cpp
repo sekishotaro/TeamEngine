@@ -29,6 +29,7 @@ void TitleScene::Initialize()
 	rope = Model::LoadFromOBJ("rope");
 	locusModel = Model::LoadFromOBJ("locus");
 	block = Model::LoadFromOBJ("block");
+	modelBoard = Model::LoadFromOBJ("signboard");
 
 	//BGM SE 読み込み
 	Audio::GetInstance()->LoadWave("SE/enter.wav");
@@ -63,6 +64,7 @@ void TitleScene::Initialize()
 		}
 	}
 	player = Object3d::Create();
+	board = Object3d::Create();
 
 	//エフェクト
 	shock = Object3d::Create();
@@ -120,6 +122,10 @@ void TitleScene::Initialize()
 	//プレイヤー
 	player->SetModel(modelPlayer);
 	player->SetScale({ 3, 3, 3 });
+	board->SetModel(modelBoard);
+	board->SetPosition({  30 , -65 , 10 });
+	board->SetScale({ 5 , 5 , 5 });
+	board->SetRotation({ 0,270,0 });
 	p_pos = { 50, 10, 0 };
 	old_p_pos = { 0, 0, 0 };
 	p_x_radius = 0.4f * player->GetScale().x;
@@ -667,6 +673,7 @@ void TitleScene::Update()
 		locus[i]->Update();
 	}
 	shock->Update();
+	board->Update();
 
 
 	//プレイヤーの座標（X：Y)
@@ -702,6 +709,7 @@ void TitleScene::Draw()
 	// 3Dオブジェクト描画前処理
 	Object3d::PreDraw(cmdList);
 
+	board->Draw();
 	// 3Dオブクジェクトの描画
 	for (int i = 0; i < enemySpawn; i++)
 	{
@@ -735,6 +743,7 @@ void TitleScene::Draw()
 		}
 	}
 
+
 	//エフェクト
 	for (int i = 0; i < locus.size(); i++)
 	{
@@ -745,6 +754,7 @@ void TitleScene::Draw()
 	{
 		shock->Draw();
 	}
+
 
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる

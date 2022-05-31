@@ -15,7 +15,7 @@ void MyGame::Initialize()
 	SceneManager::GetInstance()->SetSceneFactory(sceneFactory_.get());
 	
 	//シーンマネージャーに最初のシーンをセット
-	SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
+	SceneManager::GetInstance()->ChangeScene("TITLE");
 }
 
 void MyGame::Finalize()

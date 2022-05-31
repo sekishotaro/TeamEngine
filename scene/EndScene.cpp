@@ -30,11 +30,17 @@ void EndScene::Initialize()
 	Sprite::LoadTexture(12, L"Resources/new record.png");
 	Sprite::LoadTexture(21, L"Resources/switch_In.png");
 	Sprite::LoadTexture(22, L"Resources/switch_Out.png");
+	Sprite::LoadTexture(23, L"Resources/1st.png");
+	Sprite::LoadTexture(24, L"Resources/2nd.png");
+	Sprite::LoadTexture(25, L"Resources/3nd.png");
 	// 背景スプライト生成
 	spriteBG = Sprite::Create(10, { 0.0f,0.0f });
 	totitle = Sprite::Create(11, { 0.0f,50.0f });
 	newrecord = Sprite::Create(12, { 0.0f,50.0f });
 	newrecord->SetPosition({ 100,350 });
+	rank[0] = Sprite::Create(23, { 576,128.0f });
+	rank[1] = Sprite::Create(24, { 576,256.0f });
+	rank[2] = Sprite::Create(25, { 576,384.0f });
 
 	//BGM SE 読み込み
 	Audio::GetInstance()->LoadWave("SE/enter.wav");
@@ -139,6 +145,10 @@ void EndScene::Draw()
 	{
 		newrecord->Draw();
 	}
+
+	rank[0]->Draw();
+	rank[1]->Draw();
+	rank[2]->Draw();
 	/// <summary>
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
