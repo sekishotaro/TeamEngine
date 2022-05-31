@@ -212,6 +212,7 @@ void GamePlayScene::Initialize()
 		enemy_data[i].is_add = true;
 		enemy_data[i].escape_time = 0;
 		enemy_data[i].max_rope = 15;
+		enemy_data[i].is_fall = true;
 		enemy_data[i].circle_radius = 0;
 		enemy[i]->SetRotation({ 0, 270, 0 });
 		enemy[i]->SetModel(model);
@@ -655,6 +656,7 @@ void GamePlayScene::Update()
 				{
 					if (is_attack == true)
 					{
+						enemy_data[i].is_fall = false;
 						if (enemy_data[i].circle_radius == 0)
 						{
 							enemy_data[i].circle_radius = 1.25f;
@@ -810,7 +812,7 @@ void GamePlayScene::Update()
 					}
 				}
 				//重力
-				if (is_attack == false || enemy_data[i].is_bounce == true)
+				if (enemy_data[i].is_fall == true || enemy_data[i].is_bounce == true)
 				{
 					//下降度をマイナス
 					if (enemy_data[i].is_bounce == false)
@@ -1349,6 +1351,7 @@ void GamePlayScene::SpawnEnemy(int mapNumber, int enemyNumber)
 		enemy[enemyNumber]->SetRotation(e_rot);
 		enemy_data[enemyNumber].e_pos = { spawnX * LAND_SCALE,  -spawnY * LAND_SCALE, 0 };
 		enemy_data[enemyNumber].is_alive = true;//スポーン
+		enemy_data[enemyNumber].is_fall = true;
 		enemy_data[enemyNumber].enemy_type = NORMAL;
 		int num = rand() % 101;
 		if (level * 10 > num)
@@ -1530,7 +1533,7 @@ void GamePlayScene::RopeMove(const int enemy_index)
 				if (GetUpMapChip(enemy_data[enemy_index].e_pos) == Ground)
 				{
 					break;
-				}
+				} 
 				else
 				{
 					break;
@@ -1569,18 +1572,14 @@ void GamePlayScene::RopeMove(const int enemy_index)
 			rope_data[enemy_index][i].r_pos = (rope_data[enemy_index][i - 1].r_pos) / 2 + (rope_data[enemy_index][i + 1].r_pos) / 2;
 
 			//ロープ同士の距離
-			XMFLOAT2 length = {
-				rope_data[enemy_index][i - 1].r_pos.x - rope_data[enemy_index][i + 1].r_pos.x,
-				rope_data[enemy_index][i - 1].r_pos.y - rope_data[enemy_index][i + 1].r_pos.y };
+			XMFLOAT2 length = { rope_data[enemy_index][i - 1].r_pos.x - rope_data[enemy_index][i + 1].r_pos.x, rope_data[enemy_index][i - 1].r_pos.y - rope_data[enemy_index][i + 1].r_pos.y };
 			float len = GetObjectLength(rope_data[enemy_index][i - 1].r_pos, rope_data[enemy_index][i + 1].r_pos);
 			//最大値より大きいなら
 			if (len > enemy_data[enemy_index].max_rope)
 			{
 				float wq = len / enemy_data[enemy_index].max_rope;
 				len = enemy_data[enemy_index].max_rope;
-				rope_data[enemy_index][i + 1].r_pos = {
-					rope_data[enemy_index][i - 1].r_pos.x - length.x / wq,
-					rope_data[enemy_index][i - 1].r_pos.y - length.y / wq, 0 };
+				rope_data[enemy_index][i + 1].r_pos = { rope_data[enemy_index][i - 1].r_pos.x - length.x / wq, rope_data[enemy_index][i - 1].r_pos.y - length.y / wq, 0 };
 			}
 
 			angleX[i] = rope_angle->PosForAngle(rope_data[enemy_index][i - 1].r_pos.x, rope_data[enemy_index][i + 1].r_pos.y, rope_data[enemy_index][i + 1].r_pos.x, rope_data[enemy_index][i - 1].r_pos.y);

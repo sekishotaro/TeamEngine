@@ -57,6 +57,8 @@ public: //サブクラス
 
 		bool is_add; //加算するか
 
+		bool is_fall;
+
 		float turn_move; //裏返るときの動き
 
 		int escape_time; //逃げるまでの時間
