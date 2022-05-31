@@ -26,7 +26,7 @@ void GamePlayScene::Initialize()
 	Audio::GetInstance()->LoadWave("futta-dream.wav");
 	Audio::GetInstance()->LoadWave("zaza.wav");
 
-	//Audio::GetInstance()->PlayWave("zaza.wav", true);
+	Audio::GetInstance()->PlayWave("futta-dream.wav", true);
 	
 	//デバイスのセット
 	FbxObject3d::SetDevice(DirectXCommon::GetInstance()->GetDev());
